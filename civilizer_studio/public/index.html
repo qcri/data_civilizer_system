@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en" ng-app="rheem">
+<head>
+  <meta charset="utf-8">
+  <title>Civilizer studio</title>
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="css/reset.css">
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link rel="stylesheet" type="text/css" href="../bower_components/font-awesome/css/font-awesome.min.css">
+  <link href='https://fonts.googleapis.com/css?family=Oxygen:400,700,300' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="css/onedatastyle.css" type="text/css">
+  <script src="../bower_components/angular/angular.js"></script>
+  <script src="../bower_components/jquery/dist/jquery.js"></script>
+  <script src="../bower_components/jquery-ui/jquery-ui.min.js"></script>
+<!--   <script src="../bower_components/angular-dragdrop/src/angular-dragdrop.js"></script> -->
+  <script src="libs/ngFlowchart.js"></script>
+  <script src="../bower_components/angular-resource/angular-resource.js"></script>
+  <script src="libs/angular-ui-router.min.js"></script>
+  <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+  <script type="text/javascript" src="../bower_components/ace-builds/src-min-noconflict/ace.js"></script>
+  <script type="text/javascript" src="../bower_components/angular-ui-ace/ui-ace.js"></script>
+
+  <script src="./js/app.js"></script>
+  <script src="./js/controllers/main.controller.js"></script>
+  <script src="./js/controllers/editor.controller.js"></script>
+  <script src="./js/controllers/monitor.controller.js"></script>
+  <script src="./js/services/rheem-api.js"></script>
+  <script src="./js/filters/prettyClassName.filter.js"></script>
+  <script src="./js/services/execution-plan.js"></script>
+  <script src="./js/services/plans-conversions.js"></script>
+</head>
+<body>
+
+<div class="wrapper" ui-view></div>
+
+</body>
+</html>

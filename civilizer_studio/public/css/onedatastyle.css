@@ -1,0 +1,291 @@
+body {
+  font-family: sans-serif;
+}
+
+.fc-canvas svg {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  box-sizing: content-box;
+}
+
+.fc-canvas * {
+  box-sizing: content-box;
+}
+
+.fc-canvas p {
+  margin: 0;
+  padding: 5px !important;
+}
+
+.button-overlay {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  z-index: 10;
+}
+
+.button-overlay button {
+  display: block;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  border: none;
+  box-shadow: none;
+  color: #fff;
+  font-size: 20px;
+  background-color: #F15B26;
+}
+
+.button-overlay button:hover:not(:disabled) {
+  border: 4px solid #b03911;
+  border-radius: 5px;
+
+  margin: -4px;
+  margin-bottom: 11px;
+}
+
+.button-overlay button:disabled {
+  -webkit-filter: brightness(70%);
+  filter: brightness(70%);
+}
+
+.fc-node {
+  z-index: 1;
+}
+
+.innerNode {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -ms-flex-align: center;
+  -ms-grid-row-align: center;
+  align-items: center;
+  min-width: 150px;
+  border-radius: 5px;
+  color: #333;
+  font-size: 16px;
+}
+
+.innerNode.source,
+.innerNode.sink {
+  display: block;
+}
+
+.innerNode.source p,
+.innerNode.sink p {
+  display: block;
+  padding: 5px !important;
+  background-position: center center;
+}
+
+.innerNode.source img,
+.innerNode.sink img {
+  pointer-events: none;
+  width: 35px;
+  height: 35px;
+}
+
+.innerNode.source img {
+  margin-bottom: 10px;
+}
+
+.innerNode.sink img {
+  margin-top: 10px;
+}
+
+.fc-node .innerNode {
+  border: 3px solid #7c4dff;
+}
+
+.fc-node.fc-selected .innerNode {
+  background-color: #7c4dff;
+  color: #FFF;
+}
+
+.fc-node.fc-dragging {
+  z-index: 10;
+}
+
+.fc-node p {
+  padding: 10px 5px 10px 50px !important;
+  text-align: center;
+  background-size: 30px 30px;
+  background-position: 5px center;
+  background-repeat: no-repeat;
+}
+
+.fc-topConnectors,
+.fc-bottomConnectors,
+.fc-rightConnectors,
+.fc-leftConnectors  {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  z-index: -10;
+}
+
+.fc-topConnectors {
+  top: -20px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 80%;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+.broadcast-connectors {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  right: 0;
+}
+
+.broadcast-connectors .single-connector {
+  position: absolute;
+}
+
+.broadcast-connectors .fc-connector {
+  background-color: #666;
+}
+
+.broadcast-connectors .single-connector:first-of-type {
+  right: -20px;
+}
+
+.broadcast-connectors .single-connector:last-of-type {
+  left: -20px;
+}
+
+.fc-bottomConnectors {
+  bottom: -20px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 80%;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -ms-flex-pack: center;
+  justify-content: center;  
+}
+
+.fc-rightConnectors {
+  right: -22px;
+  left: auto;
+}
+
+.fc-rightConnectors .fc-magnet {
+  justify-content: flex-end;
+}
+
+.fc-leftConnectors {
+  left: -22px;
+  right: auto;
+}
+
+.fc-leftConnectors .fc-magnet {
+  justify-content: flex-start;
+}
+
+.fc-rightConnectors .fc-connector,
+.fc-leftConnectors .fc-connector {
+  background-color: #666;
+}
+
+.fc-magnet {
+  display: flex;
+  justify-content: center;
+}
+
+.fc-topConnectors .fc-magnet {
+  align-items: flex-end;
+}
+
+.fc-bottomConnectors .fc-magnet {
+  align-items: flex-start;
+}
+
+.fc-connector {
+  width: 18px;
+  height: 18px;
+  border: 10px solid transparent;
+  -moz-background-clip: padding; /* Firefox 3.6 */
+  -webkit-background-clip: padding; /* Safari 4? Chrome 6? */
+  background-clip: padding-box;
+  border-radius: 50% 50%;
+  background-color: #7c4dff;
+  color: #fff;
+}
+
+.fc-connector.fc-hover {
+  background-color: #000;
+}
+
+.fc-edge {
+  stroke: gray;
+  stroke-width: 4;
+  fill: transparent;
+}
+
+.fc-edge.fc-hover {
+  stroke: gray;
+  stroke-width: 6;
+  fill: transparent;
+}
+
+@keyframes dash {
+  from {
+    stroke-dashoffset: 500;
+  }
+}
+
+.fc-edge.fc-selected {
+  stroke: red;
+  stroke-width: 4;
+  fill: transparent;
+}
+
+.fc-edge.fc-active {
+  animation: dash 3s linear infinite;
+  stroke-dasharray: 20;
+}
+
+.fc-edge.fc-dragging {
+  pointer-events: none;
+}
+
+.edge-endpoint {
+  fill: gray;
+}
+
+.fc-nodedelete {
+  display: none;
+}
+
+.fc-selected .fc-nodedelete {
+  display: block;
+  position: absolute;
+  right: -13px;
+  top: -13px;
+  border: solid 2px white;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 20px;
+  height: 20px;
+  padding-top: 2px;
+  width: 22px;
+  background: red;
+  color: #fff;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.fc-nodedelete i.fa {
+  display: block;
+  font-size: 16px;
+}
+

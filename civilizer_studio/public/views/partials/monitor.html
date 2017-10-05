@@ -1,0 +1,33 @@
+<div id="monitor-tabs">
+  <input id="tab1" type="radio" name="tabs" checked>
+  <label for="tab1"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i>Running</label>
+
+  <input id="tab2" type="radio" name="tabs">
+  <label for="tab2"><i class="fa fa-check" aria-hidden="true"></i>Succeeded</label>
+
+  <input id="tab3" type="radio" name="tabs">
+  <label for="tab3"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>Failed</label>
+
+  <div class="content">
+    <div id="content1">
+      <div id="monitor-progress-bar">
+        <span style="width: {{ monitorProgress }}%">{{ monitorProgress }}%</span>
+      </div>
+      <canvas id="monitor-graph"></canvas>
+
+      <ul id="stages-colors" class="pull-right">
+        <li><span style="background-color: brown;"></span>&nbsp;&nbsp;Java Streams</li>
+        <li><span style="background-color: orange;"></span>&nbsp;&nbsp;Apache Spark</li>
+        <li><span style="background-color: green;"></span>&nbsp;&nbsp;Apache Hadoop</li>
+      </ul>
+    </div>
+
+    <div id="content2">
+      list of succeeded plans
+    </div>
+
+    <div id="content3">
+      list of failed plans
+    </div>
+  </div>
+</div>

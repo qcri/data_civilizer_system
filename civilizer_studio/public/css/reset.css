@@ -1,0 +1,15 @@
+/*.collapse.in {
+  display: block;
+  opacity: 1;
+}
+
+.collapse {
+  display: block;
+  opacity: 0;
+  transition: 0.3s all ease-in-out;
+}*/
+
+ul {
+  padding: 0;
+  margin: 0;
+}

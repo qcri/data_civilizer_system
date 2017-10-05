@@ -1,0 +1,641 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Oxygen', sans-serif;
+  font-size: 16px;
+}
+
+.full-height {
+  height: 100%;
+  position: relative;
+  text-align: center;
+}
+
+#navbar {
+  background: #7c4dff;
+  background: -moz-linear-gradient(top,  #7c4dff 0%, #7c4dff 100%);
+  background: -webkit-linear-gradient(top,  #7c4dff 0%,#7c4dff 100%);
+  background: linear-gradient(to bottom,  #7c4dff 0%,#7c4dff 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c8213d', endColorstr='#961f21',GradientType=0 );
+  color: #FFF;
+  margin-bottom: 0;
+  border: none;
+  height: 50px;
+}
+
+
+
+#navbar i.fa {
+  margin-right: 5px;
+}
+
+#navbar a {
+  color: #FFF;
+}
+
+#logo {
+  display: inline-block;
+  margin: 8px 12px;
+  font-size: 24px;
+  border-right: 1px solid rgba(236, 231, 231, 0.3);
+  padding-right: 25px;
+}
+
+#logo h2 {
+  margin: 0;
+  float: left;
+}
+
+#logo span {
+  font-weight: 300;
+  font-size: 14px;
+  text-transform: uppercase;
+  margin-left: 10px;
+  display: block;
+  float: left;
+  margin-top: 8px;
+  letter-spacing: 1px;
+}
+
+#header-buttons {
+  list-style-type: none;
+  margin-right: 10px;
+  padding-top: 9px;
+  border-left: 1px solid rgba(236, 231, 231, 0.3);
+  padding-left: 20px;
+}
+
+#landing-page {
+  padding-top: 100px;
+}
+
+#landing-page img {
+  margin-bottom: 30px;
+  margin-right: 20px;
+}
+
+#landing-page .landing-button {
+  display: inline-block;
+  width: 150px;
+  height: 150px;
+  line-height: 150px;
+  text-align: center;
+  background: #7c4dff;
+  border-radius: 150px;
+  color: #FFF;
+  font-size: 22px;
+  margin-right: 20px;
+}
+
+#landing-page .landing-button:hover {
+  text-decoration: none;
+}
+
+
+/*===================-------------------- MAIN WARPPER --------------------===================*/
+.wrapper {
+  height: calc(100% - 50px);
+  position: relative;
+}
+
+#main-wrapper {
+  padding: 0;
+  height: 100%;
+}
+
+#main-wrapper .main-column {
+  height: 100%;
+  overflow-y: auto;
+}
+
+
+
+
+
+/*--------------- START DRAG AREA ---------------*/
+#main-wrapper #drag-area {
+  background: #FFF;
+  padding: 10px;
+}
+
+#info-panel {
+  background-color: #7c4dff;
+  padding: 10px;
+  margin-bottom: 20px;
+  color: #FFF;
+}
+
+#info-panel a {
+  color: #FFF;
+}
+
+/*
+#info-panel #save-plan {
+  display: block;
+  cursor: pointer;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #e0304e;
+}
+
+#info-panel #save-plan i.fa {
+  margin-left: 10px;
+}
+*/
+
+#build-action {
+  padding-bottom: 30px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #e0dddd;
+}
+
+#build-action i.fa {
+  margin-right: 5px;
+}
+
+#build-action a {
+  cursor: pointer;
+}
+
+#build-action a:first-of-type {
+  margin-right: 10px;
+  float: left;
+}
+
+#build-action a:last-of-type {
+  float: right;
+}
+
+
+#build-execute {
+  padding-top: 10px;
+  margin-top: 10px;
+  border-top: 1px solid #e0dddd;
+}
+
+#build-execute i.fa {
+  margin-right: 5px;
+}
+
+#build-execute a {
+  cursor: pointer;
+}
+
+#build-execute a:first-of-type {
+  margin-right: 10px;
+  float: left;
+}
+
+#build-execute a:last-of-type {
+  float: right;
+}
+
+#info-panel:after {
+  content: ".";
+  visibility: hidden;
+  display: block;
+  height: 0;
+  clear: both;
+}
+
+#drag-area .group-of-draggables {
+  border: 2px solid #7c4dff;
+}
+
+#drag-area .group-of-draggables:not(:last-of-type) {
+  margin-bottom: 20px;
+}
+
+#drag-area .collapse-title {
+  cursor: pointer;
+  margin: 0;
+  background: #7c4dff;
+  color: #FFF;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: left;
+}
+
+#drag-area .collapse-title img {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+#drag-area .collapse-title i.fa {
+  margin-right: 10px;
+}
+
+#drag-area .collapse-title.true:after {
+  font-family: "FontAwesome";
+  content: "\f106";
+  float: right;
+}
+
+#drag-area .collapse-title.false:after {
+  font-family: "FontAwesome";
+  content: "\f107";
+  float: right;
+}
+
+#drag-area ul.list-of-tools {
+  list-style-type: none;
+  padding: 5px;
+}
+
+#drag-area ul.list-of-tools li {
+  text-align: left;
+  background: #EEE;
+  padding: 5px 10px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  overflow-x: hidden;
+}
+
+#drag-area ul.list-of-tools li:hover {
+  cursor: pointer;
+}
+
+#drag-area ul.list-of-tools li.selected {
+  background: #131313;
+  color: #FFF;
+}
+
+#drag-area ul.list-of-tools li:last-of-type {
+  margin-bottom: 0;
+}
+
+#operators-tabs-container {
+  margin: 10px;
+}
+
+#operators-tabs-container .tab-content {
+  border: none;
+  border-top: 1px solid #7c4dff;
+  padding-top: 10px;
+}
+
+#operators-tabs-container .nav > li > a {
+  font-size: 15px;
+  font-weight: bold;
+  padding: 5px 10px;
+  color: #7c4dff;
+}
+
+#operators-tabs-container .nav-tabs > li.active > a {
+  background-color: #7c4dff;
+  color: #FFF;
+  border-color: #7c4dff;
+}
+
+
+/*--------------- END DRAG AREA ---------------*/
+
+
+
+
+
+/*--------------- START WORK AREA ---------------*/
+#main-wrapper #work-area {
+  background: #EEE;
+}
+
+.onoffswitch {
+    position: relative; width: 90px;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+    float: right;
+}
+.onoffswitch-checkbox {
+    display: none;
+}
+.onoffswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    border: 2px solid #999999; border-radius: 20px;
+}
+.onoffswitch-inner {
+    display: block; width: 200%; margin-left: -100%;
+    transition: margin 0.3s ease-in 0s;
+}
+.onoffswitch-inner:before, .onoffswitch-inner:after {
+    display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 30px;
+    font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+    box-sizing: border-box;
+}
+.onoffswitch-inner:before {
+    content: "ON";
+    padding-left: 10px;
+    background-color: #FFFFFF; color: #3ACF04;
+}
+.onoffswitch-inner:after {
+    content: "OFF";
+    padding-right: 10px;
+    background-color: #EEEEEE; color: #999999;
+    text-align: right;
+}
+.onoffswitch-switch {
+    display: block; width: 20px; height: 20px; margin: 7px;
+    background: #FFFFFF;
+    position: absolute; top: 0; bottom: 0;
+    right: 56px;
+    border: 2px solid #999999; border-radius: 20px;
+    transition: all 0.3s ease-in 0s;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+    margin-left: 0;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+    right: 0px;
+}
+
+.header-button-title {
+  margin-right: 10px;
+  margin-top: 5px;
+  display: inline-block;
+}
+
+#execution-plan-area {
+  height: 100%;
+  border-left: 1px solid #CCC;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  overflow: auto;
+}
+
+#execution-plan-graph {
+  display: block;
+}
+
+#export-action {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  display: block;
+  border: 0px solid #CCC;
+  padding: 10px;
+  font-size: 13px;
+}
+
+#export-action span{
+  list-style-type: none;
+  display: table;
+  margin-bottom: 10px;
+}
+
+#export-action a{
+  color: #333;
+  cursor: pointer;
+}
+
+#export-action li:last-of-type {
+  margin-bottom: 0;
+}
+
+#export-action li span {
+  display: table-cell;
+  width: 20px;
+  height: 20px;
+}
+
+#stages-colors {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: block;
+  border: 1px solid #CCC;
+  margin-top: 20px;
+  padding: 10px;
+  font-size: 13px;
+}
+
+#stages-colors li {
+  list-style-type: none;
+  display: table;
+  margin-bottom: 10px;
+}
+
+#stages-colors li:last-of-type {
+  margin-bottom: 0;
+}
+
+#stages-colors li span {
+  display: table-cell;
+  width: 20px;
+  height: 20px;
+}
+
+.operator-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.styled-select {
+  background: url(http://i62.tinypic.com/15xvbd5.png) no-repeat 96% 0;
+  height: 29px;
+  overflow: hidden;
+  width: 185px;
+}
+
+.styled-select select {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  height: 29px;
+  width: 200px;
+  padding: 5px; /* If you add too much padding here, the options won't show in IE */
+}
+.styled-select.slate {
+  background: url(http://i62.tinypic.com/2e3ybe1.jpg) no-repeat right center;
+  height: 32px;
+  width: 185px;
+}
+
+.styled-select.slate select {
+  border: 1px none #999999;
+  font-size: 16px;
+  height: 32px;
+  width: 200px;
+}
+.slate select   { color: #333; }
+.slate   { background-color: #FFF; }
+
+#currentPlanDiv{
+  background-color: #FFF;
+}
+
+/*--------------- END WORK AREA ---------------*/
+
+
+
+
+
+/*--------------- START WORK INFO AREA ---------------*/
+#info-area {
+  color: #FFF;
+  background-color: #333;
+  padding: 10px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  text-align: left;
+  overflow: auto;
+  z-index: 1000;
+}
+
+#info-area a {
+  color: #FFF;
+  font-weight: bold;
+}
+
+#info-area a#simple-dropdown:hover,
+#info-area a#simple-dropdown:focus {
+  text-decoration: none;
+}
+
+#info-area textarea {
+  color: #333;
+  width: 100%;
+  height: 100px;
+  margin: 10px 0;
+  padding: 10px;
+  font-size: 12px;
+}
+
+#info-area .dropdown-menu {
+  color: #000;
+  padding: 8px;
+}
+
+#parameters-list {
+  /*right: 0;
+  left: auto;*/
+}
+
+#paramters-input-list li {
+  margin-bottom: 20px;
+  word-break: break-word;
+}
+
+#parameters-list li {
+  cursor: pointer;
+}
+
+#parameters-list li:not(:last-of-type) {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #CCC;
+}
+
+#close-param-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  padding: 5px 10px;
+  background: #000;
+  border-bottom-left-radius: 10px;
+}
+
+#close-param-panel i.fa {
+  font-size: 20px;
+}
+/*--------------- END WORK INFO AREA ---------------*/
+
+
+
+
+
+
+
+/*--------------- START MONITORING ---------------*/
+#monitor-graph {
+  margin: 50px 10px 10px 10px;
+}
+
+#monitor-progress-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background-color: #CECECE;
+}
+
+#monitor-progress-bar span {
+  display: block;
+  padding: 5px;
+  background-color: green;
+  color: #FFF;
+}
+
+#monitor-tabs {
+  text-align: left;
+}
+
+#monitor-tabs .content {
+  text-align: center;
+  border-top: 3px solid #7c4dff;
+}
+
+#monitor-tabs .content > div {
+  display: none;
+  padding: 0 20px 25px 5px;
+}
+
+#monitor-tabs input {
+  display: none;
+}
+
+#monitor-tabs label {
+  display: inline-block;
+  padding: 10px 15px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 0;
+}
+
+#monitor-tabs label i.fa {
+  margin-right: 10px;
+}
+
+#monitor-tabs label:hover {
+  cursor: pointer;
+}
+
+#monitor-tabs input:checked + label {
+  background: #7c4dff;
+  color: #fff;
+}
+
+#monitor-tabs #tab1:checked ~ .content #content1,
+#monitor-tabs #tab2:checked ~ .content #content2,
+#monitor-tabs #tab3:checked ~ .content #content3,
+#monitor-tabs #tab4:checked ~ .content #content4 {
+  display: block;
+}
+/*--------------- END MONITORING ---------------*/
+
+/*--------------- START CODE EDITOR ----------- */
+.ace_editor {
+  height: 400px;
+}
+
+.ace-tm { 
+  text-align: left;
+}
+
+.ace_operator {
+  color: #e59100 !important;
+}
+
+.ace_text-layer {
+  font-size: 13px !important;
+}
+/*---------------- END ----------------------------------*/

@@ -1,0 +1,6 @@
+{
+    "port" : "5000",
+    "apiServer": "http://localhost:8089",
+    "socketEndPoint": "ws://localhost:5002",
+    "socketServerPort": "5005"
+}

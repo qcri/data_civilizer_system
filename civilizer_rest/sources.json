@@ -1,0 +1,14 @@
+{
+    "CSV": {
+            "dir": "/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/storage/data_sets/UCI/",
+            "table": ""
+        },
+    "postgres": {
+        "database": "chembl_22",
+        "table": "action_type;formulations",
+        "user": "postgres",
+        "password": "postgres",
+        "host": "localhost",
+        "port": "5433"
+    }
+}

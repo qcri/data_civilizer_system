@@ -1,0 +1,142 @@
+<div id="main-wrapper" tabindex="0" class="container-fluid" ng-keydown="keyDown($event)" ng-keyup="keyUp($event)">
+  <div id="drag-area" class="main-column col-xs-2">
+    <div id="info-panel">
+      <div id="build-action">
+        <a ng-click="createNewPlan()"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>New</a>
+        <a id="save-plan" ng-click="savePlan()"><i class="fa fa-floppy-o" aria-hidden="true"></i>Save</a>
+      </div>
+      <label for="currentPlan"> Load Another Plan </label>
+      <div class="styled-select slate" name="currentPlanDiv" id="currentPlanDiv">
+      <select name="currentPlan" id="currentPlan" ng-change="showCurrentPlan()"  ng-model="currentPlan">
+        <option ng-repeat="plan in plans" value="{{plan._id}}">&nbsp;{{plan.name}}&nbsp;</option>
+      </select>
+      </div>
+      <div id="build-execute">
+        <a ng-click="buildPlan()" class="top-button"><i ng-click="buildPlan()" class="fa fa-gavel" aria-hidden="true"></i>Build</a>
+        <!--<a href="#!/monitor" class="top-button" ng-click="executeClicked()"><i class="fa fa-paper-plane-o" aria-hidden="true"></i>Execute</a>-->
+        <a class="top-button" ng-click="executeClicked()"><i class="fa fa-gavel" aria-hidden="true"></i>Execute</a>
+      </div>
+    </div>
+
+    <div align='center' id="loader" ng-show="loader_req">
+      <img align='center' class="ajax-loader"
+           width="100"
+           height="100"
+           src="images/spinner.gif" />
+    </div>
+
+    <div id="datasources-tools" class="group-of-draggables">
+      <h4 class="collapse-title {{arrowDirection}}" ng-click="soucresCollapseClicked()">
+        <img src="/images/operators-icons/source.png">Source Operators
+      </h4>
+      <ul class="list-of-tools" uib-collapse="sourcesIsCollapsed">
+        <li
+        ng-repeat="source in datasources"
+        ng-click="itemSelected(source); addNewNode('datasource', source, 'source')"
+        ng-class="{selected: source == selectedItem}"
+        >
+          {{ source.class | prettyClassName }}
+        </li>
+      </ul>
+    </div>
+
+    <div id="operators-tools" class="group-of-draggables">
+      <h4 class="collapse-title {{arrowDirection}}" ng-click="unaryOperatorsCollapseClicked()">
+      <img src="/images/operators-icons/unary.png">Civilizer Services</h4>
+
+      <ul class="list-of-tools" uib-collapse="unaryOperatorsIsCollapsed">
+        <li
+        ng-repeat="operator in unaryOperators"
+        ng-click="itemSelected(operator); addNewNode('operator', operator, 'unary')"
+        ng-class="{selected: operator == selectedItem}"
+        >
+          {{ operator.class | prettyClassName }}
+        </li>
+      </ul>
+    </div>
+
+    <div style="display: none;" class="toshow"  id="operators-tools" class="group-of-draggables">
+      <h4 class="collapse-title {{arrowDirection}}" ng-click="binaryOperatorsCollapseClicked()">
+      <img src="/images/operators-icons/binary.png">Binary Operators</h4>
+
+      <ul class="list-of-tools" uib-collapse="binaryOperatorsIsCollapsed">
+        <li
+        ng-repeat="operator in binaryOperators"
+        ng-click="itemSelected(operator); addNewNode('operator', operator, 'binary')"
+        ng-class="{selected: operator == selectedItem}"
+        >
+          {{ operator.class | prettyClassName }}
+        </li>
+      </ul>
+    </div>
+
+    <div style="display: none;" class="toshow"  id="operators-tools" class="group-of-draggables">
+      <h4 class="collapse-title {{arrowDirection}}" ng-click="trinaryOperatorsCollapseClicked()">
+      <img src="/images/operators-icons/sink.png">Trinary Operators</h4>
+      <ul class="list-of-tools" uib-collapse="trinaryOperatorsIsCollapsed">
+        <li
+        ng-repeat="trinary in trinaryOperators"
+        ng-click="itemSelected(trinary); addNewNode('operator', trinary, 'trinary')"
+        ng-class="{selected: trinary == selectedItem}"
+        >
+          {{ trinary.class | prettyClassName }}
+        </li>
+      </ul>
+    </div>
+
+    <div style="display: none;" id="sink-tools" class="group-of-draggables">
+      <h4 class="collapse-title {{arrowDirection}}" ng-click="sinkCollapseClicked()">
+      <img src="/images/operators-icons/sink.png">Sink Operators</h4>
+      <ul class="list-of-tools" uib-collapse="sinkIsCollapsed">
+        <li
+        ng-repeat="sink in sinks"
+        ng-click="itemSelected(sink); addNewNode('sink', sink, 'sink')"
+        ng-class="{selected: sink == selectedItem}"
+        >
+          {{ sink.class | prettyClassName }}
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div id="work-area" class="main-column" ng-class="{'col-xs-5': planSwitch == true, 'col-xs-10': planSwitch == false}">
+    <fc-canvas model="model" selected-objects="flowchartselected" edge-style="curved" callbacks="callbacks" automatic-resize="true"></fc-canvas>
+  </div>
+
+  <div id="execution-plan-area" class="col-xs-5" ng-show="planSwitch">
+    <canvas id="execution-plan-graph"></canvas>
+    <div id="export-action">
+      <span><a ng-click="exportJson()" ng-href="{{ url }}" download="rheenPlanJson.json"><i class="fa fa-download" aria-hidden="true"></i>&nbsp;<b>JSON</b></a>
+        &nbsp;&nbsp;&nbsp;<a ng-click="exportJava()" download="rheenPlanJava.txt"  ng-href="{{ url }}" target="_blank"><i class="fa fa-download" aria-hidden="true"></i>&nbsp;<b>JAVA</b></a></span>
+    </div>
+    <ul id="stages-colors" class="pull-right">
+      <li><span style="background-color: brown;"></span>&nbsp;&nbsp;Java Streams</li>
+      <li><span style="background-color: orange;"></span>&nbsp;&nbsp;Apache Spark</li>
+      <li><span style="background-color: green;"></span>&nbsp;&nbsp;Apache Hadoop</li>
+    </ul>
+  </div>
+</div>
+
+<div id="info-area" class="main-column col-xs-5" ng-show="showParamPanel">
+  <div id="close-param-panel"><i class="fa fa-times" aria-hidden="true" ng-click="closeParamPanel()"></i></div>
+
+  <span uib-dropdown on-toggle="toggled(open)">
+    <a href id="simple-dropdown" uib-dropdown-toggle>
+      <i class="fa fa-caret-down" aria-hidden="true"></i>&nbsp;&nbsp;Select Constructor Signature
+    </a>
+    <ul id="parameters-list"  class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
+      <li ng-repeat="param in selectedNodeParams" ng-click="paramClicked($index)">
+        {{param}}
+      </li>
+    </ul>
+  </span>
+  <br><br>
+  <span >
+    <ul id="paramters-input-list">
+      <li ng-repeat="param in  model.nodes[model.nodes.indexOf(selectedNodeData)].parameters[paramIndex] track by param.id ">
+        {{param.name}} <br> {{param.type}} <br><div ng-show="param.inputType ==  'UDF' "  ng-model="param.value" ui-ace="{ useWrapMode: true, mode: 'java', onChange: aceChanged}">{{param.value}}</div>
+        <textarea name="name" ng-show="param.inputType == 'String' " ng-model="param.value"></textarea>
+      </li>
+    </ul>
+  </span>
+
+</div>
