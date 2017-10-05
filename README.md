@@ -4,7 +4,7 @@
 ### MangoDB which used by the Studio to store the workflows
 #### move to storage/mongos
 #### run mongod --dbpath .
-###Start the Studio 
+### Start the Studio 
 #### run gulp start 
 #### it is running at port http://localhost:5000/
 ### Start the Civilizer Rest
