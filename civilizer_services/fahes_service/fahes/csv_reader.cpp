@@ -93,7 +93,7 @@ Table CSV_READER::read_csv_file(string file_name) {
       {
         long nc = csv_read_row(in, row);
         if (nc == num_of_cols) {
-            for (long kk = 0; kk < row.size(); kk++)
+            for (long kk = 0; kk < (long)row.size(); kk++)
                 trim(row[kk]);
           data.push_back(row);
           num_of_rows ++;
@@ -113,12 +113,12 @@ Table CSV_READER::read_csv_file(string file_name) {
 void CSV_READER::display_table(const Table &T)
 {
   long i, S = T.number_of_rows;
-  for (i = 0; i < T.data[0].size(); i++)
+  for (i = 0; i < (long)T.data[0].size(); i++)
     cout << T.header[i] << ',';
   cout << endl;
-  for (long j = 0; j < T.data.size(); j++)
+  for (long j = 0; j < (long)T.data.size(); j++)
   {
-    for (i = 0; i < T.data[0].size(); i++)
+    for (i = 0; i < (long)T.data[0].size(); i++)
       cout << T.data[j][i] << ',';
     cout << endl; 
   }

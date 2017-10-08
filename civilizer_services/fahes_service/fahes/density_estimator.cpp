@@ -85,8 +85,7 @@ double Den_Estimator::evaluate_pnt(map <double, long> & col_profiler, const doub
 // ==============================================================
 vector<sus_disguised> Den_Estimator::density_based_od(const string Attribute, map<double, long> & col_profile,
 										map<string, long> & common, 
-    									const double & std, const double & min_val, 
-    									const double & max_val){
+    									const double & std){
 	vector<sus_disguised> sus_disg;
 	int num_distinct_vals = col_profile.size();
 	map<string, long>::iterator str_itr;

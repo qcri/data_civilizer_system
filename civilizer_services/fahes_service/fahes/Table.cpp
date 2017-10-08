@@ -38,7 +38,7 @@ vector<struct item> Table::get_most_common(vector<map<string, long> > tabhist, l
     long count = 0;
     long col_size = COL.size();
     
-    while ((count < col_size) && (frequent.size() < max_num_terms_per_att)){
+    while ((count < col_size) && ((long)frequent.size() < max_num_terms_per_att)){
         freq = -1;
         for(map<string, long>::iterator it = COL.begin(); it != COL.end(); it++){
             if (it->second > freq){

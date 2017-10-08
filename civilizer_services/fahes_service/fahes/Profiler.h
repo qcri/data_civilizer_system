@@ -22,7 +22,7 @@ public:
     float compare_distribution(const long , const long, const long, 
     							vector<map<string, long> > &, 
     							vector<map<string, long> > &);
-    bool prune_value(const string &, const vector<map<string, long> > &, const vector<map<string, long> > &);
+    // bool prune_value(const string &, const vector<map<string, long> > &, const vector<map<string, long> > &);
     bool prune_attribute(const long, const long, const vector<map<string, long> > &);
     void PrintTableHist(vector<map<string, long> > m_tablehist);
     long find_least_distinct_values(vector<map<string, long> > tabhist);

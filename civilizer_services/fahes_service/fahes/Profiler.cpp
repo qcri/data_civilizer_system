@@ -85,15 +85,15 @@ float DataProfiler::compare_distribution(const long N1, const long N2,
     return KL;
 }
 // ========================================================================
-bool DataProfiler::prune_value(const string & S, const vector<map<string, long> > & Part_M, 
-                            const vector<map<string, long> > & M){
-    return true;
-}
+// bool DataProfiler::prune_value(const string & S, const vector<map<string, long> > & Part_M, 
+//                             const vector<map<string, long> > & M){
+//     return true;
+// }
 // ========================================================================
 bool DataProfiler::prune_attribute(const long idx, const long len, const vector<map<string, long> > & M){
-    if (M[idx].size() < 3)
+    if ((long)M[idx].size() < 3)
         return true;
-    if (M[idx].size() == len)
+    if ((long)M[idx].size() == len)
         return true;
     return false;
 }
@@ -101,8 +101,8 @@ bool DataProfiler::prune_attribute(const long idx, const long len, const vector<
 long DataProfiler::find_least_distinct_values(vector<map<string, long> > tabhist)
 {
     long idx = 0, num_distinct_values = tabhist[0].size();
-    for (long i = 1; i < tabhist.size(); i++){
-        if(tabhist[i].size() < num_distinct_values){
+    for (long i = 1; i < (long)tabhist.size(); i++){
+        if((long)tabhist[i].size() < num_distinct_values){
             idx = i;
             num_distinct_values = tabhist[i].size();
         }
@@ -118,8 +118,8 @@ vector<map<string, long> > DataProfiler::TableHistogram(const Table & table)
         long num_col = table.number_of_cols;
         string SS;
         m_tablehist = vector<map<string, long> > (num_col);
-        for (long i = 0; i < table.data.size(); i++) {
-        for(long j = 0; j < table.data[0].size(); j++) {
+        for (long i = 0; i < (long)table.data.size(); i++) {
+        for(long j = 0; j < (long)table.data[0].size(); j++) {
             SS = table.data[i][j];
             transform( SS.begin(), SS.end(), SS.begin(), ::tolower );
             if ((SS.empty()) || (SS == "null") || (SS.length() == 0)){
@@ -146,7 +146,7 @@ vector<map<string, long> > DataProfiler::TableHistogram(const Table & table)
 // ============ Print the distinct values in each column and their frequency =================
 void DataProfiler::PrintTableHist(vector<map<string, long> > m_tablehist) 
 {
-	for (long i = 0; i < m_tablehist.size(); i++) {
+	for (long i = 0; i < (long)m_tablehist.size(); i++) {
 		cout << "***************" << endl;
 		cout << "column: " << i << " histogram" << endl;
 		map<string, long>::iterator itr = m_tablehist[i].begin();
@@ -166,7 +166,7 @@ TableProfile DataProfiler::profile_table(const Table & T, vector<map<string, lon
     vector<struct item> most_frequent;
     map <long, vector<string> >::iterator string_vec_itr;
         
-    for (long i = 0; i < TabHist.size(); i++){
+    for (long i = 0; i < (long)TabHist.size(); i++){
         map<string, long>::iterator itr = TabHist[i].begin();
         profiler PR;
         PR.reset_profiler();
@@ -206,13 +206,13 @@ TableProfile DataProfiler::profile_table(const Table & T, vector<map<string, lon
         }
         TP.profile.push_back(PR);
     }
-    for (long i = 0; i < TabHist.size(); i++){
+    for (long i = 0; i < (long)TabHist.size(); i++){
         long count = 0;
         bool done = 0;
         string_vec_itr = TP.profile[i].sorted_Strings_by_freq.end();
         string_vec_itr --;
         while (string_vec_itr != TP.profile[i].sorted_Strings_by_freq.begin()){
-                for (long k = 0; k < string_vec_itr->second.size(); k++){
+                for (long k = 0; k < (long)string_vec_itr->second.size(); k++){
                     if ((count < max_num_terms_per_att) && (string_vec_itr->first > 1)){
                         TP.profile[i].common_Strings[string_vec_itr->second[k]] = string_vec_itr->first;
                         count ++;

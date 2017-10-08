@@ -8,7 +8,7 @@
 #include "Profiler.h"
 // ========================================================================
 F_DiMaC::F_DiMaC(){
-    for (long i = 0; i < DiMaC_Index_T.size(); i++){
+    for (long i = 0; i < (long)DiMaC_Index_T.size(); i++){
         DiMaC_Index_T[i].clear();        
     }
 }
@@ -19,7 +19,7 @@ long F_DiMaC::compute_num_cooccur(const vector<string> & Vec, const long & idx){
     long index_min_subT;
     long min_subT;
     bool first_time = true;
-    for (long i = 0; i < Vec.size(); i++){ 
+    for (long i = 0; i < (long)Vec.size(); i++){ 
         if (i != idx){
             map<string, doubleVecStr>::iterator index_itr11 = DiMaC_Index_T[i].find(Vec[i]);
             if (first_time){
@@ -28,7 +28,7 @@ long F_DiMaC::compute_num_cooccur(const vector<string> & Vec, const long & idx){
                 first_time = false;
             }
             else{
-                if (min_subT > index_itr11->second.size()){
+                if (min_subT > (long)index_itr11->second.size()){
                     min_subT = index_itr11->second.size();
                     index_min_subT = i;
                 }
@@ -36,7 +36,7 @@ long F_DiMaC::compute_num_cooccur(const vector<string> & Vec, const long & idx){
         }
     }
     map<string, doubleVecStr>::iterator index_itr = DiMaC_Index_T[index_min_subT].find(Vec[index_min_subT]);
-    for (long K = 0; K < index_itr->second.size(); K++){
+    for (long K = 0; K < (long)index_itr->second.size(); K++){
         if (equals(index_itr->second[K], Vec, idx))     num_coocur++;
     }
     return num_coocur;
@@ -55,7 +55,7 @@ long F_DiMaC::compute_num_cooccur(const vector<string> & Vec, const long & idx,
     long index_min_subT;
     long min_subT;
     bool first_time = true;
-    for (long i = 0; i < Vec.size(); i++){ 
+    for (long i = 0; i < (long)Vec.size(); i++){ 
         if (i != idx){
             map<string, doubleVecStr>::iterator index_itr11 = DiMaC_Index_subT[i].find(Vec[i]);
             if (first_time){
@@ -64,7 +64,7 @@ long F_DiMaC::compute_num_cooccur(const vector<string> & Vec, const long & idx,
                 first_time = false;
             }
             else{
-                if (min_subT > index_itr11->second.size()){
+                if (min_subT > (long)index_itr11->second.size()){
                     min_subT = index_itr11->second.size();
                     index_min_subT = i;
                 }
@@ -72,7 +72,7 @@ long F_DiMaC::compute_num_cooccur(const vector<string> & Vec, const long & idx,
         }
     }
     map<string, doubleVecStr>::iterator index_itr = DiMaC_Index_T[index_min_subT].find(Vec[index_min_subT]);
-    for (long K = 0; K < index_itr->second.size(); K++){
+    for (long K = 0; K < (long)index_itr->second.size(); K++){
         if (equals(index_itr->second[K], Vec, idx))     num_coocur++;
     }
     return num_coocur;
@@ -87,7 +87,7 @@ long F_DiMaC::compute_num_occur(string v, long A, DiMaC_Index & DiMaC_Index_subT
 bool F_DiMaC::prune_attribute(const long idx, const long len, vector<map<string, long> > & M){
     if (M[idx].size() < 3)
         return true;
-    if (M[idx].size() == len)
+    if ((long)M[idx].size() == len)
         return true;
     return false;
 }
@@ -260,7 +260,7 @@ vector< sus_disguised > F_DiMaC::find_disguised_values(const Table & T,
     // cout << "The size of the new table = ( " << Temp_T.number_of_rows << " , " << Temp_T.number_of_cols << " )\n";
     std::vector<string> row(Temp_T.number_of_cols);
     for (long i = 0; i < T.number_of_rows; i++){
-        for (long j = 0; j < KK.size(); j++)
+        for (long j = 0; j < (long)KK.size(); j++)
             row[j] = T.data[i][KK[j]];
         Temp_T.data.push_back(row);
     }
@@ -274,9 +274,12 @@ vector< sus_disguised > F_DiMaC::find_disguised_values(const Table & T,
         // cout << "=====================================\n";
         // cout << T.header[i] << endl;        
         most_com = Table::get_most_common(Temp_tablehist, i, max_num_terms_per_att);
-        for(long k = 0; k < most_com.size(); k++){                
+        for(long k = 0; k < (long)most_com.size(); k++){                
             // PT = SELECT(T, most_com[k].value, i);
             // corr = subtable_correlation(T, PT, i);
+            string str = most_com[k].value;
+            transform( str.begin(), str.end(), str.begin(), ::tolower );
+            if (str == "null")        continue;
             corr = subtable_correlation(Temp_T, most_com[k].value, i, PT_num_rows);
             DV_Score = (double)Temp_T.number_of_rows / (double) PT_num_rows * corr;
             dis_value.attr_name = Temp_T.header[i];

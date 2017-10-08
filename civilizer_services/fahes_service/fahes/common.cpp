@@ -11,7 +11,7 @@
 bool equals(const vector<string> & V1, const vector<string> & V2, const long & idx){
     bool res = true;
     if (V1.size() != V2.size())  return false;
-    for (long i = 0; i < V1.size(); i++){
+    for (long i = 0; i < (long)V1.size(); i++){
         if (i == idx)   continue;
         if (V1[i] != V2[i])     return false;
     }
@@ -21,8 +21,8 @@ bool equals(const vector<string> & V1, const vector<string> & V2, const long & i
 void sort_sus_values(vector<sus_disguised> & sus_dis_values_per_att){
     sus_disguised temp;
     long i, j;
-    for (i = 0; i < sus_dis_values_per_att.size(); i ++)
-        for (j = i + 1; j < sus_dis_values_per_att.size(); j++){
+    for (i = 0; i < (long)sus_dis_values_per_att.size(); i ++)
+        for (j = i + 1; j < (long)sus_dis_values_per_att.size(); j++){
             if (sus_dis_values_per_att[i].score < sus_dis_values_per_att[j].score){
                 temp = sus_dis_values_per_att[j];
                 sus_dis_values_per_att[j] = sus_dis_values_per_att[i];
@@ -51,7 +51,7 @@ unsigned hash_str(const string word){
     #define FIRSTH 37 /* also prime */
 
     unsigned h = FIRSTH;
-    for(long i = 0; i < word.length(); i++) {
+    for(long i = 0; i < (long)word.length(); i++) {
       h = (h * A) ^ (word[i] * B);
     }
     return h; // or return h % C;
@@ -75,7 +75,7 @@ void remove_elements_in(vector<string> &V){
 // ========================================================================
 void print_vector(const vector<string> &V){
 //    cout << "[ " ;
-    for (long i = 0; i < V.size() - 1; i++)
+    for (long i = 0; i < (long)V.size() - 1; i++)
          cout << check_d_quotation(V[i]) << ',';
     cout << check_d_quotation(V[V.size()-1]) << "\n";
 }
@@ -83,14 +83,14 @@ void print_vector(const vector<string> &V){
 // ========================================================================
 void print_vector(const vector<double> &V){
 //    cout << "[ " ;
-    for (long i = 0; i < V.size() - 1; i++)
+    for (long i = 0; i < (long)V.size() - 1; i++)
          cout << V[i] << '\t';
     cout << V[V.size()-1] << "\n";
 }
 
 // ========================================================================
 void print_double_vector(doubleVecStr V){
-    for (long i = 0; i < V.size(); i++)
+    for (long i = 0; i < (long)V.size(); i++)
         print_vector(V[i]);
 }
 
@@ -189,7 +189,7 @@ long check_data_type(const string& s ){
 bool check_str_repetition(const string val){
     if (val.length() < 4)
         return false;
-    for (long i = 0; i < val.length() - 1; i++)
+    for (long i = 0; i < (long)val.length() - 1; i++)
         if (val[i] != val[i+1]) 
             return false;
     return true;
@@ -237,7 +237,7 @@ double kernel_func(double x)
 }
 // ========================================================================
 bool member_of(const sus_disguised & s_ele, const vector<sus_disguised> & s_vec){
-    for (long i = 0; i < s_vec.size(); i ++)
+    for (long i = 0; i < (long)s_vec.size(); i ++)
         if ((s_ele.value == s_vec[i].value) && (s_ele.attr_name == s_vec[i].attr_name))
             return true;
     return false;
@@ -245,7 +245,7 @@ bool member_of(const sus_disguised & s_ele, const vector<sus_disguised> & s_vec)
 
 // ========================================================================
 bool member_of(const string & s_ele, const vector<item> & com_vec){
-    for (long i = 0; i < com_vec.size(); i ++)
+    for (long i = 0; i < (long)com_vec.size(); i ++)
         if (s_ele == com_vec[i].value)
             return true;
     return false;
@@ -255,9 +255,9 @@ bool member_of(const string & s_ele, const vector<item> & com_vec){
 // ========================================================================
 bool member_of(const vector<string> & vec_ele, const doubleVecStr & com_vec){
     bool found;
-    for (long i = 0; i < com_vec.size(); i ++){
+    for (long i = 0; i < (long)com_vec.size(); i ++){
         found = true;
-        for (long j = 0; j < vec_ele.size(); j++)
+        for (long j = 0; j < (long)vec_ele.size(); j++)
             if (vec_ele[j] != com_vec[i][j]){
                 found = false;
                 break;

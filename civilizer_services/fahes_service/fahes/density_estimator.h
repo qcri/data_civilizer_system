@@ -33,8 +33,7 @@ public:
 				// 	const double & min_val, const double & max_val, long S);
     vector<sus_disguised> density_based_od(const string Attribute, map<double, long> & col_profile, 
                                         map<string, long> & common, 
-    									const double & std, const double & min_val, 
-    									const double & max_val);
+    									const double & std);
 };
 
 #endif 
