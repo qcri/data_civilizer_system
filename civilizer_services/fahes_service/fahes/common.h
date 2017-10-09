@@ -84,7 +84,7 @@ double convert_to_double(const string& s);
 long convert_to_long(const string& s);
 long check_data_type(const string& s );
 bool check_num_repetition(const string);
-bool check_str_repetition(const string);
+double check_str_repetition(const string);
 void trim(string& s);
 void Print_double_vector(doubleVecStr V);
 void print_line_of(char c);
@@ -97,18 +97,6 @@ bool member_of(const sus_disguised &, const vector<sus_disguised> &);
 bool member_of(const string & , const vector<item> &);
 bool member_of(const vector<string> & vec_ele, const doubleVecStr & com_vec);
 void sort_sus_values(vector<sus_disguised> & );
-
-// template <typename T>
-// vector<size_t> sort_descend_indexes(const vector<T> &v) {
-
-// vector<size_t> idx(v.size());
-// std::iota(idx.begin(), idx.end(), 0);
-
-// sort(idx.begin(), idx.end(),
-//     [&v](size_t i1, size_t i2) {return v[i1] > v[i2];});
-//     return idx;
-// }
-
 sus_disguised prepare_sus_struct(string att, string s, double score, long freq, string tool_name);
 
 #endif

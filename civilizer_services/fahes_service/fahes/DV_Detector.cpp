@@ -29,83 +29,7 @@ void compute_statistical_quantities(const Table & T, vector<double> & subT_mean,
 }
 
 // // ========================================================================
-// vector< sus_disguised > DV_Detector::Mod_DiMaC(const Table & T, TableProfile & TP){
-//     std::vector<sus_disguised> sus_dis_values, sus_dis_values_per_att;
-//     sus_disguised s_disg;
-//     // DataProfiler dvdDataProfiler;
-//     double m, s, KL, KL1, KL2;
-//     double sum_m, sum_std;
-//     Table PT;
-//     vector<map<string, long> > subtablehist;
-//     TableProfile subTP;
-//     vector<double> T_mean (T.number_of_cols);
-//     vector<double> T_std (T.number_of_cols);
-//     vector<double> subT_mean (T.number_of_cols);
-//     vector<double> subT_std (T.number_of_cols);  
-//     for (long i = 0; i < T.number_of_cols; i++){
-//     	OD od;
-// 		od.compute_statistical_quantities(TP.profile[i].distinct_Numbers, m, s);
-// 		T_mean[i] = m;
-// 		T_std[i] = s;
-//     }
-//     print_vector(T_mean);
-//     print_vector(T_std);
-//     for (long i = 0; i < T.number_of_cols; i++){
-//     	// cout << " i = " << i << endl;
-//     	map <string, long>::iterator c_str_itr = TP.profile[i].common_Strings.begin();
-//     	for (; c_str_itr != TP.profile[i].common_Strings.end(); c_str_itr++){
-//     		KL = 0.0;
-//     		sum_std = 0;
-//     		sum_m = 0;
-//     		PT = SELECT(T, c_str_itr->first, i);
-//     		// subtablehist =  dvdDataProfiler.TableHistogram(PT);
-//     		// subTP = dvdDataProfiler.profile_table(PT, subtablehist);
-//     		compute_statistical_quantities(PT, subT_mean, subT_std);
-//     		// cout << c_str_itr->first << endl;
-//     		// cout << "========================================\n";
-//     		// print_vector(subT_mean);
-// 		    // print_vector(subT_std);
-//     		// mean = 0;	std = 0;
-//     		for (long k = 0; k < T.number_of_cols; k++){
-//     			if (i == k) continue;
-// 	    	// 	OD od;
-// 	    	// 	od.compute_statistical_quantities(TP.profile[k].distinct_Numbers, m, s);
-// 	    	// 	od.compute_statistical_quantities(subTP.profile[k].distinct_Numbers, m1, s1);
-//     			KL1 = compute_KL(subT_mean[k], T_mean[k], subT_std[k], T_std[k]);
-//     			KL2 = compute_KL(T_mean[k], subT_mean[k], T_std[k], subT_std[k]);
-//     			if ((KL1 != KL1) || KL2 != KL2)		continue;
-//     			// cerr << subT_mean[k] << "::" << T_mean[k] << "::" << subT_std[k] << "::" << T_std[k] << "::" 
-//     			// 	 << KL1 << "::" << KL2 << endl;
-// 	    		KL += MAX(KL1, KL2);
-// 	    		// sum_m += pow((T_mean[k] - subT_mean[k]), 2.0) / pow(T_mean[k], 2.0);
-// 	    		// sum_std += pow((T_std[k] - subT_std[k]), 2.0) / pow(T_std[k], 2.0);
-// 	    		sum_m += pow((T_mean[k] - subT_mean[k]), 2.0) / pow(T_mean[k], 1.0);
-// 	    		sum_std += pow((T_std[k] - subT_std[k]), 2.0) / pow(T_std[k], 1.0);
 
-// 	    	// 	std += fabs(s1 - s);
-// 	    		// cout << i << "::" << k << ":::" << T.header[i] << "::" << c_str_itr->first << "::" << m << "::" 
-// 	    		// 	 << m1 << "::" << s << "::" << s1 << endl;
-// 	    	}
-// 	    	// cout << i << ":::" << T.header[i] << "::" << c_str_itr->first << "::" << c_str_itr->second 
-// 	    	// 	 << "::" << KL << "::" << sum_m << "::" << sum_std << endl;
-// 	    	s_disg.value = c_str_itr->first;
-// 	    	s_disg.attr_name = T.header[i];
-// 	    	s_disg.score = KL;
-// 	    	s_disg.frequency = c_str_itr->second;
-// 	    	sus_dis_values.push_back(s_disg);
-//     	}
-//     	sort_sus_values(sus_dis_values);
-//     	int mm = MIN(5, sus_dis_values.size());
-//     	for (int jj = 0; jj < mm; jj++){
-//     		cout << i << ":::" << T.header[i] << "::" << sus_dis_values[jj].attr_name << "::" 
-//     			 << sus_dis_values[jj].value << "::" << sus_dis_values[jj].frequency << "::" 
-//     			 << sus_dis_values[jj].score << endl;
-//     	}
-//     	while (!sus_dis_values.empty())
-//     		sus_dis_values.pop_back();
-//     }
-//     return sus_dis_values;
-// }
 
 
 // ========================================================================
@@ -194,7 +118,7 @@ void DV_Detector::positive_negative_inconsistency(TableProfile TP,
 			str = strs.str();
 			string_itr = TP.profile[i].common_Strings.find(str);
 			if (!(string_itr == TP.profile[i].common_Strings.end())){
-				sus_dis = prepare_sus_struct(TP.header[i], str, sc, double_itr->second, "RB2");
+				sus_dis = prepare_sus_struct(TP.header[i], str, sc, double_itr->second, "RB");
 				sus_dis_values.push_back(sus_dis);
 			}
 		}
@@ -208,45 +132,62 @@ void DV_Detector::positive_negative_inconsistency(TableProfile TP,
 			str = strs.str();
 			string_itr = TP.profile[i].common_Strings.find(str);
 			if (!(string_itr == TP.profile[i].common_Strings.end())){
-				sus_dis = prepare_sus_struct(TP.header[i], str, sc, double_itr->second, "RB2");
+				sus_dis = prepare_sus_struct(TP.header[i], str, sc, double_itr->second, "RB");
 				sus_dis_values.push_back(sus_dis);
 			}
 		}
 	}
 }
 // ========================================================================
-void DV_Detector::check_repeated_patterns(TableProfile TP, 
+void DV_Detector::check_repeated_substrings(TableProfile TP,
+				vector<map<string, long> > & M,  
     			std::vector<sus_disguised> & sus_dis_values){
 	sus_disguised sus_disg;
 	map<string, long>::iterator string_itr;
-	bool repeated;
+	double std_dev;
 	double sc = 1.0;
-	double diff_threshold = 0.9;
-	long distinct;
-	long L_Str, L_Nums;
-	long number;
+	double threshold = 0.1;
+	int num_rep_substr = 0;			// The number of strings containing repeated substrings
+
 	for (long i = 0; i < (long)TP.header.size(); i++){
-		string_itr = TP.profile[i].common_Strings.begin();
-		while (string_itr != TP.profile[i].common_Strings.end()){
-			repeated = check_str_repetition(string_itr->first);
-			if (repeated){
-				sus_disg = prepare_sus_struct(TP.header[i], string_itr->first, sc, string_itr->second, "RB3");
-				if (!member_of(sus_disg, sus_dis_values))
-					sus_dis_values.push_back(sus_disg);
+		map<string, long>::iterator itr = M[i].begin();
+		while (itr != M[i].end()) {
+			string s = itr->first;
+			transform( s.begin(), s.end(), s.begin(), ::tolower );
+			std_dev = check_str_repetition(s);
+			if (std_dev == 0)
+				num_rep_substr ++;
+			itr++;
+		}
+		if (num_rep_substr > 0){
+			// cout << "num_strs_containing_rep_substr = " << num_rep_substr << endl;
+			if ((double) num_rep_substr < (threshold * (double) M[i].size())){			
+				string_itr = TP.profile[i].common_Strings.begin();
+				while (string_itr != TP.profile[i].common_Strings.end()){
+					string s = string_itr->first;
+					transform( s.begin(), s.end(), s.begin(), ::tolower );
+					std_dev = check_str_repetition(s);
+					if (std_dev == 0){
+						sus_disg = prepare_sus_struct(TP.header[i], string_itr->first, sc, string_itr->second, "RB33");
+						if (!member_of(sus_disg, sus_dis_values))
+							sus_dis_values.push_back(sus_disg);
+					}
+					string_itr ++;
+				}
 			}
-			string_itr ++;
 		}
 	}
 }
 // ========================================================================
 void DV_Detector::check_non_conforming_patterns(TableProfile & TP, 
+				vector<map<string, long> > & M,
     			std::vector<sus_disguised> & sus_dis_values){
 	// cerr << "Start : detect_single_char_strings\n"; 
 	detect_single_char_strings(TP, sus_dis_values);
 	// cerr << "Done : detect_single_char_strings\n"; 
 	positive_negative_inconsistency(TP, sus_dis_values);
 	// cerr << "Done : positive_negative_inconsistency\n";
-	check_repeated_patterns(TP, sus_dis_values);
+	check_repeated_substrings(TP, M, sus_dis_values);
 	// cerr << "Done : check_repeated_patterns\n";
 }
 

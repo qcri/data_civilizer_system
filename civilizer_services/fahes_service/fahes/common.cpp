@@ -186,13 +186,35 @@ long check_data_type(const string& s ){
     return 3;
 }
 // ========================================================================
-bool check_str_repetition(const string val){
-    if (val.length() < 4)
-        return false;
-    for (long i = 0; i < (long)val.length() - 1; i++)
-        if (val[i] != val[i+1]) 
-            return false;
-    return true;
+double check_str_repetition(const string str){
+    int min_dist_idx, min_dist;
+    double s = 0, sqs = 0, count = 0, std_dev;
+    if (str.length() < 5)
+        return 1.0;
+    min_dist = abs(str[0] - str[1]);
+    min_dist_idx = 1;
+    for (int j = 1; j < (int)str.length(); j++){
+        if (abs(str[0] - str[j]) < min_dist){
+            min_dist = abs(str[0] - str[j]);
+            min_dist_idx = j;
+        }
+    }
+    if (min_dist_idx > (int)(str.length()/2))
+        for (int k = 0; k < (int)str.length() - 1; k++){
+            s += abs(str[k] - str[k+1]);
+            sqs += abs(str[k] - str[k+1]) * abs(str[k] - str[k+1]);
+            count ++;
+        }
+    else
+        for (int k = 0; k < (int)str.length() - min_dist_idx; k++){
+            double a = abs(str[k] - str[k+min_dist_idx]);
+            s += a;
+            sqs += a * a;
+            count ++;
+        }
+    std_dev = compute_std(s, sqs, count);
+    
+    return std_dev;
 }
 // // ========================================================================
 // bool check_str_repetition(const string val){

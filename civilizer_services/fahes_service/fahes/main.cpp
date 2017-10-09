@@ -28,6 +28,36 @@
     return result;
 }
 
+// // ========================================================================
+// void Print_output_data(string tab_ref, string output_dir, string tab_name, std::vector<sus_disguised> sus_dis_values){
+//     if (output_dir[output_dir.length()-1] != '/')
+//         output_dir += '/';
+//     char delim = '/';
+//     string out_f_name = splitpath(tab_name, delim);
+//     out_f_name = "DMV_"+out_f_name;
+//     string out_file_name = output_dir + out_f_name;
+//     fstream ofs(out_file_name, ios::out);
+//     if (!ofs.good()){
+//         cerr << "Problem opening output file .... \n" << out_file_name << endl;;
+//         return;
+//     }
+//     if (sus_dis_values.size() < 1)
+//         return;
+//     ofs << "table reference, attribute name, DMV, frequency" << endl;
+//     ofs << tab_ref << "," <<sus_dis_values[0].attr_name << "," 
+//              << check_d_quotation(sus_dis_values[0].value) << "," 
+//              << sus_dis_values[0].frequency << endl;
+//              // << "," << sus_dis_values[0].tool_name << endl;
+//     for (long i = 1; i < (long)sus_dis_values.size(); i++)
+//         ofs << "," <<sus_dis_values[i].attr_name << "," 
+//              << check_d_quotation(sus_dis_values[i].value) << "," 
+//              << sus_dis_values[i].frequency << endl;
+//              // << "," << sus_dis_values[i].tool_name << endl;
+    
+//     ofs.close();
+// }
+
+
 // ========================================================================
 void Print_output_data(string tab_ref, string output_dir, string tab_name, std::vector<sus_disguised> sus_dis_values){
     if (output_dir[output_dir.length()-1] != '/')
@@ -46,16 +76,18 @@ void Print_output_data(string tab_ref, string output_dir, string tab_name, std::
     ofs << "table reference, attribute name, DMV, frequency" << endl;
     ofs << tab_ref << "," <<sus_dis_values[0].attr_name << "," 
              << check_d_quotation(sus_dis_values[0].value) << "," 
-             << sus_dis_values[0].frequency << endl;
-             // << "," << sus_dis_values[0].tool_name << endl;
+             << sus_dis_values[0].frequency
+             << "," << sus_dis_values[0].tool_name << endl;
     for (long i = 1; i < (long)sus_dis_values.size(); i++)
         ofs << "," <<sus_dis_values[i].attr_name << "," 
              << check_d_quotation(sus_dis_values[i].value) << "," 
-             << sus_dis_values[i].frequency << endl;
-             // << "," << sus_dis_values[i].tool_name << endl;
+             << sus_dis_values[i].frequency
+             << "," << sus_dis_values[i].tool_name << endl;
     
     ofs.close();
 }
+
+
 
 // ================The main Function====================================
 extern "C"
@@ -72,7 +104,12 @@ void execute(char* table_ref, char * table_name, char * out_directory) {
     string tab_ref = string(table_ref); 
     string file_name = string(table_name);
     string output_dir = string(out_directory);
-    // cout << tab_ref << "::" << file_name << "::" << output_dir << endl;
+
+    cout << tab_ref << "::" << file_name << "::" << output_dir << endl;
+    // string s = "ERIN";
+    // transform( s.begin(), s.end(), s.begin(), ::tolower );
+    // cout << "Checking " << s << "\t" << check_str_repetition(s) << endl;
+    // return ;
     string full_output_path = realpath(output_dir.c_str(), NULL);
 
     std::vector<sus_disguised> sus_dis_values;
@@ -123,7 +160,7 @@ void execute(char* table_ref, char * table_name, char * out_directory) {
 
     
     DV_Detector DVD;
-    DVD.check_non_conforming_patterns(TP, sus_dis_values);
+    DVD.check_non_conforming_patterns(TP, tablehist, sus_dis_values);
     // cerr << "Checking non conforming patterns is done .. <" << TP.profile.size() << ">\n";
     OD od;
     od.detect_outliers(TP, sus_dis_values);

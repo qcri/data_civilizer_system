@@ -11,52 +11,6 @@
 // ========================================================================
 
 
-//  // ========================================================================
-// vector< sus_disguised > DataProfiler::find_disguised_values(const Table & T){
-//     std::vector<sus_disguised> sus_dis_values, sus_dis_values_per_att;
-//     Table PT;
-//     vector<map<string, long> > tablehist =  TableHistogram(T);
-//     vector<map<string, long> > subtablehist;
-//     sus_disguised dis_value;
-//     vector<struct item> most_com;
-//     long num_sus;
-//     bool disguised;
-//     double a, b, c, d, ratio = 1.3, KL,DV_Score;
-//     for (long i = 0; i < T.number_of_cols - 1; i++){
-//         if (!prune_attribute(i, T.number_of_rows, tablehist)){
-//             most_com = get_most_common(tablehist, i);
-//             for(long k = 0; k < most_com.size(); k++){
-//                 KL = 0;
-//                 disguised = true;
-//                 PT = SELECT(T, most_com[k].value, i);
-//                 subtablehist =  TableHistogram(PT);
-//                 for (long j = 0; j < T.number_of_cols - 1; j++){
-//                     if (j == i)     continue;
-//                     KL += compare_distribution(T.number_of_rows, PT.number_of_rows, j,
-//                             tablehist, subtablehist);
-//                 }
-//                 dis_value.attr_name = T.header[i];
-//                 dis_value.value = most_com[k].value;
-//                 DV_Score = KL;
-//                 dis_value.score = DV_Score;
-//                 dis_value.frequency = most_com[k].frequency;
-//                 sus_dis_values_per_att.push_back(dis_value);
-//                 cout << T.header[i] << "::" << most_com[k].value << ",";
-//                 cout << DV_Score << endl;
-//             }
-//             sort_sus_values(sus_dis_values_per_att);
-//             num_sus = MIN(3, sus_dis_values_per_att.size());
-//             for (long k = 0; k < num_sus; k++){
-//                 dis_value = sus_dis_values_per_att[k];
-//                 sus_dis_values.push_back(dis_value);
-//             }
-//             while(!sus_dis_values_per_att.empty())
-//                 sus_dis_values_per_att.pop_back();
-//         }
-//     }
-//     return sus_dis_values;
-// }
-
 
 // ========================================================================
 // Measure the inhirited information from the original database 

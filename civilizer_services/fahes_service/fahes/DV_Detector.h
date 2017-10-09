@@ -19,9 +19,11 @@ public:
     			std::vector<sus_disguised> & sus_dis_values);
     void positive_negative_inconsistency(TableProfile TP, 
     			std::vector<sus_disguised> & sus_dis_values);
-    void check_repeated_patterns(TableProfile TP, 
+    void check_repeated_substrings(TableProfile TP, 
+                vector<map<string, long> > & M,
     			std::vector<sus_disguised> & sus_dis_values);
-    void check_non_conforming_patterns(TableProfile & TP, 
+    void check_non_conforming_patterns(TableProfile & TP,
+                vector<map<string, long> > & M,  
     			std::vector<sus_disguised> & sus_dis_values);
     // vector< sus_disguised > Mod_DiMaC(const Table & T, TableProfile & TP);
 };
