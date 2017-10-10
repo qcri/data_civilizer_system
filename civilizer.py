@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import json
 #from workflow.civilizer_services.fahes_service import fahes_api
 #from workflow.civilizer_services.aurum_service import aurum_api 
-#from civilizer_services.fahes_service import fahes_api
+from civilizer_services.fahes_service import fahes_api
 from civilizer_services.aurum_service import aurum_api 
 
 

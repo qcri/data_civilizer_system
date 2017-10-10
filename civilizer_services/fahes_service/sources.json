@@ -1,0 +1,15 @@
+{
+    "CSV": {
+            "dir":
+"/Users/ra-mit/development/civilizer_demo/storage/data_sets/MIT_Demo",
+            "table": ""
+        },
+    "postgres": {
+        "database": "chembl_22",
+        "table": "action_type;formulations",
+        "user": "postgres",
+        "password": "postgres",
+        "host": "localhost",
+        "port": "5433"
+    }
+}

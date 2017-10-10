@@ -1,5 +1,9 @@
 {
     "CSV": {
+<<<<<<< HEAD
             "dir": "/Users/ra-mit/development/civilizer_demo/storage/data_sets/MIT_Demo"
+=======
+            "dir": "/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/storage/data_sets/MIT_DemoResults/"
+>>>>>>> 178ac9f65979e5f60913614a9c5a710c564d0b60
     }
 }

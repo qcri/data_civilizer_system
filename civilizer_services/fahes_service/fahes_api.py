@@ -6,8 +6,8 @@ import ctypes
 from ctypes import c_char_p
 
 global tool_loc
-# tool_loc = "./Fahes/"
-tool_loc = "../civilizer_services/fahes_service/fahes/"
+tool_loc = "./fahes/"
+#tool_loc = "../civilizer_services/fahes_service/fahes/"
 
 def read_csv_directory(dir_name):
     csv_tables_names = []
@@ -94,7 +94,7 @@ def execute_fahes(input_sources, output_location):
                                 if element[T]['dir'].endswith('/'):
                                     tName = element[T]['dir']+Ts[i]
                                 else:
-                                    tName = element[T]['dir']+'/'+i
+                                    tName = element[T]['dir']+'/'+Ts[i]
                                 callFahes(tab_ref, tName, output_dir)
                     else:
                         tables = element[T]['table'].split(';')
