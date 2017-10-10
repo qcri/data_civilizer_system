@@ -322,7 +322,35 @@ string Consolidation::ApplyCluster(int i, int col_id, int applied_group_num, int
 void Consolidation::MaterializeTable(int i, string outfilepath)
 {
   Table &table = csvreader->tables[i];
-  table.OutputCSV(outfilepath);
+
+	Table ans(-1, "whatever");
+	ans.row_no = 0;
+	ans.col_no = table.col_no;
+	ans.schema = table.schema;
+
+	//loop over every cluster
+	for (auto &row_ids : clusters)
+	{
+		vector<string> cur_ans_row;
+
+		for (auto i = 0; i < table.col_no; i ++)
+		{
+			unordered_map<string, int> votes;
+			for (int row : row_ids)
+				if (table.rows[row][i].size())
+					votes[table.rows[row][i]]++;
+
+			string cur_value = "";
+			int max_vote = -1;
+			for (auto cp2 : votes)
+				if (cp2.second > max_vote)
+					max_vote = cp2.second, cur_value = cp2.first;
+			cur_ans_row.push_back(cur_value);
+		}
+		ans.rows.push_back(cur_ans_row);
+	}
+	ans.row_no = (int) ans.rows.size();
+  ans.OutputCSV(outfilepath);
 }
 
 /*
