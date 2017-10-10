@@ -124,7 +124,6 @@ TableProfile DataProfiler::profile_table(const Table & T, vector<map<string, lon
         map<string, long>::iterator itr = TabHist[i].begin();
         profiler PR;
         PR.reset_profiler();
-
         PR.num_distinct_values = TabHist[i].size();
         while (itr != TabHist[i].end()) {
             s = itr->first;
@@ -161,20 +160,23 @@ TableProfile DataProfiler::profile_table(const Table & T, vector<map<string, lon
         TP.profile.push_back(PR);
     }
     for (long i = 0; i < (long)TabHist.size(); i++){
-        long count = 0;
-        bool done = 0;
-        string_vec_itr = TP.profile[i].sorted_Strings_by_freq.end();
-        string_vec_itr --;
-        while (string_vec_itr != TP.profile[i].sorted_Strings_by_freq.begin()){
-                for (long k = 0; k < (long)string_vec_itr->second.size(); k++){
-                    if ((count < max_num_terms_per_att) && (string_vec_itr->first > 1)){
-                        TP.profile[i].common_Strings[string_vec_itr->second[k]] = string_vec_itr->first;
-                        count ++;
-                    }
-                    else { done = 1;    break;}        
-                }
-            if (done)   break;
+        if (TP.profile[i].sorted_Strings_by_freq.size() > 1){
+            long count = 0;
+            bool done = 0;
+            string_vec_itr = TP.profile[i].sorted_Strings_by_freq.end();
+            // cerr << "Values = " << TP.profile[i].sorted_Strings_by_freq.size() << endl;
             string_vec_itr --;
+            while (string_vec_itr != TP.profile[i].sorted_Strings_by_freq.begin()){
+                    for (long k = 0; k < (long)string_vec_itr->second.size(); k++){
+                        if ((count < max_num_terms_per_att) && (string_vec_itr->first > 1)){
+                            TP.profile[i].common_Strings[string_vec_itr->second[k]] = string_vec_itr->first;
+                            count ++;
+                        }
+                        else { done = 1;    break;}        
+                    }
+                if (done)   break;
+                string_vec_itr --;
+            }
         }
     }
     return TP;

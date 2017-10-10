@@ -73,16 +73,21 @@ void Print_output_data(string tab_ref, string output_dir, string tab_name, std::
     }
     if (sus_dis_values.size() < 1)
         return;
+    // ofs << "FAHES_V1" << endl;
     ofs << "table reference, attribute name, DMV, frequency" << endl;
     ofs << tab_ref << "," <<sus_dis_values[0].attr_name << "," 
              << check_d_quotation(sus_dis_values[0].value) << "," 
              << sus_dis_values[0].frequency
-             << "," << sus_dis_values[0].tool_name << endl;
+             // << "," << sus_dis_values[0].score
+             // << "," << sus_dis_values[0].tool_name 
+             << endl;
     for (long i = 1; i < (long)sus_dis_values.size(); i++)
         ofs << "," <<sus_dis_values[i].attr_name << "," 
              << check_d_quotation(sus_dis_values[i].value) << "," 
              << sus_dis_values[i].frequency
-             << "," << sus_dis_values[i].tool_name << endl;
+             // << "," << sus_dis_values[i].score
+             // << "," << sus_dis_values[i].tool_name 
+             << endl;
     
     ofs.close();
 }
