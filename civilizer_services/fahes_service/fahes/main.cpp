@@ -110,7 +110,7 @@ void execute(char* table_ref, char * table_name, char * out_directory) {
     string file_name = string(table_name);
     string output_dir = string(out_directory);
 
-    cout << tab_ref << "::" << file_name << "::" << output_dir << endl;
+    // cout << tab_ref << "::" << file_name << "::" << output_dir << endl;
     // string s = "ERIN";
     // transform( s.begin(), s.end(), s.begin(), ::tolower );
     // cout << "Checking " << s << "\t" << check_str_repetition(s) << endl;
