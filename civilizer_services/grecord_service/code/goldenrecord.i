@@ -1,0 +1,10 @@
+%module goldenrecord 
+%include "std_string.i"
+%include Aggregator.i
+%include CSVReader.i
+%include Reader.i
+%include Rules.i
+%include Synthesize.i
+%include Table.i
+%include Wrapper.i
+%include Consolidation.i
