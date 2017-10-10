@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 import json
 from workflow.civilizer_services.fahes_service import fahes_api
-from workflow.civilizer_services.aurum_service import aurum_api 
+# from workflow.civilizer_services.aurum_service import aurum_api
 
 
 
@@ -69,5 +69,5 @@ def init_modules():
 
 if __name__ == '__main__':
     # app.run(debug=True)
-    init_modules()
+    # init_modules()
     app.run(host='localhost', port=8089)
