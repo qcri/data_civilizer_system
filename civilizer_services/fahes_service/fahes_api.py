@@ -44,7 +44,7 @@ def execute_fahes(input_sources, output_location):
                     print("Cannot read json file .. (", e, ")")
                 return None
     except:
-        print("File not found .. (", f_name, ")")
+        print("File not found .. (", output_location, ")")
         return None
 
     output_dir = ""

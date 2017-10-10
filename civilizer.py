@@ -3,7 +3,7 @@ import json
 #from workflow.civilizer_services.fahes_service import fahes_api
 #from workflow.civilizer_services.aurum_service import aurum_api 
 from civilizer_services.fahes_service import fahes_api
-from civilizer_services.aurum_service import aurum_api 
+#from civilizer_services.aurum_service import aurum_api 
 
 
 
@@ -67,7 +67,8 @@ def init_modules():
     This allows the modules to initialize themselves before the app is
     up for the user.
     """
-    aurum_api.init()
+    #aurum_api.init()
+    return
 
 if __name__ == '__main__':
     # app.run(debug=True)
