@@ -23,4 +23,4 @@ $(TARGET_LIB): $(OBJS)
 clean:
 	-${RM} ${TARGET_LIB} ${OBJS} $(SRCS:.cpp=.d)
 rmo:
-	-${RM} $(SRCS:.cpp=.d)
+	-${RM} $(SRCS:.cpp=.o) $(SRCS:.cpp=.d)
