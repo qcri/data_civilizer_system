@@ -127,7 +127,8 @@ def callFahes(tab_ref, tab_full_name, output_dir):
     Fahes=ctypes.cdll.LoadLibrary(path)
     Fahes.execute(ref, tab_name, out_dir)
     
-
+# This hard coded lines are used to test the service fronm the terminal directly 
+# The api execute_fahes(source, dest) is used to call fahes from the studio
 inputF = "sources.json"
 outputF = "destination.json"
 execute_fahes(inputF, outputF)
