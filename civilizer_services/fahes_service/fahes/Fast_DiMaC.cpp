@@ -294,6 +294,9 @@ vector< sus_disguised > F_DiMaC::find_disguised_values(const Table & T,
         sort_sus_values(sus_dis_values_per_att);
         // for (long L = 0; L < 5; L ++){
             dis_value = sus_dis_values_per_att[0];
+            double ratio1 = (double)dis_value.frequency / (double)Temp_T.number_of_rows;
+            double ratio2 = (double)Temp_tablehist[i].size() / (double)Temp_T.number_of_rows;
+            if ((ratio1 > 0.01) && (ratio2 > 0.01) && (dis_value.frequency > 20))
             sus_dis_values.push_back(dis_value);
         // }
         while(!sus_dis_values_per_att.empty())
