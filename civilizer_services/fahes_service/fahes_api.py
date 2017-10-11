@@ -90,7 +90,7 @@ def execute_fahes(input_sources, output_location):
                         if Ts:
                             for i in range(len(Ts)):
                                 tName = ""
-                                tab_ref = "csv//"+element[T]['dir']+"//"+Ts[i]
+                                tab_ref = "csv::"+element[T]['dir']+"::"+Ts[i]
                                 if element[T]['dir'].endswith('/'):
                                     tName = element[T]['dir']+Ts[i]
                                 else:
@@ -100,7 +100,7 @@ def execute_fahes(input_sources, output_location):
                         tables = element[T]['table'].split(';')
                         for i in tables:
                             tName = ""
-                            tab_ref = "csv//"+element[T]['dir']+"//"+i
+                            tab_ref = "csv::"+element[T]['dir']+"::"+i
                             if element[T]['dir'].endswith('/'):
                                 tName = element[T]['dir']+i
                             else:
