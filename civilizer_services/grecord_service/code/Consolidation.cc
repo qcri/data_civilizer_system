@@ -204,14 +204,16 @@ string Consolidation::ProfileColumn(int i, int col_id)
   Table &table = csvreader->tables[i];
 
   buffer << "looking for rules for table " << table.table_name << " at column " << col_id << endl;
-  buffer << "number of clusters " << clusters.size() << endl << "avg size " << table.row_no * 1.0 / clusters.size() << endl;
+  // buffer << "number of clusters " << clusters.size() << endl << "avg size " << table.row_no * 1.0 / clusters.size() << endl;
   buffer << "column: " << table.schema[col_id] << endl;
-  buffer << "option: 0 (default): skip,  " << endl
-         << "1: replacing rule only, " << endl
-         << "2: replacing rules + full rules, " << endl
-         << "3: replacing rules + deletion rules, " << endl
-         << "4: replacing rules + deletion rules + full rules," << endl
-         << "5: full rules only" << endl;
+  buffer << "number of distinct values: " << table.cols[col_id].size() << endl;
+  buffer << "option: 0 (default): skip,  "
+         << "  1: applying golden record. " << endl;
+         // << "1: replacing rule only, " << endl
+         // << "2: replacing rules + full rules, " << endl
+         //<< "3: replacing rules + deletion rules, " << endl
+         //<< "4: replacing rules + deletion rules + full rules," << endl
+         //<< "5: full rules only" << endl;
 
   return buffer.str();
 }
@@ -235,6 +237,8 @@ string Consolidation::TryNextColumn(int i, int col_id, string skip)
     rule_types = 5;
   else
     return "skipped this column\n";
+
+  rule_types = 4;
 
   ostringstream buffer;
   Table &table = csvreader->tables[i];
