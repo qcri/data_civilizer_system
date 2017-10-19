@@ -1,0 +1,6 @@
+{
+    "CSV": {
+        "dir": "imputedb/demo_data",
+        "table": "labs;demo"
+    }
+}

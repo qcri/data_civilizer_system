@@ -1,23 +1,35 @@
 from __future__ import print_function
 
+import glob
 import json
+import os
+import shutil
+import subprocess
+import tempfile
 
-SELF_PATH = os.path.realpath(__file__)
-STORAGE_PATH = SELF_PATH + '/../../storage/imputedb/'
-IMPUTEDB_PATH = SELF_PATH + '/imputedb/imputedb'
+SELF_DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+STORAGE_PATH = SELF_DIR_PATH + '/../../storage/imputedb/'
+IMPUTEDB_PATH = SELF_DIR_PATH + '/imputedb/imputedb'
+DB_PATH = STORAGE_PATH + '/tmp.db'
+INPUT_PATH = STORAGE_PATH + '/inputs'
+OUTPUT_PATH = STORAGE_PATH + '/out.csv'
 
 def get_csv_paths(src):
     csv_paths = []
     csv_dir = src['CSV']['dir'] + '/'
-    csv_tables = src['CSV']['table'].split(';')
+    csv_tables = src['CSV']['table']
+
+    assert csv_tables != '', 'Must specify some tables'
 
     assert os.path.isdir(csv_dir)
-    for fn in os.listdir(csv_dir):
-        csv_paths = csv_dir + fn
+    for table in csv_tables.split(';'):
+        csv_fn = csv_dir + table + '.csv'
+        assert os.path.isfile(csv_fn), '{} must be a CSV file'.format(csv_fn)
+        csv_paths += [csv_fn]
     return csv_paths
 
 
-def get_postgres_paths(src, tmp_dir):
+def get_postgres_paths(src):
     csv_paths = []
     pg_db = src['postgres']['database']
     pg_tables = src['postgres']['table'].split(';')
@@ -41,7 +53,7 @@ def get_postgres_paths(src, tmp_dir):
         table_cmd = cmd + [
             '-c', 'select * from {}'.format(table)
         ]
-        csv_fn = '{}/{}.csv'.format(tmp_dir, table)
+        csv_fn = '{}/{}.csv'.format(INPUT_PATH, table)
         with open(csv_fn, 'w') as f:
             p = subprocess.Popen(table_cmd, env=env, stdout=f)
             p.wait()
@@ -52,52 +64,50 @@ def get_postgres_paths(src, tmp_dir):
     return csv_paths
 
 
-def put_csv_output(dst, tmp_out):
+def put_csv_output(dst):
     out_dir = dst['CSV']['dir']
-    shutil.copy(tmp_out, out_dir)
+    shutil.copy(OUTPUT_PATH, out_dir)
 
 
-def put_postgres_output(dst, tmp_out):
+def put_postgres_output(dst):
     raise RuntimeError('Not implemented.')
 
 
 def execute_imputedb(src_json, dst_json, query, alpha):
-    src = json.loads(src_json)
-    dst = json.loads(dst_json)
+    with open(src_json, 'r') as f:
+        src = json.load(f)
+    with open(dst_json, 'r') as f:
+        dst = json.load(f)
 
     try:
-        tmp_dir = tempfile.mkdtemp(dir=STORAGE_PATH) + '/'
-        tmp_db = tempfile.mkdtemp(dir=STORAGE_PATH, suffix='.db')
-        tmp_out = tempfile.mkstemp(dir=STORAGE_PATH, suffix='.csv')
-
         csv_paths = []
         if 'CSV' in src:
-            cvs_paths += get_csv_paths(src)
+            csv_paths += get_csv_paths(src)
         if 'postgres' in src:
-            csv_paths += get_postgres_paths(src, tmp_dir)
+            csv_paths += get_postgres_paths(src)
 
-        load_cmd = [IMPUTEDB_PATH, 'load', '--db', tmp_db] + csv_paths
+        load_cmd = [IMPUTEDB_PATH, 'load', '--db', DB_PATH] + csv_paths
         subprocess.check_call(load_cmd)
 
-        query_cmd = [IMPUTEDB_PATH, 'query', '--db', tmp_db, '--csv', '-c', query]
-        with open(tmp_out, 'w') as f:
+        query_cmd = [IMPUTEDB_PATH, 'query', '--db', DB_PATH, '--csv', '-c', query]
+        with open(OUTPUT_PATH, 'w') as f:
             subprocess.check_call(query_cmd, stdout=f)
 
         if 'CSV' in dst:
-            put_csv_output(dst, tmp_out)
+            put_csv_output(dst)
         if 'postgres' in dst:
-            put_postgres_output(dst, tmp_out)
+            put_postgres_output(dst)
 
     finally:
-        if os.path.isdir(tmp_dir):
-            shutil.rmtree(tmp_dir)
-        if os.path.isdir(tmp_db):
-            shutil.rmtree(tmp_db)
-        if os.path.isfile(tmp_out):
-            os.remove(tmp_out)
+        for f in glob.glob(INPUT_PATH + '/*csv'):
+            os.remove(f)
+        if os.path.isdir(DB_PATH):
+            shutil.rmtree(DB_PATH)
+        if os.path.isfile(OUTPUT_PATH):
+            os.remove(OUTPUT_PATH)
 
 
 if __name__ == '__main__':
     src = 'src_test.json'
     dst = 'dst_test.json'
-    execute_imputedb(src, dst, '', 0)
+    execute_imputedb(src, dst, 'select white_blood_cell_ct from labs;', 0)
