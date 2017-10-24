@@ -97,20 +97,12 @@ void Print_output_data(string tab_ref, string output_dir, string tab_name, std::
 // ================The main Function====================================
 extern "C"
 void execute(char* table_ref, char * table_name, char * out_directory) {
-    // if (argc != 4)
-    // {
-    //   cout << "Wrong number of arguments entered (" << argc << ") \n";
-    //   for (int k = 0; k < argc; k++)
-    //     cerr << argv[k] << endl;
-    //   cout << "Usage (" << argv[0] << "): <data file reference> <table_name> <output dir>"
-    //           "\n\n";
-    //   return 1;
-    // }
+    
     string tab_ref = string(table_ref); 
     string file_name = string(table_name);
     string output_dir = string(out_directory);
-
-    // cout << tab_ref << "::" << file_name << "::" << output_dir << endl;
+    // if (debug)
+        // cout << tab_ref << "::" << file_name << "::" << output_dir << endl;
     // string s = "ERIN";
     // transform( s.begin(), s.end(), s.begin(), ::tolower );
     // cout << "Checking " << s << "\t" << check_str_repetition(s) << endl;
@@ -140,10 +132,10 @@ void execute(char* table_ref, char * table_name, char * out_directory) {
     vector<map<string, long> > tablehist =  dvdDataProfiler->TableHistogram(T);
     // for (long i = 0; i < tablehist.size(); i++)
     //     cout << T.header[i] << " has (" << tablehist[i].size() << ") distinct values" << endl;
-    // cerr << "Starting Fast_DiMaC .....\n";
+    // if (debug) cerr << "Starting Fast_DiMaC .....\n";
     sus_dis_values = FDiMaC.find_disguised_values(T, tablehist, max_num_terms_per_att);
     // return 0;
-    // cerr << "Fast_DiMaC Finished .....\n";
+    // if (debug)  cerr << "Fast_DiMaC Finished .....\n";
     // cerr << "Frequency computed .. \n";
     TP = dvdDataProfiler->profile_table(T, tablehist, max_num_terms_per_att);
     // cerr << "Profiling is done .. <" << TP.profile.size() << ">\n";
@@ -166,10 +158,11 @@ void execute(char* table_ref, char * table_name, char * out_directory) {
     
     DV_Detector DVD;
     DVD.check_non_conforming_patterns(TP, tablehist, sus_dis_values);
-    // cerr << "Checking non conforming patterns is done .. <" << TP.profile.size() << ">\n";
+    // if (debug) 
+        // cerr << "Checking non conforming patterns is done .. <" << TP.profile.size() << ">\n";
     OD od;
     od.detect_outliers(TP, sus_dis_values);
-    // cerr << "Outliers are detected .. \n";
+    // if (debug)      cerr << "Outliers are detected .. \n";
     Print_output_data(tab_ref, full_output_path, T.table_name, sus_dis_values);
              // << sus_dis_values[i].score << endl;
     // for (int i = 0; i < TP.number_of_atts; i ++){

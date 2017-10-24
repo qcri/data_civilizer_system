@@ -1,7 +1,7 @@
 {
     "CSV": {
             "dir":
-"/Users/ra-mit/development/civilizer_demo/storage/data_sets/MIT_Demo",
+"Data_for_Eval/",
             "table": ""
         },
     "postgres": {
