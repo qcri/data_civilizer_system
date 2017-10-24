@@ -87,8 +87,8 @@ long F_DiMaC::compute_num_occur(string v, long A, DiMaC_Index & DiMaC_Index_subT
 bool F_DiMaC::prune_attribute(const long idx, const long len, vector<map<string, long> > & M){
     if (M[idx].size() < 3)
         return true;
-    if ((long)M[idx].size() == len)
-        return true;
+    // if ((long)M[idx].size() == len)
+    //     return true;
     return false;
 }
 // ========================================================================
@@ -257,6 +257,8 @@ vector< sus_disguised > F_DiMaC::find_disguised_values(const Table & T,
         }
     }
     Temp_T.number_of_cols = KK.size();
+    if ((int) KK.size() == 1)
+        return sus_dis_values;
     // cout << "The size of the new table = ( " << Temp_T.number_of_rows << " , " << Temp_T.number_of_cols << " )\n";
     std::vector<string> row(Temp_T.number_of_cols);
     for (long i = 0; i < T.number_of_rows; i++){

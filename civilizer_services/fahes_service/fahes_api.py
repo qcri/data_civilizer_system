@@ -27,7 +27,7 @@ def read_csv_directory(dir_name):
     return [filename for filename in filenames if filename.endswith( file_extension ) ]
 
 
-def execute_fahes(input_sources, output_location):
+def execute_fahes(input_sources, output_location, debug = 0):
     out_dir = ""
     try:
         with open(output_location) as output_loc:
@@ -95,7 +95,7 @@ def execute_fahes(input_sources, output_location):
                                     tName = element[T]['dir']+Ts[i]
                                 else:
                                     tName = element[T]['dir']+'/'+Ts[i]
-                                callFahes(tab_ref, tName, output_dir)
+                                callFahes(tab_ref, tName, output_dir, debug)
                     else:
                         tables = element[T]['table'].split(';')
                         for i in tables:
@@ -105,14 +105,14 @@ def execute_fahes(input_sources, output_location):
                                 tName = element[T]['dir']+i
                             else:
                                 tName = element[T]['dir']+'/'+i
-                            callFahes(tab_ref, tName, output_dir)
+                            callFahes(tab_ref, tName, output_dir, debug)
                     
                 else:
                     print ("Unsupported data type .. (", T, ")")
         
         
 
-def callFahes(tab_ref, tab_full_name, output_dir):
+def callFahes(tab_ref, tab_full_name, output_dir, debug):
     global tool_loc
     g_path = os.path.abspath(tool_loc)
     path = ""
@@ -125,13 +125,13 @@ def callFahes(tab_ref, tab_full_name, output_dir):
     tab_name = c_char_p(tab_full_name.encode('utf-8'))
     out_dir = c_char_p(output_dir.encode('utf-8'))
     Fahes=ctypes.cdll.LoadLibrary(path)
-    Fahes.execute(ref, tab_name, out_dir)
+    Fahes.execute(ref, tab_name, out_dir, debug)
     
 # This hard coded lines are used to test the service fronm the terminal directly 
 # The api execute_fahes(source, dest) is used to call fahes from the studio
 inputF = "sources.json"
 outputF = "destination.json"
-execute_fahes(inputF, outputF)
+execute_fahes(inputF, outputF, 1)
 
 
 # filenames = listdir("/Users/qahtanaa/Documents/ErrorDetection/DataSets/MIT")
