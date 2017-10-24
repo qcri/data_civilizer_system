@@ -52,7 +52,7 @@
 
 {"supportBroadcast":true,
 	"nb_outputs":1,
-	"class":"civilizer.basic.operators.DataDiscovery ",
+	"class":"civilizer.basic.operators.DataDiscovery",
 	"parameters":{
 		"0":[
 			{"name":"param0",
@@ -70,7 +70,7 @@
 
 {"supportBroadcast":true,
 	"nb_outputs":1,
-	"class":"civilizer.basic.operators.JoinDiscovery ",
+	"class":"civilizer.basic.operators.JoinDiscovery",
 	"parameters":{
 		"0":[
 			{"name":"param0",
@@ -96,7 +96,7 @@
 
 {"supportBroadcast":true,
 	"nb_outputs":1,
-	"class":"civilizer.basic.operators.DataTransformation ",
+	"class":"civilizer.basic.operators.DataTransformation",
 	"parameters":{
 		"0":[
 			{"name":"param0",
@@ -118,7 +118,7 @@
 
 {"supportBroadcast":true,
 	"nb_outputs":1,
-	"class":"civilizer.basic.operators.EntityMatching ",
+	"class":"civilizer.basic.operators.EntityMatching",
 	"parameters":{
 		"0":[
 			{"name":"param0",
@@ -162,7 +162,7 @@
 
 {"supportBroadcast":true,
 	"nb_outputs":1,
-	"class":"civilizer.basic.operators.EntityConsolidation ",
+	"class":"civilizer.basic.operators.EntityConsolidation",
 	"parameters":{
 		"0":[
 			{"name":"param0",
@@ -190,7 +190,7 @@
 
 {"supportBroadcast":true,
 	"nb_outputs":1,
-	"class":"civilizer.basic.operators.DataVisualization ",
+	"class":"civilizer.basic.operators.DataVisualization",
 	"parameters":{
 		"0":[
 			{"name":"param0",
