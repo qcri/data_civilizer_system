@@ -61,10 +61,13 @@
 			 },
 			 {"name":"param1",
 			  "inputType":"String",
-			  "type":"civilizer.DataDiscovery.Aurum.EKGPath"},
+			  "type":"civilizer.dataCollection.destination"},
 			 {"name":"param2",
 			  "inputType":"String",
-			   "type":"civilizer.DataDiscovery.Aurum.EKGPath.Index"}
+			   "type":"civilizer.DataDiscovery.Aurum.Data.Index"},
+			 {"name":"param3",
+			  "inputType":"String",
+			   "type":"civilizer.DataDiscovery.Aurum.EKGPath"}
 			]},
 	"nb_inputs":1},
 
@@ -77,10 +80,13 @@
 			 "inputType":"Service",
 			 "type":"civilizer.JoinDiscovery.Aurum"
 			 },
-			 {"name":"param1",
+			{"name":"param1",
+			  "inputType":"String",
+			  "type":"civilizer.dataCollection.destination"},
+			 {"name":"param2",
 			  "inputType":"String",
 			  "type":"civilizer.JoinDiscovery.Aurum.EKGPath"},
-			 {"name":"param2",
+			 {"name":"param3",
 			  "inputType":"String",
 			   "type":"civilizer.JoinDiscovery.Aurum.EKGPath.Index"}
 			],
@@ -89,32 +95,13 @@
 			 "inputType":"Service",
 			 "type":"civilizer.JoinDiscovery.ML4JoinDiscovery"
 			 },
-			 {"name":"param1",
+			{"name":"param1",
+			  "inputType":"String",
+			  "type":"civilizer.dataCollection.destination"},
+			 {"name":"param2",
 			  "inputType":"String",
 			  "type":"civilizer.JoinDiscovery.ML4JoinDiscovery.Model"}]},
 	"nb_inputs":1},
-
-{"supportBroadcast":true,
-	"nb_outputs":1,
-	"class":"civilizer.basic.operators.DataTransformation",
-	"parameters":{
-		"0":[
-			{"name":"param0",
-			 "inputType":"Service",
-			 "type":"civilizer.DataTransformation.WenboMethod"
-			 },
-			 {"name":"param1",
-			  "inputType":"String",
-			  "type":"civilizer.DataTransformation.DataSetType"}],
-		"1":[
-			{"name":"param0",
-			 "inputType":"Service",
-			 "type":"civilizer.DataTransformation.DBXformer"
-			 },
-			 {"name":"param1",
-			  "inputType":"String",
-			  "type":"civilizer.DataTransformation.DataSetType"}]},
-	"nb_inputs":1},	
 
 {"supportBroadcast":true,
 	"nb_outputs":1,
@@ -125,7 +112,10 @@
 			 "inputType":"Service",
 			 "type":"civilizer.EntityMatching.Tamr"
 			 },
-			 {"name":"param1",
+			{"name":"param1",
+			  "inputType":"String",
+			  "type":"civilizer.dataCollection.destination"},
+			 {"name":"param2",
 			  "inputType":"String",
 			  "type":"civilizer.EntityMatching.DataSetType"}],
 		"1":[
@@ -133,31 +123,26 @@
 			 "inputType":"Service",
 			 "type":"civilizer.EntityMatching.Synthesizer"
 			 },
-			 {"name":"param1",
+			{"name":"param1",
+			  "inputType":"String",
+			  "type":"civilizer.dataCollection.destination"},
+			 {"name":"param2",
 			  "inputType":"String",
 			  "type":"civilizer.EntityMatching.DataSetType"}]},
 	"nb_inputs":1},
 
 {"supportBroadcast":true,
 	"nb_outputs":1,
-	"class":"civilizer.basic.operators.DataCleaning",
+	"class":"civilizer.basic.operators.DataCleaning-Fahes",
 	"parameters":{
 		"0":[
-			{"name":"param0",
-			 "inputType":"Service",
-			 "type":"civilizer.DataCleaning.PKDUCK"
-			 },
-			 {"name":"param1",
-			  "inputType":"String",
-			  "type":"civilizer.DataCleaning.DataOutput"}],
-		"1":[
 			{"name":"param0",
 			 "inputType":"Service",
 			 "type":"civilizer.DataCleaning.Fahes"
 			 },
 			 {"name":"param1",
 			  "inputType":"String",
-			  "type":"civilizer.DataCleaning.DataOutput"}]},
+			  "type":"civilizer.dataCollection.destination"}]},
 	"nb_inputs":1},	
 
 {"supportBroadcast":true,
@@ -171,7 +156,7 @@
 			 },
 			 {"name":"param1",
 			  "inputType":"String",
-			  "type":"civilizer.EntityConsolidation.DataSetType"}]},
+			  "type":"civilizer.dataCollection.destination"}]},
 	"nb_inputs":1},	
 
 {"supportBroadcast":true,
@@ -185,7 +170,7 @@
 			 },
 			 {"name":"param1",
 			  "inputType":"String",
-			  "type":"civilizer.enrichment.DataSetType"}]},
+			  "type":"civilizer.dataCollection.destination"}]},
 	"nb_inputs":1},	
 
 {"supportBroadcast":true,
@@ -199,7 +184,7 @@
 			 },
 			 {"name":"param1",
 			  "inputType":"String",
-			  "type":"civilizer.DataVisualization.DataSetType"}]},
+			  "type":"civilizer.dataCollection.destination"}]},
 	"nb_inputs":1},
 
 {"supportBroadcast":true,
@@ -213,7 +198,7 @@
 			 },
 			 {"name":"param1",
 			  "inputType":"String",
-			  "type":"civilizer.DataVisualization.DataSetType"}]},
+			  "type":"civilizer.dataCollection.destination"}]},
 	"nb_inputs":1},
 
 {"supportBroadcast":true,

@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify
 import json
 import webbrowser
-# from data_civilizer_system.civilizer_services.fahes_service import fahes_api
+# from subprocess import Popen, PIPE
+from civilizer_services.fahes_service import fahes_api
 # from workflow.civilizer_services.aurum_service import aurum_api
 
 
@@ -35,21 +36,27 @@ def post_ExePlan():
     # Posted JSON Plan
     inputF = "sources.json"
     outputF = "destination.json"
-    # fahes_api.execute_fahes(inputF, outputF)
 
     operators = request.json["operators"]
     number = len(operators)
     class_name =operators[number-1]["java_class"]
 
-    if(class_name=="civilizer.basic.operators.DataCleaning"):
-        print("DataCleaning")
-        open_chrome()
-    else: print("Error")
+    if(class_name=="civilizer.basic.operators.DataDiscovery"):
+        print("Data Discovery")
+        open_chrome('http://localhost:3000/')
+    elif(class_name=="civilizer.basic.operators.DataCleaning-Fahes"):
+        print("DataCleaning-Fahes")
+        fahes_api.execute_fahes(inputF, outputF)
+    elif(class_name == "civilizer.basic.operators.EntityConsolidation"):
+        print("Data Discovery")
+        open_chrome('http://localhost:8888/notebooks/civilizer_gr.ipynb')
+    else:
+        print("Error")
     return jsonify(operators[number-1])
 
 
-def open_chrome():
-    url = 'http://localhost:3000/'
+def open_chrome(url):
+    # url = 'http://localhost:3000/'
     # MacOS
     chrome_path = 'open -a /Applications/Google\ Chrome.app %s'
     print("open chrome")

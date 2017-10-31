@@ -6,8 +6,8 @@ import ctypes
 from ctypes import c_char_p
 
 global tool_loc
-tool_loc = "./fahes/"
-#tool_loc = "../civilizer_services/fahes_service/fahes/"
+# tool_loc = "./fahes/"
+tool_loc = "../civilizer_services/fahes_service/fahes/"
 
 def read_csv_directory(dir_name):
     csv_tables_names = []
