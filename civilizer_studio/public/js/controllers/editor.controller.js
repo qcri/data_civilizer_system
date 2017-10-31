@@ -634,15 +634,15 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
     $scope.loader_req = true;
     plansConversions.set(planWithRheemParams);
 
-    $scope.ts= Date();
+    $scope.ts= (new Date()).getTime()
     console.log("started", $scope.ts)
     $scope.callExecutePlan()
     .then(function(){
-      var te= Date();
-      console.log("finished:", te, te- $scope.ts)
+      var te= (new Date()).getTime()
+      console.log("finished:", te, te - $scope.ts)
       $scope.loader_req = false;
-      if((te- $scope.ts) > 50)
-      alert("Your data is ready.");
+      if((te - $scope.ts) > 300)
+       alert("Your data is ready.");
     })
 
       // vafr myVar = setInterval(myTimer, 1000);

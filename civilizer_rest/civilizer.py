@@ -3,7 +3,8 @@ import json
 import webbrowser
 # from subprocess import Popen, PIPE
 from civilizer_services.fahes_service import fahes_api
-# from workflow.civilizer_services.aurum_service import aurum_api
+from civilizer_services.imputedb_service import imputedb_api
+# from civilizer_services.aurum_service import aurum_api
 
 
 
@@ -34,9 +35,6 @@ def post_plan():
 @app.route('/rheem/plan_executions', methods=['POST'])
 def post_ExePlan():
     # Posted JSON Plan
-    inputF = "sources.json"
-    outputF = "destination.json"
-
     operators = request.json["operators"]
     number = len(operators)
     class_name =operators[number-1]["java_class"]
@@ -46,7 +44,14 @@ def post_ExePlan():
         open_chrome('http://localhost:3000/')
     elif(class_name=="civilizer.basic.operators.DataCleaning-Fahes"):
         print("DataCleaning-Fahes")
+        inputF = "sources.json"
+        outputF = "destination.json"
         fahes_api.execute_fahes(inputF, outputF)
+    elif (class_name == "civilizer.basic.operators.DataCleaning-Imputedb"):
+        print("DataCleaning-Imputedb")
+        inputF = "sources.json"
+        outputF = "destination.json"
+        imputedb_api.execute_imputedb(inputF, outputF, 'select Dept_Budget_Code from Sis_department;', 0)
     elif(class_name == "civilizer.basic.operators.EntityConsolidation"):
         print("Data Discovery")
         open_chrome('http://localhost:8888/notebooks/civilizer_gr.ipynb')
