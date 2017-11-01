@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.6)
+project(xClean)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+set(SOURCE_FILES main.cpp Reader.cpp Reader.h Common.cpp Common.h Solver/Solver.cpp Solver/Solver.h RuleGenerator/RuleGenerator.cpp RuleGenerator/RuleGenerator.h RuleGenerator/SlowLCS.cpp Joiner/Joiner.cpp Joiner/Joiner.h Joiner/BruteForceJoiner.cpp RuleGenerator/FastLCS.cpp RuleGenerator/FastLCS.h RuleGenerator/SlowLCS.h Joiner/BruteForceJoiner.h Joiner/PolynomialJoiner.cpp Joiner/PolynomialJoiner.h Joiner/SigBuilder/DpSigBuilder.cpp RuleGenerator/MyRule.cpp RuleGenerator/MyRule.h Joiner/SigBuilder/DpLargeTokenSigBuilder.cpp Joiner/Verifier/Sigmod13Verifier.cpp Joiner/Verifier/LargeTokenGreedyVerifier.cpp Joiner/SigBuilder/OriginalSigBuilder.cpp Joiner/SigBuilder/OriginalLargeTokenSigBuilder.cpp RuleGenerator/BadBoy.cpp RuleGenerator/BadBoy.h RuleGenerator/WildLCS.cpp RuleGenerator/WildLCS.h RuleGenerator/NLPRule.cpp RuleGenerator/NLPRule.h Joiner/Verifier/GreedyVerifier.cpp Exp.cpp Exp.h RuleGenerator/Vldb09.cpp RuleGenerator/Vldb09.h Joiner/JaccardJoiner.cpp Joiner/JaccardJoiner.h Joiner/SigBuilder/ExpansionSigBuilder.cpp Joiner/Verifier/Icde08Verifier.cpp Joiner/SigBuilder/DpSigBuilderSlow.cpp Joiner/SigBuilder/JacctSigBuilder.cpp RuleGenerator/HandDict.cpp RuleGenerator/HandDict.h RuleGenerator/GPDict.cpp RuleGenerator/GPDict.h)
+#add_executable(xClean ${SOURCE_FILES})
+add_library(xClean SHARED ${SOURCE_FILES})

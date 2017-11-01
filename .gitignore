@@ -14,11 +14,6 @@
 *.gch
 *.pch
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
 # Fortran module files
 *.mod
 *.smod
@@ -36,3 +31,8 @@
 
 # mongodb
 mongos/
+
+# misc
+.DS_Store
+result_pkduck.csv
+
