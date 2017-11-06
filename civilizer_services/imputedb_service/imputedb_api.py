@@ -15,18 +15,20 @@ INPUT_PATH = STORAGE_PATH + '/inputs'
 OUTPUT_PATH = STORAGE_PATH + '/out.csv'
 
 def get_csv_paths(src):
-    csv_paths = []
     csv_dir = src['CSV']['dir'] + '/'
     csv_tables = src['CSV']['table']
 
-    assert csv_tables != '', 'Must specify some tables'
-
     assert os.path.isdir(csv_dir)
-    for table in csv_tables.split(';'):
-        csv_fn = csv_dir + table + '.csv'
-        assert os.path.isfile(csv_fn), '{} must be a CSV file'.format(csv_fn)
-        csv_paths += [csv_fn]
-    return csv_paths
+
+    if csv_tables == '':
+        return glob.glob(csv_dir + '/*.csv')
+    else:
+        csv_paths = []
+        for table in csv_tables.split(';'):
+            csv_fn = csv_dir + table + '.csv'
+            assert os.path.isfile(csv_fn), '{} must be a CSV file'.format(csv_fn)
+            csv_paths += [csv_fn]
+        return csv_paths
 
 
 def get_postgres_paths(src):
