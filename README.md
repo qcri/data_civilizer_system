@@ -1,7 +1,7 @@
 # data_civilizer_system
 ## Running Data Civilizer
 ### you need to start the following main servers
-### MangoDB which used by the Studio to store the workflows
+### MangoDB which is used by the Studio to store the workflows
 #### move to storage/mongos
 #### run mongod --dbpath .
 ### Start the Studio 
