@@ -1,15 +1,6 @@
 {
     "CSV": {
-            "dir":
-"Data_for_Eval/",
+            "dir":"Data_for_Eval/",
             "table": ""
-        },
-    "postgres": {
-        "database": "chembl_22",
-        "table": "action_type;formulations",
-        "user": "postgres",
-        "password": "postgres",
-        "host": "localhost",
-        "port": "5433"
-    }
+        }
 }
