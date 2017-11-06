@@ -147,6 +147,26 @@
 
 {"supportBroadcast":true,
 	"nb_outputs":1,
+	"class":"civilizer.basic.operators.DataCleaning-PKDuck",
+	"parameters":{
+		"0":[
+			{"name":"param0",
+			 "inputType":"Service",
+			 "type":"civilizer.DataCleaning.PKDuck"
+			 },
+			 {"name":"param1",
+			  "inputType":"String",
+			  "type":"civilizer.dataCollection.destination"},
+			{"name":"param2",
+			  "inputType":"String",
+			  "type":"civilizer.DataCleaning.PKDuck.Columns"},
+			{"name":"param3",
+			  "inputType":"String",
+			  "type":"civilizer.DataCleaning.PKDuck.Tau"}]},
+	"nb_inputs":1},
+
+{"supportBroadcast":true,
+	"nb_outputs":1,
 	"class":"civilizer.basic.operators.DataCleaning-Imputedb",
 	"parameters":{
 		"0":[

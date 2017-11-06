@@ -4,6 +4,7 @@ import webbrowser
 # from subprocess import Popen, PIPE
 from civilizer_services.fahes_service import fahes_api
 from civilizer_services.imputedb_service import imputedb_api
+from civilizer_services.pkduck_service import pkduck_api
 # from civilizer_services.aurum_service import aurum_api
 
 
@@ -47,9 +48,15 @@ def post_ExePlan():
         inputF = "sources.json"
         outputF = "destination.json"
         fahes_api.execute_fahes(inputF, outputF)
+    elif (class_name == "civilizer.basic.operators.DataCleaning-PKDuck"):
+        print("DataCleaning-PKDuck")
+        inputF = "sources.json"
+        outputF = "destination.json"
+        columns = "12#11#8#7#1,2,7#10"
+        pkduck_api.execute_pkduck(inputF, outputF, columns, 0.8)
     elif (class_name == "civilizer.basic.operators.DataCleaning-Imputedb"):
         print("DataCleaning-Imputedb")
-        inputF = "sources.json"
+        inputF = "sources_im.json"
         outputF = "destination.json"
         imputedb_api.execute_imputedb(inputF, outputF, 'select Dept_Budget_Code from Sis_department;', 0)
     elif(class_name == "civilizer.basic.operators.EntityConsolidation"):

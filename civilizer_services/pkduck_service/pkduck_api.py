@@ -16,9 +16,14 @@ def execute_pkduck(input_json_file, output_json_file, columns, tau):
     with open(output_json_file, 'r') as f:
         output_json = json.load(f)
 
-    input_dir = c_char_p(input_json['CSV']['dir'] + "/")
-    output_dir = c_char_p(output_json['CSV']['dir'] + "/")
-    columns = c_char_p(columns)
+    i = input_json['CSV']['dir'];
+    input_dir = c_char_p(i.encode('utf-8'))
+    # input_dir = input_dir.encode('utf-8')
+    o = output_json['CSV']['dir'] ;
+    output_dir = c_char_p(o.encode('utf-8'))
+
+    columns = c_char_p(columns.encode('utf-8'))
+
     tau = c_double(tau)
     pkduck = ctypes.cdll.LoadLibrary(SELF_DIR_PATH + "/pkduck.dylib")
     pkduck.execute(input_dir, output_dir, columns, tau)
