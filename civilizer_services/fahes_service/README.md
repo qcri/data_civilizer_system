@@ -22,7 +22,10 @@ Comment the line that include "tool_loc = "../civilizer_services/fahes_service/f
 In "sources.json", modify the "dir" to include the path to your data (csv files). If you like to work on specific tables, add the names of the tables in the field "table". Separate the tables names by semicolon (;). When the name of the table is left empty, the tool will work on all the csv files inside the specified directory.
 
 $ cd data_civilizer_system/civilizer_services/fahes_service/fahes/
+
 $ make
+
 $ cd ..
+
 $ python3 fahes_api.py
 
