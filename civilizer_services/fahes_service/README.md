@@ -5,7 +5,7 @@
 $ make
 #### This will produce a library called "libFahes.so", which can be accessed through the python script "fahes_api.py"
 
-### fahes_api.py requires the following parameters
+### fahes_api.py requires the following parameters:
 #### Input: a json file that contains a path to the directory that include the CSV files, if the table name is specified, the tool will work on the specified table. Otherwise, the tool will search for all csv files inside the specified directory.
 
 #### Output: a json file that specifies the place where to put the output table.
