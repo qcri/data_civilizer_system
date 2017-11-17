@@ -40,10 +40,6 @@ void execute(char *table_dir, char *out_dir, char *_columns, double tau)
 	string dir(table_dir);
 	reader->reading(dir, false);
 
-	cout << "haha : " << endl;
-	cout << reader->tables.size() << endl << endl;
-	for (auto i = 0; i < reader->tables.size(); i ++)
-		cout << reader->tables[i].table_name << endl;
 	for (auto i = 0; i < reader->tables.size(); i ++)
 	{
 		reader->tables[i].row_no = (int) reader->tables[i].rows.size();
@@ -69,16 +65,45 @@ void execute(char *table_dir, char *out_dir, char *_columns, double tau)
 	Solver solver(vector<string>(cells.begin(), cells.end()));
 	vector<pair<string, string>> results = solver.solve();
 
-	//write it to file
-	string output_file_name(out_dir);
-	if (output_file_name.back() != '/')
-		output_file_name += "/";
-	output_file_name += "result_pkduck.csv";
-	ofstream fout(output_file_name.c_str());
-	fout << "string1,string2" << endl;
+	//write sim string file
+	string output_file_name1(out_dir);
+	if (output_file_name1.back() != '/')
+		output_file_name1 += "/";
+	output_file_name1 += "simstring_pkduck.csv";
+	ofstream fout1(output_file_name1.c_str());
+	fout1 << "string1,string2" << endl;
 	for (auto cp : results)
-		fout << "\"" << cp.first << "\", \"" << cp.second << "\"" << endl;
-	fout.close();
+		fout1 << "\"" << cp.first << "\", \"" << cp.second << "\"" << endl;
+	fout1.close();
+
+	//write auxiliary table file
+	string output_file_name2(out_dir);
+	if (output_file_name2.back() != '/')
+		output_file_name2 += "/";
+	output_file_name2 += "auxiliary_pkduck.csv";
+	ofstream fout2(output_file_name2.c_str());
+	fout2 << "id,string,tablename,row,column,columnname" << endl;
+	unordered_set<string> ss;
+	for (auto cp : results)
+		ss.insert(cp.first), ss.insert(cp.second);
+
+	int id = 0;
+	for (auto s : ss)
+		for (auto i = 0; i < reader->tables.size(); i ++)
+		{
+			int row_no = reader->tables[i].row_no;
+			int col_no = reader->tables[i].col_no;
+			for (auto x = 0; x < row_no; x ++)
+				for (auto y = 0; y < col_no; y ++)
+					if (reader->tables[i].rows[x][y] == s)
+						fout2 << "\"" << id << "\","
+							  << "\"" << s << "\","
+						      << "\"" << reader->tables[i].table_name << "\","
+							  << "\"" << x << "\","
+						      << "\"" << y << "\","
+						      << "\"" << reader->tables[i].schema[y] << "\"" << endl;
+		}
+	fout2.close();
 }
 
 int main()
