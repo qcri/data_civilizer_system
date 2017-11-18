@@ -3,8 +3,13 @@ import json
 import ctypes
 from ctypes import c_double
 from ctypes import c_char_p
+from sys import platform
 
 SELF_DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+if platform == "darwin":
+    DYNAMIC_LIB = "pkduck.dylib"
+else:
+    DYNAMIC_LIB = "pkduck.so"
 
 # columns are in the format of 1,3,4#5#2#4,7, meaning that 
 # the 1st, 3rd and 4th columns of the first table are selected 
@@ -18,14 +23,13 @@ def execute_pkduck(input_json_file, output_json_file, columns, tau):
 
     i = input_json['CSV']['dir'];
     input_dir = c_char_p(i.encode('utf-8'))
-    # input_dir = input_dir.encode('utf-8')
     o = output_json['CSV']['dir'] ;
     output_dir = c_char_p(o.encode('utf-8'))
 
     columns = c_char_p(columns.encode('utf-8'))
 
     tau = c_double(tau)
-    pkduck = ctypes.cdll.LoadLibrary(SELF_DIR_PATH + "/pkduck.dylib")
+    pkduck = ctypes.cdll.LoadLibrary(SELF_DIR_PATH + "/" + DYNAMIC_LIB)
     pkduck.execute(input_dir, output_dir, columns, tau)
 
 if __name__ == '__main__':
