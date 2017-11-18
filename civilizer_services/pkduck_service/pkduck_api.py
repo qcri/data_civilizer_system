@@ -7,9 +7,9 @@ from sys import platform
 
 SELF_DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 if platform == "darwin":
-    DYNAMIC_LIB = "pkduck.dylib"
+    DYNAMIC_LIB = "libpkduck.dylib"
 else:
-    DYNAMIC_LIB = "pkduck.so"
+    DYNAMIC_LIB = "libpkduck.so"
 
 # columns are in the format of 1,3,4#5#2#4,7, meaning that 
 # the 1st, 3rd and 4th columns of the first table are selected 
@@ -29,7 +29,7 @@ def execute_pkduck(input_json_file, output_json_file, columns, tau):
     columns = c_char_p(columns.encode('utf-8'))
 
     tau = c_double(tau)
-    pkduck = ctypes.cdll.LoadLibrary(SELF_DIR_PATH + "/" + DYNAMIC_LIB)
+    pkduck = ctypes.cdll.LoadLibrary(SELF_DIR_PATH + "/code/" + DYNAMIC_LIB)
     pkduck.execute(input_dir, output_dir, columns, tau)
 
 if __name__ == '__main__':

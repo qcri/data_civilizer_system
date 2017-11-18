@@ -32,7 +32,20 @@
 # mongodb
 mongos/
 
+# cmake
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+
 # misc
 .DS_Store
-result_pkduck.csv
 
+# pkduck
+result_pkduck.csv
+auxiliary_pkduck.csv
