@@ -47,5 +47,5 @@ CTestTestfile.cmake
 .DS_Store
 
 # pkduck
-result_pkduck.csv
+simstring_pkduck.csv
 auxiliary_pkduck.csv
