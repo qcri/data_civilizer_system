@@ -9,7 +9,9 @@ Golden Record is written in C++ with a python wrapper.
 
 ### Compile
 Go to the 'code' folder and execute the following command:
-./run.sh 
+
+* ./run.sh 
+
 It will produce a file '_goldenrecord.so'
 
 ### Specify Parameters
