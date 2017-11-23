@@ -49,6 +49,20 @@ For shorter values (e.g., names) use 2 or 4. For longer values (e.g., full addre
 
 * Full rules uses a pair of values within the same cluster as a single rule.
 
+If you do not skip the column, it will repeatly generate a group of rules and ask you to choose from:
 
+0: do not apply all of them;  
+
+1: apply them to all;  
+
+2: apply them reversely; 
+
+3: postpone;  
+
+4; exit
+
+The first option skip the rule group. The second replaces the left side with the right side. The third replaces the right side with the left side. The last one will terminate the processing of the current column.
+
+Finally, after go throught all columns, the updated table will write into a CSV file as specified in the parameter.
 
 
