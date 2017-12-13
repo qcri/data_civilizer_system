@@ -1,1 +1,0 @@
-# civilizer_jupyter
