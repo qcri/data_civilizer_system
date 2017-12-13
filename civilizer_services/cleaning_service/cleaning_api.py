@@ -25,29 +25,29 @@ TOOLS_FOLDER = "tools"
 
 
 ########################################
-def install_tools():
-    """
-    This method installs and configures the data cleaning tools.
-    """
-    for tool in os.listdir(TOOLS_FOLDER):
-        if tool == "NADEEF":
-            p = subprocess.Popen(["ant", "all"], cwd="{}/NADEEF".format(TOOLS_FOLDER), stdin=subprocess.PIPE,
-                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            p.communicate()
-            print "To configure NADEEF, please follow the following steps:"
-            print "1. Create a database entitled 'naadeef' in the postgres."
-            postgress_username = raw_input("2. Inter your postgres username: ")
-            postgress_password = raw_input("3. Inter your postgres password: ")
-            nadeef_configuration_file = open("{}/NADEEF/nadeef.conf".format(TOOLS_FOLDER), "r")
-            nadeef_configuration = nadeef_configuration_file.read()
-            nadeef_configuration = re.sub("(database.username = )([\w\d]+)", "\g<1>{}".format(postgress_username),
-                                          nadeef_configuration, flags=re.IGNORECASE)
-            nadeef_configuration = re.sub("(database.password = )([\w\d]+)", "\g<1>{}".format(postgress_password),
-                                          nadeef_configuration, flags=re.IGNORECASE)
-            nadeef_configuration_file.close()
-            nadeef_configuration_file = open("{}/NADEEF/nadeef.conf".format(TOOLS_FOLDER), "w")
-            nadeef_configuration_file.write(nadeef_configuration)
-        print "{} is installed.".format(tool)
+# def install_tools():
+#     """
+#     This method installs and configures the data cleaning tools.
+#     """
+#     for tool in os.listdir(TOOLS_FOLDER):
+#         if tool == "NADEEF":
+#             p = subprocess.Popen(["ant", "all"], cwd="{}/NADEEF".format(TOOLS_FOLDER), stdin=subprocess.PIPE,
+#                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+#             p.communicate()
+#             print("To configure NADEEF, please follow the following steps:")
+#             print("1. Create a database entitled 'naadeef' in the postgres.")
+#             postgress_username = raw_input("2. Inter your postgres username: ")
+#             postgress_password = raw_input("3. Inter your postgres password: ")
+#             nadeef_configuration_file = open("{}/NADEEF/nadeef.conf".format(TOOLS_FOLDER), "r")
+#             nadeef_configuration = nadeef_configuration_file.read()
+#             nadeef_configuration = re.sub("(database.username = )([\w\d]+)", "\g<1>{}".format(postgress_username),
+#                                           nadeef_configuration, flags=re.IGNORECASE)
+#             nadeef_configuration = re.sub("(database.password = )([\w\d]+)", "\g<1>{}".format(postgress_password),
+#                                           nadeef_configuration, flags=re.IGNORECASE)
+#             nadeef_configuration_file.close()
+#             nadeef_configuration_file = open("{}/NADEEF/nadeef.conf".format(TOOLS_FOLDER), "w")
+#             nadeef_configuration_file.write(nadeef_configuration)
+#         print "{} is installed.".format(tool)
 ########################################
 
 
@@ -86,7 +86,10 @@ def run_dboost(dataset_path, dboost_parameters):
     """
     This method runs dBoost on a dataset.
     """
-    command = ["./{}/dBoost/dboost/dboost-stdin.py".format(TOOLS_FOLDER), "-F", ",", dataset_path] + dboost_parameters
+    tool_path="/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/civilizer_services/cleaning_service/"
+    # command = ["./{}/dBoost/dboost/dboost-stdin.py".format(TOOLS_FOLDER), "-F", ",", dataset_path] + dboost_parameters
+
+    command = [tool_path+"{}/dBoost/dboost/dboost-stdin.py".format(TOOLS_FOLDER), "-F", ",", dataset_path] + dboost_parameters
     p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     p.communicate()
     return_list = []

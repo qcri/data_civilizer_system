@@ -5,6 +5,8 @@ import webbrowser
 from civilizer_services.fahes_service import fahes_api
 from civilizer_services.imputedb_service import imputedb_api
 from civilizer_services.pkduck_service import pkduck_api
+from civilizer_services.cleaning_service import cleaning_api
+from civilizer_services.deeper_service import deeper_api
 # from civilizer_services.aurum_service import aurum_api
 
 
@@ -59,6 +61,14 @@ def post_ExePlan():
         inputF = "sources_im.json"
         outputF = "destination.json"
         imputedb_api.execute_imputedb(inputF, outputF, 'select Dept_Budget_Code from Sis_department;', 0)
+    elif (class_name == "civilizer.basic.operators.DataCleaning-Profiler"):
+        print("DataCleaning-Profiler")
+        inputF = "sources_p.json"
+        outputF = "destination.json"
+        cleaning_api.execute_cleaning(inputF, outputF)
+    elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER"):
+        print("DataCleaning-DeepER")
+        deeper_api.execute_deeper()
     elif(class_name == "civilizer.basic.operators.EntityConsolidation"):
         print("Data Discovery")
         open_chrome('http://localhost:8888/notebooks/civilizer_gr.ipynb')

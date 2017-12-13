@@ -105,30 +105,16 @@
 
 {"supportBroadcast":true,
 	"nb_outputs":1,
-	"class":"civilizer.basic.operators.EntityMatching",
+	"class":"civilizer.basic.operators.EntityMatching-DeepER",
 	"parameters":{
 		"0":[
 			{"name":"param0",
 			 "inputType":"Service",
-			 "type":"civilizer.EntityMatching.Tamr"
+			 "type":"civilizer.EntityMatching.DeepER"
 			 },
 			{"name":"param1",
 			  "inputType":"String",
-			  "type":"civilizer.dataCollection.destination"},
-			 {"name":"param2",
-			  "inputType":"String",
-			  "type":"civilizer.EntityMatching.DataSetType"}],
-		"1":[
-			{"name":"param0",
-			 "inputType":"Service",
-			 "type":"civilizer.EntityMatching.Synthesizer"
-			 },
-			{"name":"param1",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.destination"},
-			 {"name":"param2",
-			  "inputType":"String",
-			  "type":"civilizer.EntityMatching.DataSetType"}]},
+			  "type":"civilizer.dataCollection.destination"}]},
 	"nb_inputs":1},
 
 {"supportBroadcast":true,
@@ -183,6 +169,20 @@
 			{"name":"param3",
 			  "inputType":"String",
 			  "type":"civilizer.DataCleaning.Imputedb.Ratio"}]},
+	"nb_inputs":1},
+
+{"supportBroadcast":true,
+	"nb_outputs":1,
+	"class":"civilizer.basic.operators.DataCleaning-Profiler",
+	"parameters":{
+		"0":[
+			{"name":"param0",
+			 "inputType":"Service",
+			 "type":"civilizer.DataCleaning.Profiler"
+			 },
+			 {"name":"param1",
+			  "inputType":"String",
+			  "type":"civilizer.dataCollection.destination"}]},
 	"nb_inputs":1},
 
 {"supportBroadcast":true,
