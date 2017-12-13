@@ -1,6 +1,7 @@
 # Created by https://www.gitignore.io/api/c++
 
 storage/data_sets
+.idea/
 ### C++ ###
 # Prerequisites
 *.d
