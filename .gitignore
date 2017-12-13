@@ -1,5 +1,6 @@
 # Created by https://www.gitignore.io/api/c++
 
+storage/data_sets
 ### C++ ###
 # Prerequisites
 *.d
@@ -49,3 +50,10 @@ CTestTestfile.cmake
 # pkduck
 simstring_pkduck.csv
 auxiliary_pkduck.csv
+
+
+# python
+__pycache__/
+*.py[cod]
+*$py.class
+
