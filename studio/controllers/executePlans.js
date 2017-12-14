@@ -6,7 +6,7 @@ http = require('http');
 fs = require('fs');
 request = require('request-json');
 
-var client = request.createClient(config.apiServer);
+var client = request.createClient(process.env.API_SERVER_URL);
 
 function ExecutePlans() {
 

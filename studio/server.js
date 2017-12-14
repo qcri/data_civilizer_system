@@ -5,16 +5,10 @@ var path = require('path');
 var fs = require('fs');
 var WebSocket = require("./helpers/websocket");
 
-
-//read configuration file
-config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
-
-//load port number
-var port = config.port;
-
 // Mongodb connection
 mongoose.Promise = global.Promise;
-connection = mongoose.connect('mongodb://localhost:27017/rheem');
+db = process.env.MONGODB_URL;
+connection = mongoose.connect(db);
 
 // init
 
@@ -23,9 +17,10 @@ app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-websocket = WebSocket(config.socketServerPort);
+var socketServerPort = process.env.SOCKET_SERVER_PORT;
+websocket = WebSocket(socketServerPort);
 
-console.log("websocket is running : ", websocket);
+console.log("websocket is running on port: ", socketServerPort);
 
 //config
 app.use("/bower_components", express.static(__dirname + '/bower_components'));
@@ -44,7 +39,10 @@ app.get('/', function(req, res){
     res.sendFile(path.join(__dirname, './public', 'index.html'));
 });
 
+//load port number
+var port = process.env.WEB_SERVER_PORT;
+
 //start server
 app.listen(port);
 
-console.log("API is running port: ", port);
+console.log("API is running on port: ", port);

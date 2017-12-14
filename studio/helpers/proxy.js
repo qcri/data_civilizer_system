@@ -11,7 +11,7 @@ Proxy.prototype = {
     forwardRequest: function(req, res) {
       this.proxy.proxyRequest(req, res, {
           changeOrigin: true,
-          target: config.apiServer + '/rheem'
+          target: process.env.API_SERVER_URL + '/rheem'
       });
     }
 }

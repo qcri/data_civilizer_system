@@ -1,13 +1,14 @@
 from flask import Flask, request, jsonify
 import json
+from os import environ as env
 import webbrowser
 # from subprocess import Popen, PIPE
-from civilizer_services.fahes_service import fahes_api
-from civilizer_services.imputedb_service import imputedb_api
-from civilizer_services.pkduck_service import pkduck_api
-from civilizer_services.cleaning_service import cleaning_api
-from civilizer_services.deeper_service import deeper_api
-# from civilizer_services.aurum_service import aurum_api
+from services.fahes_service import fahes_api
+from services.imputedb_service import imputedb_api
+from services.pkduck_service import pkduck_api
+from services.cleaning_service import cleaning_api
+from services.deeper_service import deeper_api
+# from services.aurum_service import aurum_api
 
 
 
@@ -102,7 +103,7 @@ def open_chrome(url):
 @app.route('/rheem/rheem_operators', methods=['GET'])
 def get_operators():
     # Read the civilizer services
-    json_file = 'operators.json'
+    json_file = '/app/rest/operators.json'
     json_data = open(json_file)
     operators = json.load(json_data)
     json_data.close()
@@ -119,4 +120,7 @@ def init_modules():
 if __name__ == '__main__':
     # app.run(debug=True)
     # init_modules()
-    app.run(host='localhost', port=8089)
+    port = env.get('PORT')
+    if not port: 
+        port = "8089"
+    app.run(host='0.0.0.0', port=int(port))

@@ -4,7 +4,7 @@ var http = require("http");
 function WebSocket (port) {
   var server = http.createServer(function(request, response) {}).listen(port);
   var websocket = new httpProxy.createProxyServer({
-    target: config.socketEndPoint,
+    target: process.env.SOCKET_SERVER_ENDPOINT,
     changeOrigin: true,
     ws: true,
     secure: true
