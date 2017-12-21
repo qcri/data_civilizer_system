@@ -56,10 +56,10 @@ def read_csv_dataset(dataset_path, header_exists=True):
     The method reads a dataset from a csv file path.
     """
     if header_exists:
-        dataset_dataframe = pandas.read_csv(dataset_path, sep=",", header="infer", encoding=None, keep_default_na=False)
+        dataset_dataframe = pandas.read_csv(dataset_path, sep=",", header="infer", encoding="utf-8", keep_default_na=False)
         return [dataset_dataframe.columns.get_values().tolist()] + dataset_dataframe.get_values().tolist()
     else:
-        dataset_dataframe = pandas.read_csv(dataset_path, sep=",", header=None, encoding=None, keep_default_na=False)
+        dataset_dataframe = pandas.read_csv(dataset_path, sep=",", header=None, encoding="utf-8", keep_default_na=False)
         return dataset_dataframe.get_values().tolist()
 
 
@@ -68,7 +68,7 @@ def write_csv_dataset(dataset_path, dataset_table):
     The method writes a dataset to a csv file path.
     """
     dataset_dataframe = pandas.DataFrame(data=dataset_table[1:], columns=dataset_table[0])
-    dataset_dataframe.to_csv(dataset_path, sep=",", header=True, index=False, encoding=None)
+    dataset_dataframe.to_csv(dataset_path, sep=",", header=True, index=False, encoding="utf-8")
 ########################################
 
 
@@ -183,45 +183,12 @@ def run_data_cleaning_job(data_cleaning_job):
     if data_cleaning_job["tool"]["name"] == "openrefine":
         return_list = run_openrefine(dataset_path, data_cleaning_job["tool"]["param"])
     return return_list
-
-
-def execute_cleaning(input_file_path, output_file_path):
-    """
-    This method runs the data cleaning tools on input datasets and saves the results into output locations.
-    """
-    input_dictionary = json.load(open(input_file_path, "r"))
-    input_folder = input_dictionary["CSV"]["dir"]
-    if input_dictionary["CSV"]["table"]:
-        input_tables = input_dictionary["CSV"]["table"].split(";")
-    else:
-        input_tables = os.listdir(input_folder)
-    output_dictionary = json.load(open(output_file_path, "r"))
-    output_folder = output_dictionary["CSV"]["dir"]
-    if not os.path.exists(output_folder):
-        os.mkdir(output_folder)
-    for table in input_tables:
-        dataset_path = os.path.join(input_folder, table)
-        tool_name = raw_input("Please enter the name of data cleaning tool: ")
-        exec ("tool_parameters = " + raw_input("Please enter the proper parameter list: "))
-        run_input = {
-            "dataset": {
-                "type": "csv",
-                "param": [dataset_path]
-            },
-            "tool": {
-                "name": tool_name,
-                "param": tool_parameters
-                }
-        }
-        results_list = run_data_cleaning_job(run_input)
-        result_path = os.path.join(output_folder, table)
-        write_csv_dataset(result_path, [["row", "column", "value"]] + results_list)
-        print "The results have been written into the {}\n--------------------------------------".format(result_path)
 ########################################
 
 
 ########################################
 if __name__ == "__main__":
+    pass
 
     # install_tools()
 
@@ -261,8 +228,4 @@ if __name__ == "__main__":
     # results_list = run_data_cleaning_job(run_input)
     # for x in results_list:
     #     print x
-
-    input_file_path = "sources.json"
-    output_file_path = "destination.json"
-    execute_cleaning(input_file_path, output_file_path)
 ########################################
