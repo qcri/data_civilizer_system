@@ -23,4 +23,8 @@ services:
     depends_on:
       - mongodb
       - apis
+  aurum:
+    build: aurum-datadiscovery
+    image: aurum-discovery:0.1
+
 
