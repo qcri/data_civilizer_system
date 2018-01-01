@@ -27,7 +27,52 @@ def read_csv_directory(dir_name):
     return [filename for filename in filenames if filename.endswith( file_extension ) ]
 
 
-def execute_fahes(input_sources, output_location, debug = 0):
+def execute_fahes(source, out_path, debug=0):
+    out_dir = ""
+
+    # for EL in out_path:
+    #     if EL.lower() == 'csv':
+    #         out_dir = out_path[EL]['dir']
+
+    out_dir = out_path['CSV']['dir']
+
+    output_dir = ""
+    if out_dir:
+        output_dir = os.path.abspath(out_dir)
+        if not output_dir:
+            print("Cannot locate absolute location of output directory")
+    else:
+        print("Cannot locate output directory")
+        return
+
+    myDir = source['CSV']['dir']
+    myTables = source['CSV']['table']
+
+    if not (myTables):
+        Ts = read_csv_directory(myDir)
+        if Ts:
+            for i in range(len(Ts)):
+                tName = ""
+                tab_ref = "csv::" + myDir + "::" + Ts[i]
+                if myDir.endswith('/'):
+                    tName = myDir + Ts[i]
+                else:
+                    tName = myDir + '/' + Ts[i]
+                callFahes(tab_ref, tName, output_dir, debug)
+        else:
+            tables = myTables.split(';')
+            for i in tables:
+                tName = ""
+                tab_ref = "csv::" + myDir + "::" + i
+                if myDir.endswith('/'):
+                    tName = myDir + i
+                else:
+                    tName = myDir + '/' + i
+                callFahes(tab_ref, tName, output_dir, debug)
+
+
+
+def execute_fahes_files(input_sources, output_location, debug = 0):
     out_dir = ""
     try:
         with open(output_location) as output_loc:
@@ -81,6 +126,8 @@ def execute_fahes(input_sources, output_location, debug = 0):
                 print("File not found .. (", f_name, ")")
                 continue
     tName = ""
+
+
     for element in sources_list:
         if element:
             for T in element:
@@ -126,14 +173,3 @@ def callFahes(tab_ref, tab_full_name, output_dir, debug):
     out_dir = c_char_p(output_dir.encode('utf-8'))
     Fahes=ctypes.cdll.LoadLibrary(path)
     Fahes.execute(ref, tab_name, out_dir, debug)
-    
-# This hard coded lines are used to test the service fronm the terminal directly 
-# The api execute_fahes(source, dest) is used to call fahes from the studio
-inputF = "sources.json"
-outputF = "destination.json"
-execute_fahes(inputF, outputF, 1)
-
-
-# filenames = listdir("/Users/qahtanaa/Documents/ErrorDetection/DataSets/MIT")
-# for f in filenames:
-#     print(f)

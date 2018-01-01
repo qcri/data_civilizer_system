@@ -75,7 +75,36 @@ def put_postgres_output(dst):
     raise RuntimeError('Not implemented.')
 
 
-def execute_imputedb(src_json, dst_json, query, alpha):
+def execute_imputedb(src, dst, query, alpha):
+    try:
+        csv_paths = []
+        if 'CSV' in src:
+            csv_paths += get_csv_paths(src)
+        if 'postgres' in src:
+            csv_paths += get_postgres_paths(src)
+
+        load_cmd = [IMPUTEDB_PATH, 'load', '--db', DB_PATH] + csv_paths
+        subprocess.check_call(load_cmd)
+
+        query_cmd = [IMPUTEDB_PATH, 'query', '--db', DB_PATH, '--csv', '-c', query]
+        with open(OUTPUT_PATH, 'w') as f:
+            subprocess.check_call(query_cmd, stdout=f)
+
+        if 'CSV' in dst:
+            put_csv_output(dst)
+        if 'postgres' in dst:
+            put_postgres_output(dst)
+
+    finally:
+        for f in glob.glob(INPUT_PATH + '/*csv'):
+            os.remove(f)
+        if os.path.isdir(DB_PATH):
+            shutil.rmtree(DB_PATH)
+        if os.path.isfile(OUTPUT_PATH):
+            os.remove(OUTPUT_PATH)
+
+
+def execute_imputedb_file(src_json, dst_json, query, alpha):
     with open(src_json, 'r') as f:
         src = json.load(f)
     with open(dst_json, 'r') as f:
