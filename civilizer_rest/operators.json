@@ -221,7 +221,10 @@
 			 "inputType":"Service",
 			 "type":"civilizer.EntityConsolidation.GoldenRecords"
 			 },
-			 {"name":"param1",
+			{"name":"param1",
+			  "inputType":"String",
+			  "type":"civilizer.dataCollection.source"},
+			{"name":"param2",
 			  "inputType":"String",
 			  "type":"civilizer.dataCollection.destination"}]},
 	"nb_inputs":1},	

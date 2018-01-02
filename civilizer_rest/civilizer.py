@@ -73,11 +73,6 @@ def post_ExePlan():
         # inputF = "sources_im.json"
         # outputF = "destination.json"
         # imputedb_api.execute_imputedb_file(inputF, outputF, 'select Dept_Budget_Code from Sis_department;', 0)
-    elif (class_name == "civilizer.basic.operators.DataCleaning-Profiler"):
-        print("DataCleaning-Profiler")
-        inputF = "sources_p.json"
-        outputF = "destination.json"
-        # cleaning_api.execute_cleaning(inputF, outputF)
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER"):
         print("DataCleaning-DeepER")
         table1 = operators[number - 1]["parameters"]["param3"]
@@ -86,8 +81,24 @@ def post_ExePlan():
         number_of_pairs = operators[number - 1]["parameters"]["param6"]
         deeper_api.execute_deeper(task_sources, table1, table2, number_of_pairs, task_destination, predictionsFileName)
     elif(class_name == "civilizer.basic.operators.EntityConsolidation"):
-        print("Data Discovery")
+        print("Entity Consolidation")
+        gr_source_file = "/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/civilizer_services/grecord_service/source.txt"
+        gr_destination_file = "/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/civilizer_services/grecord_service/destination.txt"
+
+        sfile = open(gr_source_file, 'w')
+        sfile.write(task_sources+" ")
+        sfile.close()
+
+        dfile = open(gr_destination_file, 'w')
+        dfile.write(task_destination+" ")
+        dfile.close()
+
         open_chrome('http://localhost:8888/notebooks/civilizer_gr.ipynb')
+    elif (class_name == "civilizer.basic.operators.DataCleaning-Profiler"):
+        print("DataCleaning-Profiler")
+        inputF = "sources_p.json"
+        outputF = "destination.json"
+        # cleaning_api.execute_cleaning(inputF, outputF)
     else:
         print("Error")
     return jsonify(operators[number-1])
