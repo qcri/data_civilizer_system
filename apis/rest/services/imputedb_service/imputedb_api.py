@@ -8,7 +8,9 @@ import subprocess
 import tempfile
 
 SELF_DIR_PATH = os.path.dirname(os.path.realpath(__file__))
-STORAGE_PATH = SELF_DIR_PATH + '/../../storage/imputedb'
+# STORAGE_PATH = SELF_DIR_PATH + '/../../storage/imputedb'
+STORAGE_PATH = SELF_DIR_PATH + '/app/storage/imputedb'
+
 IMPUTEDB_PATH = SELF_DIR_PATH + '/imputedb/imputedb'
 DB_PATH = STORAGE_PATH + '/tmp.db'
 INPUT_PATH = STORAGE_PATH + '/inputs'

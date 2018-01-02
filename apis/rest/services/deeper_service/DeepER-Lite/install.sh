@@ -1,17 +1,17 @@
 #!/bin/bash
 set -e
 (
-cd torch
+cd /app/rest/services/deeper_service/DeepER-Lite/torch
 ./install-deps
 ./install.sh
-. /root/torch/install/bin/torch-activate
+. /app/torch/install/bin/torch-activate
 luarocks install csvigo
 luarocks install dp
 )
 
 #GloVe embeddings
 (
-cd glove
+cd /app/rest/services/deeper_service/DeepER-Lite/glove
 glove=glove.840B.300d.zip
 wget http://nlp.stanford.edu/data/$glove
 unzip $glove

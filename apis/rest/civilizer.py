@@ -82,8 +82,11 @@ def post_ExePlan():
         deeper_api.execute_deeper(task_sources, table1, table2, number_of_pairs, task_destination, predictionsFileName)
     elif(class_name == "civilizer.basic.operators.EntityConsolidation"):
         print("Entity Consolidation")
-        gr_source_file = "/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/civilizer_services/grecord_service/source.txt"
-        gr_destination_file = "/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/civilizer_services/grecord_service/destination.txt"
+        # gr_source_file = "/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/civilizer_services/grecord_service/source.txt"
+        # gr_destination_file = "/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/civilizer_services/grecord_service/destination.txt"
+
+        gr_source_file = "/app/rest/services/grecord_service/source.txt"
+        gr_destination_file = "/app/rest/services/grecord_service/destination.txt"
 
         sfile = open(gr_source_file, 'w')
         sfile.write(task_sources+" ")
