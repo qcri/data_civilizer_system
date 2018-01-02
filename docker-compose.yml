@@ -2,6 +2,8 @@ version: '3.4'
 services:
   apis:
     build: apis
+    volumes:
+        - $PWD/app_storage:/app/storage
     environment:
       - PORT=8089
     image: data-civilizer-api:0.1
@@ -23,8 +25,8 @@ services:
     depends_on:
       - mongodb
       - apis
-  aurum:
-    build: aurum-datadiscovery
-    image: aurum-discovery:0.1
+#  aurum:
+#    build: aurum-datadiscovery
+#    image: aurum-discovery:0.1
 
 
