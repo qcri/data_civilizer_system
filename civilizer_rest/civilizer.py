@@ -80,7 +80,11 @@ def post_ExePlan():
         # cleaning_api.execute_cleaning(inputF, outputF)
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER"):
         print("DataCleaning-DeepER")
-        deeper_api.execute_deeper()
+        table1 = operators[number - 1]["parameters"]["param3"]
+        table2 = operators[number - 1]["parameters"]["param4"]
+        predictionsFileName = operators[number - 1]["parameters"]["param5"]
+        number_of_pairs = operators[number - 1]["parameters"]["param6"]
+        deeper_api.execute_deeper(task_sources, table1, table2, number_of_pairs, task_destination, predictionsFileName)
     elif(class_name == "civilizer.basic.operators.EntityConsolidation"):
         print("Data Discovery")
         open_chrome('http://localhost:8888/notebooks/civilizer_gr.ipynb')
