@@ -1,13 +1,13 @@
 import goldenrecord
 
-filepath = "../data/mitdwh/"
+#filepath = "../data/mitdwh/"
 cname = "cluster_id"
-outfilepath = "./mitdwh_updated.csv"
+#outfilepath = "./mitdwh_updated.csv"
 
-input_file = filepath
-output_file = outfilepath
+#input_file = filepath
+#output_file = outfilepath
 
-def main(input_file, output_file):
+def main(filepath, outfilepath):
   consolidation = goldenrecord.Consolidation(filepath, cname)
   num_of_tables = consolidation.number_of_tables
   for i in range(num_of_tables):
