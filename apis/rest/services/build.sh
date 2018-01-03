@@ -15,3 +15,10 @@ pwd=`dirname $0`
 	make
 	echo "... Done!"
 )
+
+(
+	echo "Building PKDuck ..."
+	cd $pwd/pkduck_service/code/
+	make
+	echo "... Done!"
+)

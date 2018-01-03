@@ -7,7 +7,7 @@ from decimal import Decimal
 from services.fahes_service import fahes_api
 from services.imputedb_service import imputedb_api
 from services.pkduck_service import pkduck_api
-from services.cleaning_service import cleaning_api
+# from services.cleaning_service import cleaning_api
 from services.deeper_service import deeper_api
 # from services.aurum_service import aurum_api
 
@@ -96,7 +96,7 @@ def post_ExePlan():
         dfile.write(task_destination+" ")
         dfile.close()
 
-        open_chrome('http://localhost:8888/notebooks/civilizer_gr.ipynb')
+        open_chrome('http://grecord_service:8888/notebooks/civilizer_gr.ipynb')
     elif (class_name == "civilizer.basic.operators.DataCleaning-Profiler"):
         print("DataCleaning-Profiler")
         inputF = "sources_p.json"
