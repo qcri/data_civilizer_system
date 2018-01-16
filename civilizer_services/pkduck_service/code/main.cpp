@@ -83,9 +83,12 @@ void execute(char *table_dir, char *out_dir, char *_columns, double tau)
 	output_file_name2 += "auxiliary_pkduck.csv";
 	ofstream fout2(output_file_name2.c_str());
 	fout2 << "id,string,tablename,row,column,columnname" << endl;
-	unordered_set<string> ss;
+	unordered_map<string, string> ss;
 	for (auto cp : results)
-		ss.insert(cp.first), ss.insert(cp.second);
+	{
+		ss[cp.first] = cp.second;
+		ss[cp.second] = cp.first;
+	}
 
 	int id = 0;
 	for (auto s : ss)
@@ -95,15 +98,58 @@ void execute(char *table_dir, char *out_dir, char *_columns, double tau)
 			int col_no = reader->tables[i].col_no;
 			for (auto x = 0; x < row_no; x ++)
 				for (auto y = 0; y < col_no; y ++)
-					if (reader->tables[i].rows[x][y] == s)
+					if (reader->tables[i].rows[x][y] == s.first)
 						fout2 << "\"" << id << "\","
-							  << "\"" << s << "\","
+							  << "\"" << s.first << "\","
 						      << "\"" << reader->tables[i].table_name << "\","
 							  << "\"" << x << "\","
 						      << "\"" << y << "\","
 						      << "\"" << reader->tables[i].schema[y] << "\"" << endl;
 		}
 	fout2.close();
+
+	// write updated tables
+	for (auto i = 0; i < reader->tables.size(); i ++)
+	{
+		// check if there is values updated
+		bool update = false;
+		int row_no = reader->tables[i].row_no;
+		int col_no = reader->tables[i].col_no;
+		for (auto x = 0; x < row_no; x ++)
+			for (auto y = 0; y < col_no; y ++)
+				if (ss.count(reader->tables[i].rows[x][y]))
+					update = true;
+		if (! update)
+			continue;
+
+		// write a new file
+		string output_file_name(out_dir);
+		if (output_file_name.back() != '/')
+			output_file_name += "/";
+		output_file_name += "updated_" + reader->tables[i].table_name;
+		ofstream fout(output_file_name.c_str());
+
+		// schema
+		for (auto y = 0; y < col_no; y ++)
+		{
+			if (y) fout << ",";
+			fout << reader->tables[i].schema[y];
+		}
+		fout << endl;
+		for (auto x = 0; x < row_no; x ++)
+		{
+			for (auto y = 0; y < col_no; y++)
+			{
+				if (y) fout << ",";
+				string p = reader->tables[i].rows[x][y];
+				if (!ss.count(p) || p.size() <= ss[p].size())
+					fout << p;
+				else
+					fout << ss[p];
+			}
+			fout << endl;
+		}
+	}
 }
 
 int main()

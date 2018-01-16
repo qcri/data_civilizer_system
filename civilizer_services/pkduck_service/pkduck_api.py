@@ -49,4 +49,4 @@ def execute_pkduck_file(input_json_file, output_json_file, columns, tau):
 
 if __name__ == '__main__':
     columns = "1#2"
-    execute_pkduck("input.json", "output.json", columns, 0.8)
+    execute_pkduck_file("input.json", "output.json", columns, 0.8)
