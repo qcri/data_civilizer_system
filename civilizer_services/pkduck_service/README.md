@@ -30,7 +30,7 @@ After running these two commands, a shared library file will be generated in the
 ### Specify Input and Output Folders
 The input folder should contain all and __**only**__ input tables (in csv). The input folder name should be specified in the `input.json` file (the `["CSV"]["dir"]` field). 
 
-The output folder name should be specified in the `output.json` file (the `["CSV"]["dir"]` field). The output folder will contain two files after running PKDuck: `simstring_pkduck.csv` and `auxiliary_pkduck.csv`. `simstring_pkduck.csv` contains all similar pairs of input strings identified by PKDuck. `auxiliary_pkduck.csv` contains all occurrences of all strings appeared in `simstring_pkduck.csv` -- each row contains a string, the name of the table it appears in, the row id, column id and column name.  
+The output folder name should be specified in the `output.json` file (the `["CSV"]["dir"]` field). The output folder will contain two special tables `simstring_pkduck.csv` and `auxiliary_pkduck.csv`, and a bunch of updated tables. `simstring_pkduck.csv` contains all similar pairs of input strings identified by PKDuck. `auxiliary_pkduck.csv` contains all occurrences of all strings appeared in `simstring_pkduck.csv` -- each row contains a string, the name of the table it appears in, the row id, column id and column name. For each table in the input folder, if it has a value that appears in `simstring_pkduck.csv`, then the output folder will contain an updated version of it in which all full forms are replaced by abbreviations. 
 
 ### Specify Parameters
 The following two parameters need to be passed into the `execute_pkduck` function in `pkduck_api.py`:
