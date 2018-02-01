@@ -96,7 +96,7 @@ def post_ExePlan():
         dfile.write(task_destination+" ")
         dfile.close()
 
-        open_chrome('http://grecord_service:8888/notebooks/civilizer_gr.ipynb')
+        open_chrome('http://localhost:8888/notebooks/civilizer_gr.ipynb')
     elif (class_name == "civilizer.basic.operators.DataCleaning-Profiler"):
         print("DataCleaning-Profiler")
         inputF = "sources_p.json"

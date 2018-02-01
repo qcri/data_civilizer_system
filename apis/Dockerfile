@@ -19,9 +19,11 @@ RUN apt-get update -qq && \
 #    apt-get update && \
 #    apt-get install oracle-java8-installer
 
+COPY ./rest/services/deeper_service/DeepER-Lite /app/DeepER-Lite
+RUN /app/DeepER-Lite/install.sh
+
 COPY ./rest /app/rest
 RUN /app/rest/services/build.sh
-RUN /app/rest/services/deeper_service/DeepER-Lite/install.sh
 
 EXPOSE 8089
 CMD python ./rest/civilizer.py

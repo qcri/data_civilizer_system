@@ -5,8 +5,8 @@ services:
     image: grecord_service:0.1
     volumes:
       - $PWD/app_storage:/app/storage
-#    ports:
-#      - "8888:8888"
+    ports:
+      - "8888:8888"
   apis:
     build: apis
     volumes:
@@ -31,7 +31,6 @@ services:
       - "5000:5000"
       - "5002:5002"
       - "5005:5005"
-      - "8888:8888"
     depends_on:
       - mongodb
       - apis

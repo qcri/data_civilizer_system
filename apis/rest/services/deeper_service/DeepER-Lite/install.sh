@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 (
-cd /app/rest/services/deeper_service/DeepER-Lite/torch
+cd /app/DeepER-Lite/torch
 ./install-deps
 ./install.sh
 . /app/rest/services/deeper_service/DeepER-Lite/torch/install/bin/torch-activate
