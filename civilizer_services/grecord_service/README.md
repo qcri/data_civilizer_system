@@ -8,11 +8,27 @@ Golden Record is an entity consolidation tool, which, given a collection of clus
 Golden Record is written in C++ with a python wrapper.
 
 ### Compile
-Go to the 'code' folder and execute the following command:
+
+A. Compile to python module
+
+1. Install SWIG from http://www.swig.org/
+2. Creat a python3 virtual enviroment and active it
+
+* python3 -m venv FOO/BAR/
+* source FOO/BAR/bin/activate
+
+3. Go to the 'code' folder and execute the following command:
 
 * ./run.sh 
 
-It will produce a file '_goldenrecord.so'
+It will produce a file '_goldenrecord.so'_ The call_goldenrecord.py will call the modules in it.
+
+B. Compile to C++ code
+
+1. Run test.py and you will get the executable program enum_rule. DO NOT MAKE IT DIRECTLY FROM MAKE FILE!
+
+
+The following are about how to run the python code. 
 
 ### Specify Parameters
 Golden Record only takes two parameters
