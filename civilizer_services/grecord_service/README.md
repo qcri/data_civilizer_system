@@ -9,6 +9,8 @@ Golden Record is written in C++ with a python wrapper.
 
 ### Compile
 
+You can either compile the code to a python module or a c++ code.
+
 A. Compile to python module
 
 1. Install SWIG from http://www.swig.org/
@@ -23,12 +25,12 @@ A. Compile to python module
 
 It will produce a file '_goldenrecord.so'_ The call_goldenrecord.py will call the modules in it.
 
-B. Compile to C++ code
+B. Compile to C++ code [OPTIONAL]
 
 1. Run test.py and you will get the executable program enum_rule. DO NOT MAKE IT DIRECTLY FROM MAKE FILE!
+2. To run enum_rule, you only need to specify two parameters. The rest 3 are all optional. The first one is a folder contains the input_file. The second one is the attribute name on which you want to run golden record.
 
-
-The following are about how to run the python code. 
+The following are all about how to run the python code. 
 
 ### Specify Parameters
 Golden Record only takes two parameters
