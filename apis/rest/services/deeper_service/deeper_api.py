@@ -109,8 +109,8 @@ def execute_deeper(source, table1, table2, number_of_pairs, destination, predict
     #         ]
 
     # tool_path="/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/civilizer_services/deeper_service/DeepER-Lite/"
-    # tool_path = "/app/rest/services/deeper_service/DeepER-Lite/"
-    tool_path = "/app/DeepER-Lite/"
+    tool_path = "/app/rest/services/deeper_service/DeepER-Lite/"
+    # tool_path = "/app/DeepER-Lite/"
     # command = [tool_path + "{}/dBoost/dboost/dboost-stdin.py".format(TOOLS_FOLDER), "-F", ",",dataset_path] + dboost_parameters
     # p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     # p.communicate()
@@ -122,6 +122,8 @@ def execute_deeper(source, table1, table2, number_of_pairs, destination, predict
     p = subprocess.Popen(command, stdout=subprocess.PIPE).communicate()[0]
     # p.communicate()
     print(p)
+
+    print("create Clusters")
 
     prediction_file = predictions_file_path.replace(".csv", "_0.csv")
 

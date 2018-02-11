@@ -5,8 +5,9 @@ set -e
 #Path Params: Edit these for your dataset please
 #to train this model, you need 3 files, The first table, the second table and the perfect mapping
 #cd /Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/civilizer_services/deeper_service/DeepER-Lite/
-cd /app/DeepER-Lite/
-. ./torch/install/bin/torch-activate
+cd /app/rest/services/deeper_service/DeepER-Lite/
+# . ./torch/install/bin/torch-activate
+. /root/torch/install/bin/torch-activate
 #DATA_DIR=$PWD/data
 if [ $# -lt 10 ]; then
 	echo "USAGE $0 <Dataset> <first-table> <second-table> <num_table_fields> <prediction_file> <num_pairs> <num_parallels>"
