@@ -4,7 +4,7 @@ set -e
 cd /app/DeepER-Lite/torch
 ./install-deps
 ./install.sh
-. /app/rest/services/deeper_service/DeepER-Lite/torch/install/bin/torch-activate
+. /app/DeepER-Lite/torch/install/bin/torch-activate
 luarocks install csvigo
 luarocks install dp
 )
