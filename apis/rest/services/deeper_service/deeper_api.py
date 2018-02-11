@@ -119,9 +119,13 @@ def execute_deeper(source, table1, table2, number_of_pairs, destination, predict
     command.extend(params)
     print(command)
     # p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    p = subprocess.Popen(command, stdout=subprocess.PIPE).communicate()[0]
+    # p = subprocess.Popen(command, stdout=subprocess.PIPE).communicate()[0]
     # p.communicate()
-    print(p)
+    # print(p)
+    p = subprocess.Popen(command, stdout=subprocess.PIPE)
+    out, err = p.communicate()
+    # print("out\n" + out)
+    # print("err\n" + err)
 
     print("create Clusters")
 
