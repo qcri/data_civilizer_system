@@ -29,6 +29,9 @@ RUN add-apt-repository ppa:webupd8team/java && \
 RUN apt-get update && \
     apt-get --yes --no-install-recommends install oracle-java8-installer
 
+# Install ant for ImputeDB, should be installed after Java8
+RUN apt-get install -y ant
+
 WORKDIR /app
 
 # install needed libs for python
@@ -39,11 +42,13 @@ RUN pip install -r requirements.txt
 # Build Torch -- No need
 # COPY ./rest/services/deeper_service/DeepER-Lite /app/DeepER-Lite
 # RUN /app/DeepER-Lite/install.sh
+
+
+# install required lib for DeepER
 RUN luarocks install csvigo
 RUN luarocks install dp
 
 
-RUN apt-get install -y ant
 COPY ./rest /app/rest
 RUN /app/rest/services/build.sh
 
