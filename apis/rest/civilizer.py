@@ -14,7 +14,8 @@ from services.deeper_service import deeper_api
 
 app = Flask(__name__)
 
-
+myresponse1 = {'myURI': u'http://0.0.0.0:8888/notebooks/civilizer_gr.ipynb'}
+myresponse0 = {'myURI': u''}
 # operators = [
 #     {
 #         'class': u'org.qcri.civilizer.basic.operators.DataDiscovery',
@@ -85,8 +86,11 @@ def post_ExePlan():
         # gr_source_file = "/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/civilizer_services/grecord_service/source.txt"
         # gr_destination_file = "/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/civilizer_services/grecord_service/destination.txt"
 
-        gr_source_file = "/app/rest/services/grecord_service/source.txt"
-        gr_destination_file = "/app/rest/services/grecord_service/destination.txt"
+        # gr_source_file = "/app/rest/services/grecord_service/source.txt"
+        # gr_destination_file = "/app/rest/services/grecord_service/destination.txt"
+
+        gr_source_file = "/app/storage/data_sets/gr/source.txt"
+        gr_destination_file = "/app/storage/data_sets/gr/destination.txt"
 
         sfile = open(gr_source_file, 'w')
         sfile.write(task_sources+" ")
@@ -96,7 +100,9 @@ def post_ExePlan():
         dfile.write(task_destination+" ")
         dfile.close()
 
-        open_chrome('http://localhost:8888/notebooks/civilizer_gr.ipynb')
+        # open_chrome('http://0.0.0.0:8888/notebooks/civilizer_gr.ipynb')
+        return jsonify(myresponse1)
+    
     elif (class_name == "civilizer.basic.operators.DataCleaning-Profiler"):
         print("DataCleaning-Profiler")
         inputF = "sources_p.json"
@@ -104,7 +110,8 @@ def post_ExePlan():
         # cleaning_api.execute_cleaning(inputF, outputF)
     else:
         print("Error")
-    return jsonify(operators[number-1])
+    # return jsonify(operators[number-1])
+    return jsonify(myresponse0)
 
 
 def get_source_destination_objects(s, d):

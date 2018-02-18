@@ -604,6 +604,12 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
         $scope.url = '/api/plan_executions';
         return $http({method: $scope.method, url: $scope.url, data:plansConversions.get()}).
         then(function(response) {
+            
+            if(response.myURI !== ''){
+            console.log(response);
+            window.open(response.data.myURI);
+          }
+
             if(response){
                 var data = response.data;
                 if(typeof data.error != 'undefined'){

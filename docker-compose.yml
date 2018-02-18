@@ -11,6 +11,7 @@ services:
     build: apis
     volumes:
         - $PWD/app_storage:/app/storage
+        # - $PWD/apis/rest:/app/rest
     environment:
       - PORT=8089
     image: data-civilizer-api:0.1
