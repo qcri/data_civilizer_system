@@ -3,7 +3,7 @@
   ng-attr-style="position: absolute; top: {{ node.y }}px; left: {{ node.x }}px;"
   ng-dblclick="callbacks.doubleClick(node)">
   <div class="innerNode" ng-hide="node.type == 'source' || node.type == 'sink'">
-    <p style="background-image: url('/images/nodes-icons/{{ node.type }}.png')">{{ node.name }}</p>
+    <p style="background-image: url('/images/nodes-icons/{{ node.type }}.png')">{{ node.name }}X</p>
 
     <div class="{{flowchartConstants.topConnectorClass}}">
       <div fc-magnet

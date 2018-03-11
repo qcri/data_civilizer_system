@@ -605,7 +605,8 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
         return $http({method: $scope.method, url: $scope.url, data:plansConversions.get()}).
         then(function(response) {
             
-            if(response.myURI !== ''){
+            if(response && response.data.myURI !== ""){
+            console.log("Essam response.data.myURI:" + response.data.myURI);  
             console.log(response);
             window.open(response.data.myURI);
           }
