@@ -1,0 +1,122 @@
+Department Code,Department Name,Department Full Name,School Code,School Name,Dept_Budget_Code,Is Degree Granting,Dept Name In Commencement Bk,School Name In Commencement Bk,Department Name History,Department Last Activity Date,Dlc Key,Warehouse Load Date
+4,Architecture,  4 -Architecture,A,Architecture and Planning,31000,Y,Department of Architecture,School of Architecture and Planning,,2/17/94 0:00,D_ARCH,1/8/16 0:10
+11,Urban Studies and Planning, 11 -Urban Studies and Planning,A,Architecture and Planning,35000,Y,Department of Urban Studies and Planning,School of Architecture and Planning,,2/17/94 0:00,D_DUSP,1/8/16 0:10
+RED,Center for Real Estate Develop,RED -Center for Real Estate Develop,A,Architecture and Planning,33000,Y,Center for Real Estate Development,School of Architecture and Planning,,9/24/09 0:00,D_CRE,1/8/16 0:10
+MAS,Prog in Media Arts Sciences,MAS -Prog in Media Arts Sciences,A,Architecture and Planning,36000,Y,Program in Media Arts and Sciences,School of Architecture and Planning,,2/17/94 0:00,D_MAS,1/8/16 0:10
+SA&P,School of Arch & Planning,SA&P-School of Arch & Planning,A,Architecture and Planning,30000,Y,Program in School of Arch & Planning,School of Architecture and Planning,,2/17/94 0:00,D_DEANARCH,1/8/16 0:10
+1,Civil and Environmental Eng,  1 -Civil and Environmental Eng,E,Engineering,63000,Y,Department of Civil and Environmental Engineering,School of Engineering,Civil Eng (    ),8/21/96 0:00,D_CEE,1/8/16 0:10
+2,Mechanical Engineering,  2 -Mechanical Engineering,E,Engineering,65000,Y,Department of Mechanical Engineering,School of Engineering,,8/21/96 0:00,D_MECHE,1/8/16 0:10
+3,Materials Science and Eng,  3 -Materials Science and Eng,E,Engineering,66000,Y,Department of Materials Science and Engineering,School of Engineering,,2/17/94 0:00,D_DMSE,1/8/16 0:10
+13,Ocean Engineering, 13 -Ocean Engineering,E,Engineering,67000,Y,Department of Ocean Engineering,School of Engineering,,2/17/94 0:00,D_OCEAN,1/8/16 0:10
+HST,Health Sciences & Technology,HST -Health Sciences & Technology,E,Engineering,61902,Y,Program in Health Sciences and Technology,School of Engineering,,8/24/12 0:00,D_IMES,1/8/16 0:10
+CTS,Ctr for Transportation Studies,CTS -Ctr for Transportation Studies,E,Engineering,69500,Y,,School of Engineering,,2/17/94 0:00,D_CTL,1/8/16 0:10
+TPP,Technology and Policy Program,TPP -Technology and Policy Program,E,Engineering,69900,Y,Program in Technology and Policy,School of Engineering,,2/17/94 0:00,D_TPP,1/8/16 0:10
+SENG,School of Engineering,SENG-School of Engineering,E,Engineering,60000,Y,Program in School of Engineering,School of Engineering,,2/17/94 0:00,D_DOE,1/8/16 0:10
+EN,Center for Adv Eng Studies,EN  -Center for Adv Eng Studies,E,Engineering,69000,Y,,School of Engineering,,1/4/95 0:00,D_CAES,1/8/16 0:10
+SDM,System Design & Management Prg,SDM -System Design & Management Prg,E,Engineering,60800,Y,Program in System Design and Management,School of Engineering,,11/18/99 0:00,D_SDM,1/8/16 0:10
+BEH,Bioengineering & Envir. Health,BEH -Bioengineering & Envir. Health,E,Engineering,69200,Y,Biological Engineering Division,School of Engineering,was TOX,11/18/99 0:00,D_BIOENG,1/8/16 0:10
+ESD,Engineering Systems Division,ESD -Engineering Systems Division,E,Engineering,68100,Y,Engineering Systems Division,School of Engineering,,11/18/99 0:00,D_IDSS,1/8/16 0:10
+ASP,Advanced Study Program,ASP -Advanced Study Program,E,Engineering,405100,Y,,School of Engineering,was CAES,11/7/03 0:00,D_ASP,1/8/16 0:10
+CSB,Computational and Systems Bio,CSB -Computational and Systems Bio,E,Engineering,69200,Y,Program in Computational and Systems Biology,School of Engineering,,3/15/07 0:00,D_CSBI,1/8/16 0:10
+CDO,Computation for Des & Optmiz,CDO -Computation for Des & Optmiz,E,Engineering,60000,Y,Program in Computation for Design and Optimization,School of Engineering,,2/26/09 0:00,D_CDO,1/8/16 0:10
+6,Electrical Eng & Computer Sci,  6 -Electrical Eng & Computer Sci,E,Engineering,64000,Y,Department of Electrical Engineering and Computer Science,School of Engineering,,2/17/94 0:00,D_EECS,1/8/16 0:10
+16,Aeronautics and Astronautics, 16 -Aeronautics and Astronautics,E,Engineering,61000,Y,Department of Aeronautics and Astronautics,School of Engineering,,2/17/94 0:00,D_AEROASTRO,1/8/16 0:10
+20,Biological Engineering, 20 -Biological Engineering,E,Engineering,69200,Y,Department of Biological Engineering,School of Engineering,was Applied Biological Engineering,6/28/07 0:00,D_BIOENG,1/8/16 0:10
+MAP,Midcareer Acceleration Program,MAP -Midcareer Acceleration Program,E,Engineering,405100,Y,,School of Engineering,,9/20/06 0:00,D_CAES,1/8/16 0:10
+PEP,Professional Education Prog,PEP -Professional Education Prog,E,Engineering,405100,Y,,School of Engineering,,11/3/06 0:00,D_PEP,1/8/16 0:10
+EM,System Design & Management Prg,EM  -System Design & Management Prg,E,Engineering,60800,Y,Program in System Design and Management,School of Engineering,,6/23/15 0:00,D_SDM,1/8/16 0:10
+17,Political Science, 17 -Political Science,H,"Hum, Arts & Social Sciences",95500,Y,Department of Political Science,"School of Humanities, Arts, and Social Sciences",,2/17/94 0:00,D_POLSCI,1/8/16 0:10
+21,Humanities, 21 -Humanities,H,"Hum, Arts & Social Sciences",90000,Y,Department of Humanities,"School of Humanities, Arts, and Social Sciences",,2/17/94 0:00,D_DHSS,1/8/16 0:10
+21H,History, 21H-History,H,"Hum, Arts & Social Sciences",93400,Y,History,"School of Humanities, Arts, and Social Sciences",,2/17/94 0:00,D_HISTORY,1/8/16 0:10
+21L,Literature, 21L-Literature,H,"Hum, Arts & Social Sciences",93600,Y,Literature,"School of Humanities, Arts, and Social Sciences",,2/17/94 0:00,D_LIT,1/8/16 0:10
+21M,Music and Theater Arts, 21M-Music and Theater Arts,H,"Hum, Arts & Social Sciences",93700,Y,Music and Theater Arts,"School of Humanities, Arts, and Social Sciences",,2/17/94 0:00,D_MTA,1/8/16 0:10
+21A,Anthropology, 21A-Anthropology,H,"Hum, Arts & Social Sciences",93200,Y,Program in Anthropology,"School of Humanities, Arts, and Social Sciences",Anthropol/Archaeol until 1998-99,5/30/06 0:00,D_ANTHRO,1/8/16 0:10
+23,Modern Languages, 23 -Modern Languages,H,"Hum, Arts & Social Sciences",,Y,,"School of Humanities, Arts, and Social Sciences",,2/8/94 0:00,D_FLL,1/8/16 0:10
+HASS,HASS Office (fcns as SHSS Ofc),HASS-HASS Office (fcns as SHSS Ofc),H,"Hum, Arts & Social Sciences",90000,Y,Program in HASS Office (fcns as SHSS Ofc),"School of Humanities, Arts, and Social Sciences",,8/29/94 0:00,D_DHSS,1/8/16 0:10
+21N,21F no lottery, 21N-21F no lottery,H,"Hum, Arts & Social Sciences",93300,Y,,"School of Humanities, Arts, and Social Sciences",,8/1/95 0:00,D_FLL,1/8/16 0:10
+21E,Humanities and Engineering, 21E-Humanities and Engineering,H,"Hum, Arts & Social Sciences",90000,Y,Department of Humanities,"School of Humanities, Arts, and Social Sciences",,10/12/00 0:00,D_DHSS,1/8/16 0:10
+14,Economics, 14 -Economics,H,"Hum, Arts & Social Sciences",91000,Y,Department of Economics,"School of Humanities, Arts, and Social Sciences",,2/17/94 0:00,D_ECO,1/8/16 0:10
+21F,Global Studies & Languages, 21F-Global Studies & Languages,H,"Hum, Arts & Social Sciences",93300,Y,Global Studies & Languages,"School of Humanities, Arts, and Social Sciences",,7/1/14 0:00,D_FLL,1/8/16 0:10
+24,Linguistics and Philosophy, 24 -Linguistics and Philosophy,H,"Hum, Arts & Social Sciences",94000,Y,Department of Linguistics and Philosophy,"School of Humanities, Arts, and Social Sciences",,2/17/94 0:00,D_L&P,1/8/16 0:10
+CMS,Comparative Media Studies,CMS -Comparative Media Studies,H,"Hum, Arts & Social Sciences",93600,Y,Program in Comparative Media Studies,"School of Humanities, Arts, and Social Sciences",,10/28/99 0:00,D_CMS,1/8/16 0:10
+21S,Humanities and Science, 21S-Humanities and Science,H,"Hum, Arts & Social Sciences",90000,Y,Department of Humanities,"School of Humanities, Arts, and Social Sciences",,10/12/00 0:00,D_DHSS,1/8/16 0:10
+WGS,Women's and Gender Studies,WGS -Women's and Gender Studies,H,"Hum, Arts & Social Sciences",,Y,,"School of Humanities, Arts, and Social Sciences",,4/21/11 0:00,D_DHSS,1/8/16 0:10
+21G,Global Studies and Languages, 21G-Global Studies and Languages,H,"Hum, Arts & Social Sciences",93300,Y,Global Studies and Languages,"School of Humanities, Arts, and Social Sciences",For Lang & Lit,4/2/15 0:00,,1/8/16 0:10
+15,Management, 15 -Management,M,Sloan School of Management,121000,Y,Sloan School of Management,Sloan School of Management,,2/17/94 0:00,D_SLOAN,1/8/16 0:10
+SMGT,School of Management,SMGT-School of Management,M,Sloan School of Management,121000,Y,Program in School of Management,Sloan School of Management,,2/17/94 0:00,D_SLOAN,1/8/16 0:10
+LFM,Leaders For Manufacturing,LFM -Leaders For Manufacturing,M,Sloan School of Management,170000,Y,,Sloan School of Management,,8/15/96 0:00,,1/8/16 0:10
+OR,Operations Research,OR  -Operations Research,M,Sloan School of Management,121152,Y,Program in Operations Research,Sloan School of Management,,6/30/15 0:00,D_SLOAN,1/8/16 0:10
+LGO,Leaders for Global Operations,LGO -Leaders for Global Operations,M,Sloan School of Management,170000,Y,,Sloan School of Management,,5/8/09 0:00,D_LGO,1/8/16 0:10
+5,Chemistry,  5 -Chemistry,S,Science,152000,Y,Department of Chemistry,School of Science,,2/17/94 0:00,D_CHEM,1/8/16 0:10
+7,Biology,  7 -Biology,S,Science,151000,Y,Department of Biology,School of Science,,2/17/94 0:00,D_BIOLOGY,1/8/16 0:10
+8,Physics,  8 -Physics,S,Science,158000,Y,Department of Physics,School of Science,,2/17/94 0:00,D_PHYSICS,1/8/16 0:10
+9,Brain and Cognitive Sciences,  9 -Brain and Cognitive Sciences,S,Science,154500,Y,Department of Brain and Cognitive Sciences,School of Science,,2/17/94 0:00,D_B&CS,1/8/16 0:10
+18,Mathematics, 18 -Mathematics,S,Science,154000,Y,Department of Mathematics,School of Science,,2/17/94 0:00,D_MATHS,1/8/16 0:10
+25,Interdisciplinary Science Prog, 25 -Interdisciplinary Science Prog,S,Science,,Y,,School of Science,,1/21/94 0:00,D_DEANSCI,1/8/16 0:10
+19,Meteorology & Physical Oceanog, 19 -Meteorology & Physical Oceanog,S,Science,153000,Y,Department of Meteorology,School of Science,,10/4/10 0:00,D_EAPS,1/8/16 0:10
+SSCI,School of Science,SSCI-School of Science,S,Science,150000,Y,Program in School of Science,School of Science,,2/17/94 0:00,D_DEANSCI,1/8/16 0:10
+12,"Earth, Atmos & Planetary Sci"," 12 -Earth, Atmos & Planetary Sci",S,Science,153000,Y,"Department of Earth, Atmospheric, and Planetary Sciences",School of Science,,2/17/94 0:00,D_EAPS,1/8/16 0:10
+TOX,Division of Toxicology,TOX -Division of Toxicology,T,Whitaker Coll of HST;  HST,164000,Y,Program in Toxicology,Whitaker College of Health Sciences and Technology,,2/17/94 0:00,D_BIOENG,1/8/16 0:10
+WHIT,"Whit Col of Health, Sci & Tech","WHIT-Whit Col of Health, Sci & Tech",T,Whitaker Coll of HST;  HST,160000,Y,"Program in Whit Col of Health, Sci & Tech",Whitaker College of Health Sciences and Technology,,2/17/94 0:00,D_WHIT,1/8/16 0:10
+HPM,Health Policy & Management,HPM -Health Policy & Management,T,Whitaker Coll of HST;  HST,160000,Y,,Whitaker College of Health Sciences and Technology,,2/17/94 0:00,D_WHIT,1/8/16 0:10
+ADM,Admissions Office,ADM -Admissions Office,X,"MIT, non-academic",446100,N,,,,2/17/94 0:00,D_ADM,1/8/16 0:10
+REG,Registrar's Office,REG -Registrar's Office,X,"MIT, non-academic",446700,N,,,,2/17/94 0:00,D_REG,1/8/16 0:10
+ALU,Alumni/ae Office,ALU -Alumni/ae Office,X,"MIT, non-academic",,N,,,,2/11/93 0:00,D_ALUM,1/8/16 0:10
+BUR,Bursar's Office,BUR -Bursar's Office,X,"MIT, non-academic",446900,N,,,,2/17/94 0:00,D_SFS,1/8/16 0:10
+SFAO,Student Financial Aid Office,SFAO-Student Financial Aid Office,X,"MIT, non-academic",446800,N,,,,2/17/94 0:00,D_SFS,1/8/16 0:10
+OME,Office of Minority Education,OME -Office of Minority Education,X,"MIT, non-academic",441000,N,,,,2/17/94 0:00,D_OME,1/8/16 0:10
+UAAO,Undergraduate Academic Affairs,UAAO-Undergraduate Academic Affairs,X,"MIT, non-academic",441000,N,,,,2/17/94 0:00,D_DUE:HQ,1/8/16 0:10
+MISC,Miscellaneous (no dept code),MISC-Miscellaneous (no dept code),X,"MIT, non-academic",,N,,,,3/16/94 0:00,D_UNDEF,1/8/16 0:10
+MED,Medical Department,MED -Medical Department,X,"MIT, non-academic",,N,,,,3/16/94 0:00,D_MEDICAL,1/8/16 0:10
+ARC,Academic Resource Center,ARC -Academic Resource Center,X,"MIT, non-academic",441000,N,,,formerly UAAO,8/25/98 0:00,D_ACAD,1/8/16 0:10
+RES,Residential Life,RES -Residential Life,X,"MIT, non-academic",,N,,,,5/6/99 0:00,D_SLP,1/8/16 0:10
+UAAP,Undergrad Adv & Acad Prog,UAAP-Undergrad Adv & Acad Prog,X,"MIT, non-academic",441000,N,,,formerly ARC,1/3/07 0:00,D_DUE:HQ,1/8/16 0:10
+PXL,Interphase/Seminar XL,PXL -Interphase/Seminar XL,X,"MIT, non-academic",,N,,,,3/27/12 0:00,D_STU_SPECIAL,1/8/16 0:10
+NS,Naval Science (ROTC),NS  -Naval Science (ROTC),Y,"MIT, academic",187800,N,,,,2/17/94 0:00,D_ROTC,1/8/16 0:10
+DUE,Dean for Undergrad Education,DUE -Dean for Undergrad Education,Y,"MIT, academic",,N,,,,11/29/12 0:00,,1/8/16 0:10
+FOR,Foreign Study Program,FOR -Foreign Study Program,Y,"MIT, academic",446600,N,,,,2/17/94 0:00,D_CSPA,1/8/16 0:10
+AS,Aerospace Studies (ROTC),AS  -Aerospace Studies (ROTC),Y,"MIT, academic",187100,N,,,,2/17/94 0:00,D_ROTC,1/8/16 0:10
+MS,Military Science (ROTC),MS  -Military Science (ROTC),Y,"MIT, academic",187500,N,,,,2/17/94 0:00,D_ROTC,1/8/16 0:10
+WCD,Wellesley Double Degree Prog,WCD -Wellesley Double Degree Prog,Y,"MIT, academic",441000,N,,,,2/17/94 0:00,D_DUE:HQ,1/8/16 0:10
+DOM,Domestic Study Program,DOM -Domestic Study Program,Y,"MIT, academic",446600,N,,,,2/17/94 0:00,D_CSPA,1/8/16 0:10
+EC,Edgerton Center,EC  -Edgerton Center,Y,"MIT, academic",,N,,,,4/8/11 0:00,D_EDGERTON,1/8/16 0:10
+ODGE,Dean for Graduate Education,ODGE-Dean for Graduate Education,Y,"MIT, academic",442700,N,,,,7/15/08 0:00,D_DEANGRAD,1/8/16 0:10
+ENE,Energy Initiative,ENE -Energy Initiative,Y,"MIT, academic",,N,,,,8/25/09 0:00,D_LFEE,1/8/16 0:10
+SEM,Undergraduate Seminars,SEM -Undergraduate Seminars,Y,"MIT, academic",,N,,,,10/21/08 0:00,D_STU_SPECIAL,1/8/16 0:10
+CON,Concourse,CON -Concourse,Y,"MIT, academic",69600,N,,,,3/5/07 0:00,D_CONCOURSE,1/8/16 0:10
+FAS,Freshman/Alumni Summer Intern,FAS -Freshman/Alumni Summer Intern,Y,"MIT, academic",,N,,,,1/30/15 0:00,D_STU_SPECIAL,1/8/16 0:10
+WMN,Women's and Gender Studies,WMN -Women's and Gender Studies,Y,"MIT, academic",,N,,,,4/6/10 0:00,D_DHSS,1/8/16 0:10
+GSO,Graduate School Office,GSO -Graduate School Office,Y,"MIT, academic",442700,N,,,,6/30/95 0:00,D_DEANGRAD,1/8/16 0:10
+ZZZ,Dummy to get sorts,ZZZ -Dummy to get sorts,Y,"MIT, academic",,N,,,,4/13/95 0:00,D_UNDEF,1/8/16 0:10
+UND,Undesignated Sophomore,UND -Undesignated Sophomore,Y,"MIT, academic",441000,N,,,,2/17/94 0:00,D_STUDENT_UND,1/8/16 0:10
+NONE,Freshmen,NONE-Freshmen,Y,"MIT, academic",441000,N,,,,2/17/94 0:00,D_STUDENT_FRESH,1/8/16 0:10
+CAES,Center for Adv Educ Services,CAES-Center for Adv Educ Services,Y,"MIT, academic",405100,N,,,associated with school of engineering through 5th week of 1998SP,11/18/99 0:00,D_CAES,1/8/16 0:10
+ESG,Experimental Study Group,ESG -Experimental Study Group,Y,"MIT, academic",159000,N,,,,10/20/11 0:00,D_ESG,1/8/16 0:10
+ISP,Terrascope,ISP -Terrascope,Y,"MIT, academic",,N,,,,1/11/10 0:00,D_ISP,1/8/16 0:10
+NIV,Visiting Research Cross-Enroll,NIV -Visiting Research Cross-Enroll,Z,Non-MIT,,N,,,,10/10/96 0:00,D_CROSS_REG,1/8/16 0:10
+NIU,BU Cross-Enrollment Prog,NIU -BU Cross-Enrollment Prog,Z,Non-MIT,,N,,,,8/30/93 0:00,D_CROSS_REG,1/8/16 0:10
+NI,Non-Inst Cross-Enrollment Prog,NI  -Non-Inst Cross-Enrollment Prog,Z,Non-MIT,,N,,,,5/9/94 0:00,D_CROSS_REG,1/8/16 0:10
+NIG,Gordon Coll Cross-Enroll Prog,NIG -Gordon Coll Cross-Enroll Prog,Z,Non-MIT,,N,,,,10/17/07 0:00,D_CROSS_REG,1/8/16 0:10
+NIR,Brandeis Cross-Enroll Prog,NIR -Brandeis Cross-Enroll Prog,Z,Non-MIT,,N,,,,2/8/94 0:00,D_CROSS_REG,1/8/16 0:10
+NIT,Tufts Cross-Enrollment Prog,NIT -Tufts Cross-Enrollment Prog,Z,Non-MIT,,N,,,,8/30/93 0:00,D_CROSS_REG,1/8/16 0:10
+ZNIH,Harvard dummy to get sorts,ZNIH-Harvard dummy to get sorts,Z,Non-MIT,,N,,,,1/22/95 0:00,D_CROSS_REG,1/8/16 0:10
+NIN,Endicott Coll Cross-Enroll Pro,NIN -Endicott Coll Cross-Enroll Pro,Z,Non-MIT,,N,,,,9/12/08 0:00,D_CROSS_REG,1/8/16 0:10
+NIH,Harvard Cross-Enrollment Prog,NIH -Harvard Cross-Enrollment Prog,Z,Non-MIT,,N,,,,2/11/93 0:00,D_CROSS_REG,1/8/16 0:10
+NIW,Wellesley Cross-Enrollment Pro,NIW -Wellesley Cross-Enrollment Pro,Z,Non-MIT,441000,N,,,,2/17/94 0:00,D_CROSS_REG,1/8/16 0:10
+NIL,Lesley Coll Cross-Enroll Prog,NIL -Lesley Coll Cross-Enroll Prog,Z,Non-MIT,,N,,,,3/12/09 0:00,D_CROSS_REG,1/8/16 0:10
+N/A,Not Available,N/A -Not Available,NA,Not Available,,N,,,,,D_UNDEF,1/8/16 0:00
+22,Nuclear Engineering, 22 -Nuclear Engineering,E,Engineering,68000,Y,Department of Nuclear Science and Engineering,School of Engineering,,12/9/05 0:00,D_NUCENG,1/8/16 0:10
+BE,Biological Engineering,BE  -Biological Engineering,E,Engineering,69200,Y,Biological Engineering Division,School of Engineering,was BEH,8/15/02 0:00,D_BIOENG,1/8/16 0:10
+10,Chemical Engineering, 10 -Chemical Engineering,E,Engineering,62000,Y,Department of Chemical Engineering,School of Engineering,,2/17/94 0:00,D_CHEME,1/8/16 0:10
+SCM,Supply Chain Management Progra,SCM -Supply Chain Management Progra,E,Engineering,69501,Y,Program in Supply Chain Management,School of Engineering,,7/8/15 0:00,D_SCM,1/8/16 0:10
+21W,Writing & Humanistic Studies, 21W-Writing & Humanistic Studies,H,"Hum, Arts & Social Sciences",93800,Y,Program in Writing and Humanistic Studies,"School of Humanities, Arts, and Social Sciences",,2/17/94 0:00,D_CMS,1/8/16 0:10
+STS,"Science, Technology & Society","STS -Science, Technology & Society",H,"Hum, Arts & Social Sciences",97000,Y,"Program in Science, Technology, and Society","School of Humanities, Arts, and Social Sciences",,2/17/94 0:00,D_STS,1/8/16 0:10
+EDG,Edgerton Center,EDG -Edgerton Center,Y,"MIT, academic",,N,,,,11/10/94 0:00,D_EDGERTON,1/8/16 0:10
+ZZZZ,Dummy to get sorts,ZZZZ-Dummy to get sorts,Y,"MIT, academic",,N,,,,4/13/95 0:00,D_UNDEF,1/8/16 0:10
+OCW,On-Campus Wellesley,OCW -On-Campus Wellesley,Y,"MIT, academic",,N,,,,9/28/93 0:00,D_CROSS_REG,1/8/16 0:10
+WHOI,Woods Hole Oceanographic Inst,WHOI-Woods Hole Oceanographic Inst,Y,"MIT, academic",401860,N,,,,8/27/99 0:00,D_VPRESOFF,1/8/16 0:10
+NIA,Non-Institute-MFA/MCA,NIA -Non-Institute-MFA/MCA,Z,Non-MIT,,N,,,,9/24/98 0:00,D_CROSS_REG,1/8/16 0:10
+NIE,Non-Institute Exchange Student,NIE -Non-Institute Exchange Student,Z,Non-MIT,,N,,,,7/12/95 0:00,D_CROSS_REG,1/8/16 0:10
+ZNIW,Wellesley dummy to get sorts,ZNIW-Wellesley dummy to get sorts,Z,Non-MIT,,N,,,,1/22/95 0:00,D_CROSS_REG,1/8/16 0:10
+NIS,Salem State Cross-Enroll Prog,NIS -Salem State Cross-Enroll Prog,Z,Non-MIT,,N,,,,10/10/07 0:00,D_CROSS_REG,1/8/16 0:10
+NIC,Grad Consortium Women's Stud,NIC -Grad Consortium Women's Stud,Z,Non-MIT,,N,,,,12/16/05 0:00,D_CROSS_REG,1/8/16 0:10

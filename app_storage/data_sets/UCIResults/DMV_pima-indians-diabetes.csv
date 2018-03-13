@@ -1,0 +1,11 @@
+table reference, attribute name, DMV, frequency
+csv///Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/storage/data_sets/UCI///pima-indians-diabetes.csv,Number of times pregnant,3,75,F-DiMaC
+,Plasma glucose concentration,84,10,F-DiMaC
+,Diastolic blood pressure,0,35,F-DiMaC
+,Triceps skin fold thickness,0,227,F-DiMaC
+,2-Hour serum insulin,0,374,F-DiMaC
+,Body mass index,37.5,2,F-DiMaC
+,Diabetes pedigree function,0.158,2,F-DiMaC
+,Age,21,63,F-DiMaC
+,Plasma glucose concentration,0,5,OD
+,Body mass index,0.0,11,OD

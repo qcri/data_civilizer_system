@@ -1,0 +1,24 @@
+table reference, attribute name, DMV, frequency
+csv///Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/storage/data_sets/UCI///adult.csv,age,39,816,F-DiMaC
+,workclass,Private,22696,F-DiMaC
+,fnlwgt,143062,7,F-DiMaC
+,education,Some-college,7291,F-DiMaC
+,education-num,10,7291,F-DiMaC
+,marital-status,Married-civ-spouse,14975,F-DiMaC
+,occupation,Machine-op-inspct,2002,F-DiMaC
+,relationship,Husband,13193,F-DiMaC
+,race,White,27815,F-DiMaC
+,capital-gain,0,29849,F-DiMaC
+,capital-loss,0,31041,F-DiMaC
+,hours-per-week,52,138,F-DiMaC
+,native-country,United-States,29169,F-DiMaC
+,workclass,?,1836,RB
+,occupation,?,1843,RB
+,native-country,?,583,RB
+,capital-gain,99999,159,RB3
+,capital-gain,27828,34,OD
+,capital-gain,34095,5,OD
+,capital-gain,41310,2,OD
+,capital-loss,3004,2,OD
+,capital-loss,3900,2,OD
+,capital-loss,4356,3,OD
