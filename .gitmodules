@@ -1,4 +1,0 @@
-[submodule "aurum-datadiscovery"]
-	path = aurum-datadiscovery
-	url = https://github.com/mansoure/aurum-datadiscovery.git
-	branch = master_CivilizerWF
