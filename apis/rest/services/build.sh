@@ -20,6 +20,8 @@ pwd=`dirname $0`
 (
 	echo "Building PKDuck ..."
 	cd $pwd/pkduck_service/code/
+	rm makefile
+	cmake .
 	make
 	echo "... Done!"
 )
@@ -27,6 +29,8 @@ pwd=`dirname $0`
 (
 	echo "Building ImputeDB ..."
 	cd $pwd/imputedb_service/imputedb/
-	ant -Dfile.encoding=UTF8
+	export JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
+	ant
+	# ant -Dfile.encoding=UTF8
 	echo "... Done!"
 )
