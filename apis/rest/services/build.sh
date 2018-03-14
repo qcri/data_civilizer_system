@@ -34,3 +34,12 @@ pwd=`dirname $0`
 	# ant -Dfile.encoding=UTF8
 	echo "... Done!"
 )
+
+#GloVe embeddings for DeepER
+(
+cd $pwd/deeper_service/DeepER-Lite/glove/
+glove=glove.840B.300d.zip
+wget http://nlp.stanford.edu/data/$glove
+unzip $glove
+rm -f $glove
+)
