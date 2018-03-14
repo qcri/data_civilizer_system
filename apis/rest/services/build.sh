@@ -3,14 +3,6 @@ set -e
 pwd=`dirname $0`
 
 (
-	echo "Building Golden Record ..."
-	cd $pwd/grecord_service/code/
-	python test-so.py
-	ls -trlh
-	echo "... Done!"
-)
-
-(
 	echo "Building Fahes ..."
 	cd $pwd/fahes_service/fahes/
 	make
@@ -43,3 +35,12 @@ wget http://nlp.stanford.edu/data/$glove
 unzip $glove
 rm -f $glove
 )
+
+
+# (
+# 	echo "Building Golden Record ..."
+# 	cd $pwd/grecord_service/code/
+# 	python test-so.py
+# 	ls -trlh
+# 	echo "... Done!"
+# )
