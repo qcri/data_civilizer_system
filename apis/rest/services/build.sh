@@ -12,7 +12,6 @@ pwd=`dirname $0`
 (
 	echo "Building PKDuck ..."
 	cd $pwd/pkduck_service/code/
-	rm makefile
 	cmake .
 	make
 	echo "... Done!"
