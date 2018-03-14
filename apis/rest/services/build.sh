@@ -33,7 +33,7 @@ glove=glove.840B.300d.zip
 wget http://nlp.stanford.edu/data/$glove
 unzip $glove
 rm -f $glove
-th glove.lua
+th glove_setup.lua
 )
 
 
