@@ -30,6 +30,6 @@ Now you can visit [http://localhost:5000](http://localhost:5000).
 ## User Manual 
 Data Civilizer provides several data discovery and cleaning services. The main components of the civilizer is shown in the below figure. 
 
-![The Data Civilizer system](dataCivilizerSystem.pdf) 
+![The Data Civilizer system](blob/master/dataCivilizerSystem.pdf) 
 
 TODO
