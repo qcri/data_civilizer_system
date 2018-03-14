@@ -73,38 +73,6 @@
 
 {"supportBroadcast":true,
 	"nb_outputs":1,
-	"class":"civilizer.basic.operators.JoinDiscovery",
-	"parameters":{
-		"0":[
-			{"name":"param0",
-			 "inputType":"Service",
-			 "type":"civilizer.JoinDiscovery.Aurum"
-			 },
-			{"name":"param1",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.destination"},
-			 {"name":"param2",
-			  "inputType":"String",
-			  "type":"civilizer.JoinDiscovery.Aurum.EKGPath"},
-			 {"name":"param3",
-			  "inputType":"String",
-			   "type":"civilizer.JoinDiscovery.Aurum.EKGPath.Index"}
-			],
-		"1":[
-			{"name":"param0",
-			 "inputType":"Service",
-			 "type":"civilizer.JoinDiscovery.ML4JoinDiscovery"
-			 },
-			{"name":"param1",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.destination"},
-			 {"name":"param2",
-			  "inputType":"String",
-			  "type":"civilizer.JoinDiscovery.ML4JoinDiscovery.Model"}]},
-	"nb_inputs":1},
-
-{"supportBroadcast":true,
-	"nb_outputs":1,
 	"class":"civilizer.basic.operators.EntityMatching-DeepER",
 	"parameters":{
 		"0":[
@@ -227,81 +195,5 @@
 			{"name":"param2",
 			  "inputType":"String",
 			  "type":"civilizer.dataCollection.destination"}]},
-	"nb_inputs":1},	
-
-{"supportBroadcast":true,
-	"nb_outputs":1,
-	"class":"civilizer.basic.operators.Enrichment",
-	"parameters":{
-		"0":[
-			{"name":"param0",
-			 "inputType":"Service",
-			 "type":"civilizer.enrichment.XYZ"
-			 },
-			 {"name":"param1",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.destination"}]},
-	"nb_inputs":1},	
-
-{"supportBroadcast":true,
-	"nb_outputs":1,
-	"class":"civilizer.basic.operators.DataVisualization",
-	"parameters":{
-		"0":[
-			{"name":"param0",
-			 "inputType":"Service",
-			 "type":"civilizer.DataVisualization.DEEPEYE"
-			 },
-			 {"name":"param1",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.destination"}]},
-	"nb_inputs":1},
-
-{"supportBroadcast":true,
-	"nb_outputs":1,
-	"class":"civilizer.basic.operators.DataAggregator",
-	"parameters":{
-		"0":[
-			{"name":"param0",
-			 "inputType":"Service",
-			 "type":"civilizer.DataVisualization.DEEPEYE"
-			 },
-			 {"name":"param1",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.destination"}]},
-	"nb_inputs":1},
-
-{"supportBroadcast":true,
-	"nb_outputs":1,
-	"class":"civilizer.basic.operators.DataSplitter",
-	"parameters":{
-		"0":[
-			{"name":"param0",
-			 "inputType":"Service",
-			 "type":"civilizer.DataVisualization.DEEPEYE"
-			 },
-			 {"name":"param1",
-			  "inputType":"String",
-			  "type":"civilizer.DataVisualization.DataSetType"}]},
-	"nb_inputs":2},
-
-
-{"supportBroadcast":false,
-	"nb_outputs":0,
-	"class":"civilizer.basic.operators.TextFileSink",
-	"parameters":{
-		"0":[
-			{"name":"param0",
-			"inputType":"String",
-			"type":"civilizer.basic.operators.TextFileSink"}],
-		"1":[
-			{"name":"param0",
-			"inputType":"String",
-			"type":"java.lang.String"},
-			{"name":"param1",
-			"inputType":"UDF",
-			"type":"civilizer.basic.operators.TransformationDescriptor",
-			"udfTmpl":""}]},
-	"nb_inputs":1}
-	
+	"nb_inputs":1}	
 ]}
