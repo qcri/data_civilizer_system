@@ -32,7 +32,7 @@ Data Civilizer provides several data discovery and cleaning services. The main c
 
 ![The Data Civilizer system](dataCivilizerSystem.jpg) 
 
-### In a nutshell, \system has the following main services:
+### In a nutshell, Data Civilizer has the following main services:
 
 #### A data discovery module, Aurum, to help find datasets of interest. Aurum builds an enterprise knowledge graph (EKG) to connect similar tables together. Aurum allows a user to browse the graph, run similarity searches on tables in the graph, and perform keyword searches. Aurum can also help find all join paths that connect these tables. 
 
