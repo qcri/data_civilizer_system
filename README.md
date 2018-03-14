@@ -2,8 +2,8 @@
 
 Data Civilizer is an end-to-end data preparation system. 
 
-<!-- ## Demo
-A --> demo is hosted at URI.
+## Demo
+A demo could be hosted at URI.
 
 ## Docker Installation
 You need to install [Docker](https://www.docker.com/community-edition)
