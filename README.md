@@ -14,10 +14,16 @@ Data Civilizer is an end-to-end data preparation system. Data Civilizer provides
 #### Other cleaning tools in the system include an abbreviation system,  a disguised missing values detection tool (fahes), and ImputeDB for filling in missing values. 
 
 
-## Docker Installation
+## Docker Installation 
 You need to install [Docker](https://www.docker.com/community-edition)
 and [Docker Compose](https://docs.docker.com/compose/install/)
 first, then proceed to the following instructions.
+
+## A software requirements specification
+The DC system needs at least 4GB RAM. The default memory assigned to Docker is 2GB of RAM. The memory could be adjusted from the Docker preferences.
+
+The DC system needs 60GB disk space to allocated to Docker; this is including the intermediate images, such as Ubuntu and nightseas/cuda-torch. If the user needs to save some space, he can remove the intermediate images such as Ubuntu and nightseas/cuda-torch after you build the DC images. 
+   
 
 ### Development
 
