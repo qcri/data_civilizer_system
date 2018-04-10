@@ -15,6 +15,7 @@ from services.deeper_service import deeper_api
 app = Flask(__name__)
 
 myresponse1 = {'myURI': u'http://0.0.0.0:8888/notebooks/civilizer_gr.ipynb'}
+myresponse2 = {'myURI': u'http://localhost:3000/'}
 myresponse0 = {'myURI': u''}
 # operators = [
 #     {
@@ -42,23 +43,25 @@ def post_ExePlan():
     # Posted JSON Plan
     task_request = request.json
     operators = task_request["operators"]
-    number = len(operators)
-    task_sources = operators[number - 1]["parameters"]["param1"]
-    task_destination = operators[number - 1]["parameters"]["param2"]
+    # number = len(operators)
+    number = get_activeNode(request) + 1
+    task_sources = operators[number - 1]["parameters"]["param2"]
+    task_destination = operators[number - 1]["parameters"]["param3"]
     input_source, output_destination = get_source_destination_objects(task_sources, task_destination)
     class_name = operators[number-1]["java_class"]
 
 
-    if(class_name=="civilizer.basic.operators.DataDiscovery"):
+    if(class_name == "civilizer.basic.operators.DataDiscovery"):
         print("Data Discovery")
-        open_chrome('http://localhost:3000/')
+        # open_chrome('http://localhost:3000/')
+        return jsonify(myresponse2)
     elif(class_name=="civilizer.basic.operators.DataCleaning-Fahes"):
         print("DataCleaning-Fahes")
         fahes_api.execute_fahes(input_source, output_destination)
     elif (class_name == "civilizer.basic.operators.DataCleaning-PKDuck"):
         print("DataCleaning-PKDuck")
-        columns = operators[number - 1]["parameters"]["param3"]
-        tau = operators[number - 1]["parameters"]["param4"]
+        columns = operators[number - 1]["parameters"]["param4"]
+        tau = operators[number - 1]["parameters"]["param5"]
         pkduck_api.execute_pkduck(input_source, output_destination, columns, Decimal(tau))
         # inputF = "sources.json"
         # outputF = "destination.json"
@@ -66,9 +69,9 @@ def post_ExePlan():
         # pkduck_api.execute_pkduck_file(inputF, outputF, columns, 0.8)
     elif (class_name == "civilizer.basic.operators.DataCleaning-Imputedb"):
         print("DataCleaning-Imputedb")
-        tableName = operators[number - 1]["parameters"]["param3"]
-        q = operators[number - 1]["parameters"]["param4"]
-        r = operators[number - 1]["parameters"]["param5"]
+        tableName = operators[number - 1]["parameters"]["param4"]
+        q = operators[number - 1]["parameters"]["param5"]
+        r = operators[number - 1]["parameters"]["param6"]
         input_source = {'CSV': {'dir': task_sources, 'table': tableName}}
         imputedb_api.execute_imputedb(input_source, output_destination, q, r)
         # inputF = "sources_im.json"
@@ -76,10 +79,10 @@ def post_ExePlan():
         # imputedb_api.execute_imputedb_file(inputF, outputF, 'select Dept_Budget_Code from Sis_department;', 0)
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER"):
         print("DataCleaning-DeepER")
-        table1 = operators[number - 1]["parameters"]["param3"]
-        table2 = operators[number - 1]["parameters"]["param4"]
-        predictionsFileName = operators[number - 1]["parameters"]["param5"]
-        number_of_pairs = operators[number - 1]["parameters"]["param6"]
+        table1 = operators[number - 1]["parameters"]["param4"]
+        table2 = operators[number - 1]["parameters"]["param5"]
+        predictionsFileName = operators[number - 1]["parameters"]["param6"]
+        number_of_pairs = operators[number - 1]["parameters"]["param7"]
         deeper_api.execute_deeper(task_sources, table1, table2, number_of_pairs, task_destination, predictionsFileName)
     elif(class_name == "civilizer.basic.operators.EntityConsolidation"):
         print("Entity Consolidation")
@@ -112,6 +115,23 @@ def post_ExePlan():
         print("Error")
     # return jsonify(operators[number-1])
     return jsonify(myresponse0)
+
+
+def get_activeNode(request):
+    
+    active_node_index = 0
+    task_request = request.json
+    operators = task_request["operators"]
+    number = len(operators)
+    # x ranges from 0 to number-1
+    for x in range(number):    
+        isActive = operators[x]["parameters"]["param1"]
+        if isActive == 'y':
+           active_node_index = x
+        else:
+            break 
+
+    return active_node_index
 
 
 def get_source_destination_objects(s, d):

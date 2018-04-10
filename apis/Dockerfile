@@ -48,7 +48,6 @@ RUN pip install -r requirements.txt
 RUN luarocks install csvigo
 RUN luarocks install dp
 
-
 COPY ./rest /app/rest
 RUN /app/rest/services/build.sh
 

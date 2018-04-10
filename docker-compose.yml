@@ -1,4 +1,9 @@
 version: '3.4'
+
+# networks:
+#   aurum_net:
+#     driver: bridge
+
 services:
   grecord_service:
     build: grecord_service
@@ -7,6 +12,35 @@ services:
       - $PWD/app_storage:/app/storage
     ports:
       - "8888:8888"
+  mongodb:
+    image: mongo:latest
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.0.1
+  #   volumes:
+  #     - $PWD/app_storage/elasticsearch:/usr/share/elasticsearch/data
+  #   ports:
+  #     - 9200:9200
+  #     - 9300:9300
+  #   networks:
+  #     aurum_net:
+  #       aliases:
+  #         - elasticsearch
+  # frontend:
+  #   depends_on:
+  #    - elasticsearch
+  #   image: aurum/frontend
+  #   build:
+  #    context: ./aurum-datadiscovery
+  #    dockerfile: docker/Dockerfile-ui
+  #   volumes:
+  #    - $PWD/app_storage/models:/aurum/data/models
+  #   ports:
+  #    - 3000:3000
+  #    # - 5000:5000
+  #   networks:
+  #    aurum_net:
+  #      aliases:
+  #        - frontend        
   apis:
     build: apis
     volumes:
@@ -17,8 +51,7 @@ services:
     image: data-civilizer-api:0.1
     depends_on:
       - grecord_service
-  mongodb:
-    image: mongo:latest
+      # - frontend
   studio:
     build: studio
     image: data-civilizer-studio:0.1
