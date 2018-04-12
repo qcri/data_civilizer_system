@@ -1,20 +1,28 @@
 # DeepER-Lite
-Light-weight Entity Resolution in databases
-No end to end learning and no RNNs 
+Entity Resolution in databases
 
-# Requirements
+## Running
 
-Ubuntu 16.04 or 17.04 with build-essentials and python3
+First install [Docker](https://www.docker.com/), then:
 
-then run the install.sh to install 
+    docker run -it -v /path/to/datasets/root/directory:/root/data daqcri/deeper-lite <Dataset> <first-table> <second-table> <perfect-mappings-file>
 
-1) mono-devel
+Example:
 
-2) torch and the required rocks
-
-3) download and extract glove
+    docker run -it -v /home/me/Code/DeepER-Lite/data:/root/data deeper-lite fodors-zagats fodors.csv zagats.csv fodors-zagats_perfectMapping.csv
 
 
-The first time things run will of course take a while - unless you have the t7 glove file saved
+## Development
 
+Get the source:
+
+    git clone --recursive git@github.com:daqcri/deeper-lite.git
+    
+Edit source files then build a new image:
+
+    docker build .
+
+Then run:
+
+    docker run -it -v /data/dir:/data <image-id> <Dataset> ... # same like above
 
