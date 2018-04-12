@@ -4,7 +4,7 @@ require 'torch'
 require 'nn'
 require 'xlua'
 require 'optim'
-require 'dp'
+--require 'dp'
 
 
 local word2vec = nil
@@ -68,18 +68,22 @@ cmd:option('-momentum', 0, 'momentum (SGD only)')
 cmd:option('-maxIter', 0, 'maximum nb of iterations for CG and LBFGS')
 cmd:option('-type', 'float', 'type: double | float | cuda')
 cmd:option('-minfreq', 0, 'minimum freq of a word in a corpus to be considered')
-cmd:option('-percent_train', 0, 'percentage of training data to be used')
+cmd:option('-percent_neg_train', 0, 'percentage of training data to be used')
 cmd:option('-simMeasure', '', 'cosineDiff | diff | cosineDiff')
 cmd:option('-computeFeatures', '', 'recompute features anew do not load from saved yes | no')
 cmd:option('-noiseFlipLabels', '', 'noise labels yes | no')
 cmd:option('-noiseFlipLabelsRatio', 0, '0.1 - 1')
 cmd:option('-threshold',0, 'Negative Cosine Similarity Sampling Threshold [-1 , 1]')
+cmd:option('-empty_cosine_penalty','0' , 'Empty Cosine Penalty')
 cmd:option('-opMode', '', 'operation mode train_test | test')
 
 cmd:text()
 local opt = cmd:parse(arg or {})
 
 print(opt)
+
+
+torch.setdefaulttensortype('torch.FloatTensor')
 
 if opt.type == 'float' then
    print('==> switching to floats')
@@ -104,43 +108,114 @@ local function split(input, sep)
     return t
 end
 
-local function print_stats(negativeTrainingTensor,positiveTrainingTensor,negativeTestingTensor,positiveTestingTensor)
+local function print_stats(negativeTrainingTensor,positiveTrainingTensor, negativeDevTensor, positiveDevTensor, negativeTestingTensor,positiveTestingTensor)
   --========== Neg Train Metric ========================
-  negTrainTensorSize = negativeTrainingTensor:size()
-  negTrainMetric = torch.Tensor(negTrainTensorSize[1])
-  for i = 1,negTrainTensorSize[1] do
-    negTrainMetric[i] = negativeTrainingTensor[{{i},{1,4}}]:mean()
+  
+  --Training Stats
+  negTrainingTensorSize = negativeTrainingTensor:size()
+  negTrainingMetric = torch.Tensor(negTrainingTensorSize[1])
+  for i = 1,negTrainingTensorSize[1] do
+    negTrainingMetric[i] = negativeTrainingTensor[{{i},{1,4}}]:mean()
   end
-  print('\nCosine Train Negative Min')
-  print(negTrainMetric:min())
-  print('\nCosine Train Negative Mean')
-  print(negTrainMetric:mean())
-  print('\nCosine Train Negative Max')
-  print(negTrainMetric:max())
-  print('\nCosine Train Negative Median')
-  print(negTrainMetric:median(1)[1])
 
-  --========== Pos Train Metric ========================
-  posTrainTensorSize = positiveTrainingTensor:size()
-  posTrainMetric = torch.Tensor(posTrainTensorSize[1])
-  for i = 1,posTrainTensorSize[1] do
-    posTrainMetric[i] = positiveTrainingTensor[{{i},{1,4}}]:mean()
+  print('\n\n\n ====== Training Stats ====== \n')
+  print('\nCosine Training Negative Min')
+  print(negTrainingMetric:min())
+  print('\nCosine Training Negative Mean')
+  print(negTrainingMetric:mean())
+  print('\nCosine Training Negative Max')
+  print(negTrainingMetric:max())
+  print('\nCosine Training Negative Median')
+  print(negTrainingMetric:median(1)[1])
+
+  posTrainingTensorSize = positiveTrainingTensor:size()
+  posTrainingMetric = torch.Tensor(posTrainingTensorSize[1])
+  for i = 1,posTrainingTensorSize[1] do
+    posTrainingMetric[i] = positiveTrainingTensor[{{i},{1,4}}]:mean()
   end
-  print('\nCosine Train Positive Min')
-  print(posTrainMetric:min())
-  print('\nCosine Train Positive Mean')
-  print(posTrainMetric:mean())
-  print('\nCosine Train Positive Max')
-  print(posTrainMetric:max())
-  print('\nCosine Train Positive Median')
-  print(posTrainMetric:median(1)[1])
+  print('\n\nCosine Training Positive Min')
+  print(posTrainingMetric:min())
+  print('\nCosine Training Positive Mean')
+  print(posTrainingMetric:mean())
+  print('\nCosine Training Positive Max')
+  print(posTrainingMetric:max())
+  print('\nCosine Training Positive Median')
+  print(posTrainingMetric:median(1)[1])
 
+
+  --Testing Stats
+  negTestingTensorSize = negativeTestingTensor:size()
+  negTestingMetric = torch.Tensor(negTestingTensorSize[1])
+  for i = 1,negTestingTensorSize[1] do
+    negTestingMetric[i] = negativeTestingTensor[{{i},{1,4}}]:mean()
+  end
+
+  print('\n\n\n ====== Testing Stats ====== \n')
+  print('\nCosine Testing Negative Min')
+  print(negTestingMetric:min())
+  print('\nCosine Testing Negative Mean')
+  print(negTestingMetric:mean())
+  print('\nCosine Testing Negative Max')
+  print(negTestingMetric:max())
+  print('\nCosine Testing Negative Median')
+  print(negTestingMetric:median(1)[1])
+
+  posTestingTensorSize = positiveTestingTensor:size()
+  posTestingMetric = torch.Tensor(posTestingTensorSize[1])
+  for i = 1,posTestingTensorSize[1] do
+    posTestingMetric[i] = positiveTestingTensor[{{i},{1,4}}]:mean()
+  end
+  print('\n\nCosine Testing Positive Min')
+  print(posTestingMetric:min())
+  print('\nCosine Testing Positive Mean')
+  print(posTestingMetric:mean())
+  print('\nCosine Testing Positive Max')
+  print(posTestingMetric:max())
+  print('\nCosine Testing Positive Median')
+  print(posTestingMetric:median(1)[1])
+
+  --Dev Stats
+  negDevTensorSize = negativeDevTensor:size()
+  negDevMetric = torch.Tensor(negDevTensorSize[1])
+  for i = 1,negDevTensorSize[1] do
+    negDevMetric[i] = negativeDevTensor[{{i},{1,4}}]:mean()
+  end
+
+  print('\n\n\n ====== Dev Stats ====== \n')
+  print('\nCosine Dev Negative Min')
+  print(negDevMetric:min())
+  print('\nCosine Dev Negative Mean')
+  print(negDevMetric:mean())
+  print('\nCosine Dev Negative Max')
+  print(negDevMetric:max())
+  print('\nCosine Dev Negative Median')
+  print(negDevMetric:median(1)[1])
+
+  posDevTensorSize = positiveDevTensor:size()
+  posDevMetric = torch.Tensor(posDevTensorSize[1])
+  for i = 1,posDevTensorSize[1] do
+    posDevMetric[i] = positiveDevTensor[{{i},{1,4}}]:mean()
+  end
+  print('\n\nCosine Dev Positive Min')
+  print(posDevMetric:min())
+  print('\nCosine Dev Positive Mean')
+  print(posDevMetric:mean())
+  print('\nCosine Dev Positive Max')
+  print(posDevMetric:max())
+  print('\nCosine Dev Positive Median')
+  print(posDevMetric:median(1)[1])
+ 
+  
+  local cut_off_cosine = math.min(posTestingMetric:min(), posTrainingMetric:min(), posDevMetric:min()) 
+  return cut_off_cosine
 
 end
 
 local function FillDataTable(pairsTable, firstTable, secondTable, indextoIdTable, indextoIdTableCounter)
+  
   local pairsDataTable = {}
   for i=1, #pairsTable do
+    xlua.progress(i,#pairsTable)
     local pairFirstData = firstTable[pairsTable[i][1]]
     local pairSecondData = secondTable[pairsTable[i][2]]
     pairsDataTable[i] = {pairFirstData, pairSecondData}
@@ -154,6 +229,16 @@ end
 
 
 local cosine = nn.CosineDistance()
+
+local all_case_counter = 0
+local here_cos_1 = 0
+local here_cos_2 = 0
+local here_cos_3 = 0
+
+local here_diff_1 = 0
+local here_diff_2 = 0
+local here_diff_3 = 0
+
 
 local function ExtractFeatures(dataTable, negativeSamplingThreshold, emtpyCosinePenalty)
   local firstFeaturesTensor = torch.FloatTensor(opt.numTableFields,opt.embeddingSize)
@@ -171,50 +256,59 @@ local function ExtractFeatures(dataTable, negativeSamplingThreshold, emtpyCosine
   local included = torch.Tensor(dataTensor:size()[1])
   local numIncluded = 0
   for i = 1, #dataTable do
+    all_case_counter = all_case_counter + 1
+    xlua.progress(i,#dataTable)
     for j=1, opt.numTableFields do
       firstFeaturesTensor:zero()
       secondFeaturesTensor:zero()
       local sentence1 = dataTable[i][1][j]
-      local numWordsInSentences = 0
+      local numWordsInSentences_1 = 0
       for word in sentence1:gmatch("%w+") do --TODO: very naive to break on white space only
         firstFeaturesTensor[j]:add(word2vec:word2vec(word))
-        numWordsInSentences = numWordsInSentences + 1
+        numWordsInSentences_1 = numWordsInSentences_1 + 1
       end
-      firstFeaturesTensor[j]:div(numWordsInSentences)
+      firstFeaturesTensor[j]:div(numWordsInSentences_1)
 
       local sentence2 = dataTable[i][2][j]
       
       
-      numWordsInSentences = 0
+      local numWordsInSentences_2 = 0
       for word in sentence2:gmatch("%w+") do --TODO: very naive to break on white space only, use porter or something more advanced
         secondFeaturesTensor[j]:add(word2vec:word2vec(word))
-        numWordsInSentences = numWordsInSentences + 1
+        numWordsInSentences_2 = numWordsInSentences_2 + 1
       end
-      secondFeaturesTensor[j]:div(numWordsInSentences)
+      secondFeaturesTensor[j]:div(numWordsInSentences_2)
+
       local dist = cosine:forward{firstFeaturesTensor[j],secondFeaturesTensor[j]}
 
       --local diff = torch.norm((firstFeaturesTensor[j] - secondFeaturesTensor[j]),2)
       local diff = nn.Abs()(firstFeaturesTensor[j] - secondFeaturesTensor[j])
       diff = torch.norm(diff)
       if dist[1]~=dist[1] then  --cosine is NaN
-        if string.len(sentence1) == 0 and string.len(sentence2) == 0 then
+        if sentence1=="" and sentence2 =="" then
+          here_cos_1 = here_cos_1 + 1
           dist = 1
-        elseif (string.len(sentence1) == 0 and string.len(sentence2) < 3) or (string.len(sentence1) < 3 and string.len(sentence2) == 0) then
-          dist = 1
-        else
+        elseif sentence1~="" and sentence2 =="" then 
+          here_cos_2 = here_cos_2 + 1
+          dist = emtpyCosinePenalty
+        elseif sentence1=="" and sentence2 ~="" then
+          here_cos_3 = here_cos_3 + 1
           dist = emtpyCosinePenalty  -- cosine is NaN, so assigning worst value from a cosine similarity point of view
         end
       end  
 
       if diff~=diff then  --diff is NaN, this is mostly due to a mising attribute(sentence)
-        if string.len(sentence1) == 0 and string.len(sentence2) == 0 then
+        if sentence1=="" and sentence2 =="" then
+          here_diff_1 = here_diff_1 + 1
           diff = 0
         elseif sentence1~="" and sentence2 =="" then 
+          here_diff_2 = here_diff_2 + 1
           diff = torch.norm(firstFeaturesTensor[j])
-          diff = diff / string.len(sentence1)
+          diff = diff / numWordsInSentences_1
         elseif sentence1=="" and sentence2 ~="" then
+          here_diff_3 = here_diff_3 + 1
           diff = torch.norm(secondFeaturesTensor[j])
-          diff = diff / string.len(sentence2)
+          diff = diff / numWordsInSentences_2
         end
       end
 
@@ -228,7 +322,7 @@ local function ExtractFeatures(dataTable, negativeSamplingThreshold, emtpyCosine
      end
    end
    
-   if dataTensor[ {{i},{1,4} } ]:mean() < negativeSamplingThreshold then
+   if dataTensor[ {{i},{1,4} } ]:mean() <= negativeSamplingThreshold then
     included[i] = 0
    else
     included[i] = 1
@@ -263,17 +357,25 @@ if opt.computeFeatures == 'yes' then --   not paths.filep(opt.positivePairsTrain
   end
   
 
-  print("Loading data .. \n")
   sys.tic()
-  local positivePairsTraining = csvigo.load({path = opt.positivePairsTrainingFile, mode = "large"})
-  local negativePairsTraining = csvigo.load({path = opt.negativePairsTrainingFile, mode = "large"})
+  
+  local positivePairsTraining = nil
+  local negativePairsTraining = nil
+  local positivePairsDev = nil
+  local negativePairsDev = nil
 
-  local positivePairsDev = csvigo.load({path = opt.positivePairsDevFile, mode = "large"})
-  local negativePairsDev = csvigo.load({path = opt.negativePairsDevFile, mode = "large"})
+  if opt.opMode == 'train_test' then
+    print("Loading Raw Train Data .. \n")
+    positivePairsTraining = csvigo.load({path = opt.positivePairsTrainingFile, mode = "large"})
+    negativePairsTraining = csvigo.load({path = opt.negativePairsTrainingFile, mode = "large"})
 
+    print("Loading Raw Dev Data .. \n")
+    positivePairsDev = csvigo.load({path = opt.positivePairsDevFile, mode = "large"})
+    negativePairsDev = csvigo.load({path = opt.negativePairsDevFile, mode = "large"})
+  end
   local positivePairsTesting = csvigo.load({path = opt.positivePairsTestingFile, mode = "large"})
   local negativePairsTesting = csvigo.load({path = opt.negativePairsTestingFile, mode = "large"})
-
+  print("Loading Raw Test Data .. \n")
   local firstData = csvigo.load({path = opt.firstDataFile, mode = "large"})
   local secondData = csvigo.load({path = opt.secondDataFile, mode = "large"})
 
@@ -310,88 +412,111 @@ if opt.computeFeatures == 'yes' then --   not paths.filep(opt.positivePairsTrain
   print("Computing Features ... ")
   sys.tic()
   
-
-  local positivePairsTrainingTable = FillDataTable(positivePairsTraining, firstDataTable, secondDataTable)
-  local negativePairsTrainingTable = FillDataTable(negativePairsTraining, firstDataTable, secondDataTable)
-
-  local positivePairsDevTable = FillDataTable(positivePairsDev, firstDataTable, secondDataTable)
-  local negativePairsDevTable = FillDataTable(negativePairsDev, firstDataTable, secondDataTable)
-  
-  local positivePairsTestingTable = FillDataTable(positivePairsTesting, firstDataTable, secondDataTable,testIndexToIdTable, 1)
-  local negativePairsTestingTable = FillDataTable(negativePairsTesting, firstDataTable, secondDataTable,testIndexToIdTable, 1+#positivePairsTesting)
-
-
+  local positivePairsTrainingTable = nil
+  local negativePairsTrainingTable = nil
+  local positivePairsDevTable = nil
+  local negativePairsDevTable = nil
   local includedNegativeTraining = 0
   local includedNegativeDev = 0
   local includedNegativeTesting = 0
 
-  positiveTrainingTensor = ExtractFeatures(positivePairsTrainingTable,-1,0) -- -1 as we never drop positives, 0 as we lightly penalize empty positives
-  negativeTrainingTensorFull, negativeTrainingIncluded, numNegativeTrainingIncluded = ExtractFeatures(negativePairsTrainingTable, opt.threshold,-1)
-  negativeTrainingTensor = torch.Tensor(numNegativeTrainingIncluded, negativeTrainingTensorFull:size()[2])
-  local negativeCounter = 0
-  for i = 1, negativeTrainingTensorFull:size()[1] do
-    if negativeTrainingIncluded[i] == 1 then
+  if opt.opMode == 'train_test' then
+    print('Filling Train Data Tables ...')
+    positivePairsTrainingTable = FillDataTable(positivePairsTraining, firstDataTable, secondDataTable)
+    negativePairsTrainingTable = FillDataTable(negativePairsTraining, firstDataTable, secondDataTable)
+    print('Extracting Features from Train Data Tables ...')
+    positiveTrainingTensor = ExtractFeatures(positivePairsTrainingTable,-1,opt.empty_cosine_penalty) -- -1 as we never drop positives, 0 as we lightly penalize empty positives
+    negativeTrainingTensorFull, negativeTrainingIncluded, numNegativeTrainingIncluded = ExtractFeatures(negativePairsTrainingTable, opt.threshold,opt.empty_cosine_penalty)
+    print('Filtering Train Tensors by Cosine Similarity Threshold of: ' .. opt.threshold)
+    negativeTrainingTensor = torch.Tensor(numNegativeTrainingIncluded, negativeTrainingTensorFull:size()[2])
+    local negativeCounter = 0
+    for i = 1, negativeTrainingTensorFull:size()[1] do
+      if negativeTrainingIncluded[i] == 1 then
         negativeCounter = negativeCounter + 1
-      negativeTrainingTensor[negativeCounter] = negativeTrainingTensorFull[i]
+        negativeTrainingTensor[negativeCounter] = negativeTrainingTensorFull[i]
+      end
     end
-  end
-  print("negativeTrainingTensorFull:size(): " .. negativeTrainingTensorFull:size()[1])
-  print("negativeTrainingTensor:size(): " .. negativeTrainingTensor:size()[1])
-  print("positiveTrainingTensor:size(): " .. positiveTrainingTensor:size()[1])
-  print('\n')
+    print("negativeTrainingTensorFull:size() before cosine cut: " .. negativeTrainingTensorFull:size()[1])
+    print("negativeTrainingTensor:size() after cosine cut: " .. negativeTrainingTensor:size()[1])
+    print("positiveTrainingTensor:size(): " .. positiveTrainingTensor:size()[1])
+    print('\n')
 
-
-  positiveDevTensor = ExtractFeatures(positivePairsDevTable,-1,0)
-  negativeDevTensorFull, negativeDevIncluded, numNegativeDevIncluded = ExtractFeatures(negativePairsDevTable, opt.threshold,-1)
-  negativeDevTensor = torch.Tensor(numNegativeDevIncluded, negativeDevTensorFull:size()[2])
-  negativeCounter = 0
-  for i = 1, negativeDevTensorFull:size()[1] do
-    if negativeDevIncluded[i] == 1 then
+    print('Filling Dev Data Tables ...')
+    positivePairsDevTable = FillDataTable(positivePairsDev, firstDataTable, secondDataTable)
+    negativePairsDevTable = FillDataTable(negativePairsDev, firstDataTable, secondDataTable)
+    print('Extracting Features from Dev Data Tables ...')
+    positiveDevTensor = ExtractFeatures(positivePairsDevTable,-1,opt.empty_cosine_penalty)
+    negativeDevTensorFull, negativeDevIncluded, numNegativeDevIncluded = ExtractFeatures(negativePairsDevTable, opt.threshold,opt.empty_cosine_penalty)
+    print('Filtering Dev Tensors by Cosine Similarity Threshold of: ' .. opt.threshold)
+    negativeDevTensor = torch.Tensor(numNegativeDevIncluded, negativeDevTensorFull:size()[2])
+    negativeCounter = 0
+    for i = 1, negativeDevTensorFull:size()[1] do
+      if negativeDevIncluded[i] == 1 then
         negativeCounter = negativeCounter + 1
-      negativeDevTensor[negativeCounter] = negativeDevTensorFull[i]
+        negativeDevTensor[negativeCounter] = negativeDevTensorFull[i]
+      end
     end
-  end
-  print('\n')
-  print("negativeDevTensorFull:size(): " .. negativeDevTensorFull:size()[1])
-  print("negativeDevTensor:size(): " .. negativeDevTensor:size()[1])
-  print("positiveDevTensor:size(): " .. positiveDevTensor:size()[1])
-  print('\n')
+    print('\n')
+    print("negativeDevTensorFull:size() before cosine cut: " .. negativeDevTensorFull:size()[1])
+    print("negativeDevTensor:size() after cosine cut: " .. negativeDevTensor:size()[1])
+    print("positiveDevTensor:size(): " .. positiveDevTensor:size()[1])
+    print('\n')
 
-  positiveTestingTensor = ExtractFeatures(positivePairsTestingTable,-1,0)
-  negativeTestingTensorFull, negativeTestingIncluded, numNegativeTestingIncluded = ExtractFeatures(negativePairsTestingTable, opt.threshold,-1)
+
+    --balance negatives in training
+    negativeTrainingTensor = negativeTrainingTensor[ { {1,math.floor(negativeTrainingTensor:size(1)*opt.percent_neg_train)}, {} } ]
+
+    print("XXXXXXXXXX===================XXXXXXXXXXXXXXXXXXXXXX")
+    print("Training Positive: " .. positiveTrainingTensor:size(1))
+    print("Training Negative: " .. negativeTrainingTensor:size(1))
+    print("XXXXXXXXXX===================XXXXXXXXXXXXXXXXXXXXXX")
+  end
+  
+  print('Filling Test Data Tables ...')
+  local positivePairsTestingTable = FillDataTable(positivePairsTesting, firstDataTable, secondDataTable,testIndexToIdTable, 1)
+  local negativePairsTestingTable = FillDataTable(negativePairsTesting, firstDataTable, secondDataTable,testIndexToIdTable, 1+#positivePairsTesting)
+  print('Extracting Features from Test Data Tables ...')
+  positiveTestingTensor = ExtractFeatures(positivePairsTestingTable,-1,opt.empty_cosine_penalty)
+  negativeTestingTensorFull, negativeTestingIncluded, numNegativeTestingIncluded = ExtractFeatures(negativePairsTestingTable, opt.threshold,opt.empty_cosine_penalty)
+  print('Filtering Test Tensors by Cosine Similarity Threshold of: ' .. opt.threshold)
   negativeTestingTensor = torch.Tensor(numNegativeTestingIncluded, negativeTestingTensorFull:size()[2])
   negativeCounter = 0
   for i = 1, negativeTestingTensorFull:size()[1] do
     if negativeTestingIncluded[i] == 1 then
       negativeCounter = negativeCounter + 1
       negativeTestingTensor[negativeCounter] = negativeTestingTensorFull[i]
+      testIndexToIdTable[negativeCounter] = testIndexToIdTable[i]
     end
   end
-  print("negativeTestingTensorFull:size(): " .. negativeTestingTensorFull:size()[1])
-  print("negativeTestingTensor:size(): " .. negativeTestingTensor:size()[1])
+  print("negativeTestingTensorFull:size() before cosine filtering: " .. negativeTestingTensorFull:size()[1])
+  print("negativeTestingTensor:size() after cosine filtering: " .. negativeTestingTensor:size()[1])
   print("positiveTestingTensor:size(): " .. positiveTestingTensor:size()[1])
   print('\n')
 
-  negativeSamplingReductionRatio = negativeTestingTensorFull:size()[1] / negativeTestingTensor:size()[1]
-  negativeToPositveRatio = negativeTestingTensor:size()[1] / positiveTestingTensor:size()[1]
+  if opt.opMode == 'train_test' then
+    local cut_off_cosine = print_stats(negativeTrainingTensorFull, positiveTrainingTensor, negativeDevTensorFull, positiveDevTensor,negativeTestingTensorFull, positiveTestingTensor)
+    print("Safe Suggested Cut-Off Cosine Sim Value: " .. 0.9*cut_off_cosine)
+    print("Current Cut-off cosine sim value: " .. opt.threshold)
+    
+    negativeTestSamplingReductionRatio = negativeTestingTensorFull:size()[1] / negativeTestingTensor:size()[1]
+    negativeTestFilteredToPositveRatio = negativeTestingTensor:size()[1] / positiveTestingTensor:size()[1]
 
-  print('Negative Sampling Reduction Ratio: ' .. negativeSamplingReductionRatio .. '\n')
-  print('Negative to Positive After Reduction: ' .. negativeToPositveRatio .. '\n')
-
+    print('Negative Test Sampling Reduction Ratio: ' .. negativeTestSamplingReductionRatio .. '\n')
+    print('Negative Test to Positive After Filgering: ' .. negativeTestFilteredToPositveRatio .. '\n')
+  end
 
   t= sys.toc()
  
   print("Computing Features took: " .. t)
-  print_stats(negativeTrainingTensorFull, positiveTrainingTensor, negativeTestingTensorFull, positiveTestingTensor)
-
 
   sys.tic()
-  torch.save(opt.positivePairsTrainingFileBin, positiveTrainingTensor)
-  torch.save(opt.negativePairsTrainingFileBin, negativeTrainingTensor)
+  if opt.opMode == 'train_test' then
+    torch.save(opt.positivePairsTrainingFileBin, positiveTrainingTensor)
+    torch.save(opt.negativePairsTrainingFileBin, negativeTrainingTensor)
 
-  torch.save(opt.positivePairsDevFileBin, positiveDevTensor)
-  torch.save(opt.negativePairsDevFileBin, negativeDevTensor)
-
+    torch.save(opt.positivePairsDevFileBin, positiveDevTensor)
+    torch.save(opt.negativePairsDevFileBin, negativeDevTensor)
+  end
   torch.save(opt.positivePairsTestingFileBin, positiveTestingTensor)
   torch.save(opt.negativePairsTestingFileBin, negativeTestingTensor)
   torch.save(opt.testMapFileBin, testIndexToIdTable)
@@ -401,12 +526,13 @@ if opt.computeFeatures == 'yes' then --   not paths.filep(opt.positivePairsTrain
 else
   print("Loading Pre-Computed Google News word2vec Features ...")
   sys.tic()
-  positiveTrainingTensor = torch.load(opt.positivePairsTrainingFileBin)
-  negativeTrainingTensor = torch.load(opt.negativePairsTrainingFileBin)
+  if opt.opMode == 'train_test' then
+    positiveTrainingTensor = torch.load(opt.positivePairsTrainingFileBin)
+    negativeTrainingTensor = torch.load(opt.negativePairsTrainingFileBin)
 
-  positiveDevTensor = torch.load(opt.positivePairsDevFileBin)
-  negativeDevTensor = torch.load(opt.negativePairsDevFileBin)
-
+    positiveDevTensor = torch.load(opt.positivePairsDevFileBin)
+    negativeDevTensor = torch.load(opt.negativePairsDevFileBin)
+  end
   positiveTestingTensor = torch.load(opt.positivePairsTestingFileBin)
   negativeTestingTensor = torch.load(opt.negativePairsTestingFileBin)
   testIndexToIdTable = torch.load(opt.testMapFileBin)
@@ -416,37 +542,29 @@ else
 end
 
 
--- positiveTrainingTensor = positiveTrainingTensor[ { {1,math.floor(positiveTrainingTensor:size(1)*opt.percent_train)}, {} } ]
--- negativeTrainingTensor = negativeTrainingTensor[ { {1,math.floor(negativeTrainingTensor:size(1)*opt.percent_train)}, {} } ]
 
-positiveDevTensor = positiveDevTensor[ { {1,math.floor(positiveDevTensor:size(1)*opt.percent_train)}, {} } ]
-negativeDevTensor = negativeDevTensor[ { {1,math.floor(negativeDevTensor:size(1)*opt.percent_train)}, {} } ]
+local trainData = {}
+local devData = {}
 
---local positiveTrainingDevTensor = torch.cat(positiveTrainingTensor, positiveDevTensor,1)
---local negativeTrainingDevTensor = torch.cat(negativeTrainingTensor, negativeDevTensor,1)
---local positiveTestingDevTensor = torch.cat(positiveTestingTensor, positiveDevTensor,1)
---local negativeTestingDevTensor = torch.cat(negativeTestingTensor, negativeDevTensor,1)
+if opt.opMode == 'train_test' then
+  trainData = {
+     data = torch.cat(positiveTrainingTensor, negativeTrainingTensor,1),
+     labels = torch.cat(torch.Tensor(positiveTrainingTensor:size(1)):fill(1), torch.Tensor(negativeTrainingTensor:size(1)):fill(2)),
+     size = function() return positiveTrainingTensor:size(1) + negativeTrainingTensor:size(1) end
+  }
 
-local trainData = {
-   data = torch.cat(positiveTrainingTensor, negativeTrainingTensor,1),
-   labels = torch.cat(torch.Tensor(positiveTrainingTensor:size(1)):fill(1), torch.Tensor(negativeTrainingTensor:size(1)):fill(2)),
-   size = function() return positiveTrainingTensor:size(1) + negativeTrainingTensor:size(1) end
-}
+  devData = {
+     data = torch.cat(positiveDevTensor,negativeDevTensor,1),
+     labels = torch.cat(torch.Tensor(positiveDevTensor:size(1)):fill(1),torch.Tensor(negativeDevTensor:size(1)):fill(2)),
+     size = function() return positiveDevTensor:size(1) + negativeDevTensor:size(1) end
+  }
+end
 
 local testData = {
    data = torch.cat(positiveTestingTensor,negativeTestingTensor,1),
    labels = torch.cat(torch.Tensor(positiveTestingTensor:size(1)):fill(1),torch.Tensor(negativeTestingTensor:size(1)):fill(2)),
    size = function() return positiveTestingTensor:size(1) + negativeTestingTensor:size(1) end
 }
-
-local devData = {
-   data = torch.cat(positiveDevTensor,negativeDevTensor,1),
-   labels = torch.cat(torch.Tensor(positiveDevTensor:size(1)):fill(1),torch.Tensor(negativeDevTensor:size(1)):fill(2)),
-   size = function() return positiveDevTensor:size(1) + negativeDevTensor:size(1) end
-}
-
-
-
 
 if opt.noiseFlipLabels == 'yes' then
   local numToFlipPos = math.floor(opt.noiseFlipLabelsRatio * positiveTrainingTensor:size(1))
@@ -465,11 +583,6 @@ if opt.noiseFlipLabels == 'yes' then
       end
     end
   end
-  -- print(numToFlipPos)
-  -- print(numFlippedPos)
-  -- print(numFlippedNeg)
-  -- print(numToFlipNeg)
-  -- os.exit(3)
 end
 
 
@@ -713,6 +826,16 @@ local function evaluate(data, model, is_dev)
         else
           label = 2
         end
+        
+
+
+        -- print(testIndexToIdTable[t])
+        -- print(input)
+        -- print(pred)
+        -- print(label)
+
+        
+
         table.insert(test_predictions, {testIndexToIdTable[t], label})  
         if pred[1] > pred[2] and target == 2 then
           table.insert(falsePositives,testIndexToIdTable[t])
@@ -735,10 +858,11 @@ local function evaluate(data, model, is_dev)
    local f1 = 2*precision*recall/(precision+recall)
 
 
-
-   print('Dev P = ' .. precision)
-   print('Dev R = ' .. recall)
-   print('Dev F1 = ' .. f1)
+   if is_dev == true then
+    print('Dev P = ' .. precision)
+    print('Dev R = ' .. recall)
+    print('Dev F1 = ' .. f1)
+   end
    -- testLogger:add{['P,R,F1'] = precision .. ', ' .. recall .. ', ' .. f1}
    if is_dev == false then
       local copy_conf = torch.Tensor(#classes, #classes)
@@ -821,7 +945,10 @@ perf_file:close()
 
 
 local threshold_file = torch.DiskFile(opt.threshold_file_path, 'w')
-print(opt.threshold)
+print('opt.threshold ' .. opt.threshold)
+print('all_case_counter ' .. all_case_counter)
+
+
 threshold_file:writeFloat(opt.threshold)
 threshold_file:close()
 

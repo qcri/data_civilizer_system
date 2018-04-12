@@ -35,6 +35,7 @@ echo $OUTOUT_DIR
 
 
 SEED=11
+EMPTY_COSINE_PENALTY=-0.5
 #Training Params
 THREADS=1 					#cpu threads, DeepER-Lite is all done on cpus
 RECOMPUTE_FEATURES=yes 		#after the first run features are saved, you are welcome to recompute them though
@@ -57,7 +58,7 @@ for (( c=$START; c<=$END; c++ ))
 do
 	echo ${PRED_FILE%.*}_$c.csv
 	echo $OUTOUT_DIR/predictions_$c.txt
-	th DeepER-Lite-2.lua -predPairsFile  ${PRED_FILE%.*}_$c.csv \
+	th DeepER-Lite-Pred.lua -predPairsFile  ${PRED_FILE%.*}_$c.csv \
 				  	 -predPairsFileBin ${PRED_FILE%.*}_$c.csv'.t7' \
 				  	 -predMapFileBin  $OUTOUT_DIR/predMap.t7 \
 				  	 -predictions_file_path ${PREDICTION_FILE%.*}_$c.csv \
@@ -72,6 +73,7 @@ do
 					 -type float \
 					 -simMeasure  cosineDiff \
 					 -threshold_file_path $THRESHOLD_FILE \
+					 -empty_cosine_penalty $EMPTY_COSINE_PENALTY \
 					 -computeFeatures $RECOMPUTE_FEATURES
 done
 exit

@@ -86,7 +86,7 @@ def execute_deeper(source, table1, table2, number_of_pairs, destination, predict
     params=[source,
             table1_path,
             table2_path,
-            "4",
+            "6",
             pred_pairs_path,
             number_of_pairs,
             predictions_file_path,
