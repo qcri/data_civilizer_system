@@ -146,11 +146,11 @@ def execute_deeper(source, table1, table2, number_of_pairs, destination, predict
     createClusters(table1_path, table2_path, prediction_file, predictions_file_path)
 
 
-if __name__ == '__main__':
-    table2_path = '/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system_clean/app_storage/data_sets/deeper/output/fodors.csv'
-    table1_path = '/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system_clean/app_storage/data_sets/deeper/output/zagats.csv'
-    prediction_file = '/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system_clean/app_storage/data_sets/deeper/output/matches_sub.csv'
-    predictions_file_path = '/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system_clean/app_storage/data_sets/deeper/output/matchesCLS.csv'
-    createClusters(table1_path, table2_path, prediction_file, predictions_file_path)
+# if __name__ == '__main__':
+#     table2_path = '/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system_clean/app_storage/data_sets/deeper/output/fodors.csv'
+#     table1_path = '/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system_clean/app_storage/data_sets/deeper/output/zagats.csv'
+#     prediction_file = '/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system_clean/app_storage/data_sets/deeper/output/matches_sub.csv'
+#     predictions_file_path = '/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system_clean/app_storage/data_sets/deeper/output/matchesCLS.csv'
+#     createClusters(table1_path, table2_path, prediction_file, predictions_file_path)
 
 
