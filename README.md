@@ -69,6 +69,9 @@ The current version of the studio allows the user to add a service and run it; t
 
 In the following, there are different pipeline examples based on the uploaded datasets, namely six tables from a university and E-Commerce.
 
+### Active Node
+Each node has an attribute called isActive. This attribute takes 'y' or 'n' value. This used to indicate the deepest active node in the pipeline.   
+
 ### Fahes service to detect disguised missing
 This example check disguised missing values in 6 tables available at /app_storage/data_sets/MIT_Demo/ and write the output at /app_storage/data_sets/MIT_DemoResults/. 
 
@@ -112,12 +115,12 @@ This example creates a pipeline of two services to consolidate data available in
     Create a new pipeline 
     Instantiate a node from the DeepER service
     Add the following values to the DeepER parameters:
-    source: /app/storage/data_sets/deeper/Amazon-GoogleProducts
+    source: /app/storage/data_sets/deeper/fodors-zagats
     destination: /app/storage/data_sets/deeper/output 
-    Table1: Amazon_full.csv
-    Table2: GoogleProducts_full.csv
-    predictionsFileName: select Dept_Budget_Code from Sis_department;
-    number_of_pairs: 2500         
+    Table1: fodors.csv
+    Table2: zagats.csv
+    predictionsFileName: matches.csv
+    number_of_pairs: 50000         
 
 After executing the DeepER node, instantiate another node for EntityConsolidation
     
