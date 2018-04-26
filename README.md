@@ -70,7 +70,7 @@ The current version of the studio allows the user to add a service and run it; t
 In the following, there are different pipeline examples based on the uploaded datasets, namely six tables from a university and E-Commerce.
 
 ### Active Node
-Each node has an attribute called isActive. This attribute takes 'y' or 'n' value. This used to indicate the deepest active node in the pipeline.   
+Each node has an attribute called isActive. This attribute takes 'y' or 'n' value. This attribute is used to indicate the deepest active node in the pipeline.   
 
 ### Fahes service to detect disguised missing
 This example check disguised missing values in 6 tables available at /app_storage/data_sets/MIT_Demo/ and write the output at /app_storage/data_sets/MIT_DemoResults/. 
