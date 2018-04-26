@@ -9,6 +9,7 @@ bool GetClusters(int &cluster_id_col, const Table &table, vector<vector<int>> &c
   for (int j = 0; j < table.schema.size(); j++)
   {
     auto &attr = table.schema[j];
+    cout << "where is the CID"<< attr << "=="<< cluster_id_name<< endl;
     if (attr == cluster_id_name)
     {
       cluster_id_col = j;
@@ -161,6 +162,8 @@ Consolidation::Consolidation(string filepath, string cname)
 
 
   csvfilepath = filepath;
+  cout << " filepath: "<<filepath<<endl;
+  
   cluster_id_name = cname;
 
   bool normalize = true;

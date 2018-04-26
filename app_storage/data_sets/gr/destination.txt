@@ -1,1 +1,1 @@
-/app/storage/data_sets/deeper/output/GRRows.csv 
+/app/storage/data_sets/deeper/output/ 
