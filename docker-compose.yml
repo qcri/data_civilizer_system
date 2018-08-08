@@ -12,6 +12,7 @@ services:
       - $PWD/app_storage:/app/storage
     ports:
       - "8888:8888"
+      - "8889:8889"
   mongodb:
     image: mongo:latest
   # elasticsearch:
@@ -48,6 +49,8 @@ services:
         # - $PWD/apis/rest:/app/rest
     environment:
       - PORT=8089
+    ports:
+      - "8089:8089"
     image: data-civilizer-api:0.1
     depends_on:
       - grecord_service

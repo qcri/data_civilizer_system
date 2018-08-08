@@ -1,22 +1,27 @@
-# FROM python:3.5
-# FROM ubuntu:16.04
-FROM nightseas/cuda-torch
+FROM llsc/cuda-torch:0.6
 MAINTAINER Essam Mansour <essam.mansour@gmail.com>
 
-RUN apt-get update -qq && apt-get upgrade -y && \
-    apt-get install -y \
-    software-properties-common build-essential python3.5 python3.5-dev python3-pip python3.5-venv \
-    vim unzip sudo mono-complete git wget && \
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        python3 \
+        python3-pip \
+        python3-setuptools \
+        vim \
+        unzip \
+        wget \
+    && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # update pip
-RUN python3.5 -m pip install pip --upgrade
-RUN python3.5 -m pip install wheel
+RUN python3 -m pip install pip --upgrade
+RUN python3 -m pip install wheel
 
 # fix the path for python
 # RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.5 10
-RUN ln -sf python3.5 /usr/bin/python
+RUN ln -sf python3 /usr/bin/python
 RUN python --version
 RUN pip --version
 
@@ -27,10 +32,19 @@ RUN add-apt-repository ppa:webupd8team/java && \
 
 # Install Java 8
 RUN apt-get update && \
-    apt-get --yes --no-install-recommends install oracle-java8-installer
+    apt-get install -y --no-install-recommends \
+        oracle-java8-installer \
+    && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install ant for ImputeDB, should be installed after Java8
-RUN apt-get install -y ant
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ant \
+    && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -38,19 +52,21 @@ WORKDIR /app
 COPY ./requirements.txt /app/requirements.txt
 RUN pip install -r requirements.txt
 
-
 # Build Torch -- No need
 # COPY ./rest/services/deeper_service/DeepER-Lite /app/DeepER-Lite
 # RUN /app/DeepER-Lite/install.sh
-
 
 # install required lib for DeepER
 RUN luarocks install csvigo
 RUN luarocks install dp
 
 COPY ./rest /app/rest
-RUN /app/rest/services/build.sh
-
+# -- Modify build.sh in place to not install GloVe
+# -- Create symlink to point to external GloVe.t7 file
+RUN sed -i '/GloVe/,/^)$/ s/^[^#]/#&/' /app/rest/services/build.sh && \
+    /app/rest/services/build.sh && \
+    find /app -name '*.o' -exec rm -f {} \; && \
+    ln -s /app/storage/glove/GloVe.t7 /app/rest/services/deeper_service/DeepER-Lite/glove/GloVe.t7
 
 EXPOSE 8089
 CMD python ./rest/civilizer.py

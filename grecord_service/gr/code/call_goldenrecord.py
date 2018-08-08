@@ -7,7 +7,7 @@ cname = "cluster_id"
 #input_file = filepath
 #output_file = outfilepath
 
-def main(filepath, outfilepath):
+def main(filepath, outfilepath, preput=""):
   consolidation = goldenrecord.Consolidation(filepath, cname)
   num_of_tables = consolidation.number_of_tables
   for i in range(num_of_tables):
@@ -20,7 +20,7 @@ def main(filepath, outfilepath):
       message1 = consolidation.ProfileColumn(i, col_id)
       print(message1)
 
-      skip = input()
+      skip, preput = (preput[0:1], preput[1:]) if len(preput) > 0 else (input(), "")
       if skip != "1" and skip != "2" and skip != "3" and skip != "4" and skip != "5":
         continue
 
@@ -40,7 +40,7 @@ def main(filepath, outfilepath):
           print("Done with current column\n")
           break
 
-        choice = input()
+        choice, preput = (preput[0:1], preput[1:]) if len(preput) > 0 else (input(), "")
         if choice == "4":
           print("Done with current column\n")
           break
