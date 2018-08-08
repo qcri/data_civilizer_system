@@ -5,11 +5,14 @@ import csv
 
 #########################################
 def write_clustered_csv(c_data, matches_file):
-    keys = c_data[0].keys()
-    with open(matches_file, 'w') as output_file:
-        dict_writer = csv.DictWriter(output_file, keys)
-        dict_writer.writeheader()
-        dict_writer.writerows(c_data)
+    if (len (c_data) > 0):
+        print("create clusters of size")
+        print(len (c_data))
+        keys = c_data[0].keys()
+        with open(matches_file, 'w') as output_file:
+            dict_writer = csv.DictWriter(output_file, keys)
+            dict_writer.writeheader()
+            dict_writer.writerows(c_data)
 
 def readCsv(csvFile, column, data):
     with open(csvFile, "r", encoding='utf-8', errors='ignore') as infile:
@@ -22,16 +25,19 @@ def createClusters(table1, table2, prediction_file, matches_file):
     # table1="Amazon_full.csv"
     data_t1={}
     readCsv(table1, 'id', data_t1)
-    # print(data_t1['b000ayznhg'])
+    # print(data_t1['256'])
 
     # table2="GoogleProducts_full.csv"
     data_t2={}
     readCsv(table2, 'id', data_t2)
-    # print(data_t2['http://www.google.com/base/feeds/snippets/1943468973342706865'])
+    # print(data_t2['571'])
 
     cid = 0
     cluster_id_att = "cluster_id"
     clustered_data = []
+
+    # print('clustered_data  before')
+    # print(len(clustered_data))
 
     df=pd.read_csv(prediction_file, sep=',', header=None)
     data = df.values
@@ -41,18 +47,24 @@ def createClusters(table1, table2, prediction_file, matches_file):
     for connected_component in nx.connected_components(G):
         # print(connected_component)
         cluster_id_value = "cluster_id" + "_" + str(cid)
-        print("\n" + cluster_id_value)
+        # print("\n" + cluster_id_value)
         new_cluster = {cluster_id_att: cluster_id_value}
         for item in connected_component:
-            if item in data_t1:
-                new_row = dict(list(data_t1[item].items()) + list(new_cluster.items()))
+            str_item = str(item)
+            # print("for loop========")
+            # print(str_item)
+            if str_item in data_t1:
+                new_row = dict(list(data_t1[str_item].items()) + list(new_cluster.items()))
                 clustered_data.append(new_row)
-                print(new_row)
-            elif item in data_t2:
-                new_row = dict(list(data_t2[item].items()) + list(new_cluster.items()))
+                # print(new_row)
+            elif str(item) in data_t2:
+                new_row = dict(list(data_t2[str_item].items()) + list(new_cluster.items()))
                 clustered_data.append(new_row)
-                print(new_row)
+                # print(new_row)
         cid = cid + 1
+
+    # print('clustered_data  after')
+    # print(len(clustered_data))
 
     write_clustered_csv(clustered_data, matches_file)
 ########################################
@@ -86,7 +98,7 @@ def execute_deeper(source, table1, table2, number_of_pairs, destination, predict
     params=[source,
             table1_path,
             table2_path,
-            "4",
+            "6",
             pred_pairs_path,
             number_of_pairs,
             predictions_file_path,
@@ -134,6 +146,11 @@ def execute_deeper(source, table1, table2, number_of_pairs, destination, predict
     createClusters(table1_path, table2_path, prediction_file, predictions_file_path)
 
 
-
+# if __name__ == '__main__':
+#     table2_path = '/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system_clean/app_storage/data_sets/deeper/output/fodors.csv'
+#     table1_path = '/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system_clean/app_storage/data_sets/deeper/output/zagats.csv'
+#     prediction_file = '/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system_clean/app_storage/data_sets/deeper/output/matches_sub.csv'
+#     predictions_file_path = '/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system_clean/app_storage/data_sets/deeper/output/matchesCLS.csv'
+#     createClusters(table1_path, table2_path, prediction_file, predictions_file_path)
 
 
