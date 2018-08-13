@@ -69,4 +69,5 @@ RUN sed -i '/GloVe/,/^)$/ s/^[^#]/#&/' /app/rest/services/build.sh && \
     ln -s /app/storage/glove/GloVe.t7 /app/rest/services/deeper_service/DeepER-Lite/glove/GloVe.t7
 
 EXPOSE 8089
-CMD python ./rest/civilizer.py
+#CMD python ./rest/civilizer.py
+CMD ./rest/civilizer.sh

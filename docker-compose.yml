@@ -42,6 +42,9 @@ services:
   #    aurum_net:
   #      aliases:
   #        - frontend        
+  cuda_torch:
+    image: llsc/cuda-torch:0.6
+    build: cuda-torch
   apis:
     build: apis
     volumes:
