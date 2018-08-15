@@ -51,7 +51,7 @@ Build and run all Data Civilizer images at once:
 
     docker-compose up
 
-Build one by one:
+(Or) Build one by one:
 
     docker-compose build apis
     docker-compose build grecord_service
@@ -61,7 +61,7 @@ Run the system:
 
     docker-compose up studio
 
-*Note:* The the apis service requires the [Standford Global Vectors for Word Representation](https://nlp.stanford.edu/projects/glove/) binary file, GloVe.t7, which is stored external to the docker image. If the file is not present when the service is started, it will be created automatically. However, depending on your system, this could take up to 40 minutes, during which there will be no indicator of progress.  You can check the progress from another command window with either `top` or `ps auxf`. With `top`, watch for luajit to execute and finish; cpu load should remain high throughout. With `ps`, wait for the apis container to execute civilizer.py.
+*Note:* The the apis service requires the [Stanford Global Vectors for Word Representation](https://nlp.stanford.edu/projects/glove/) binary file, GloVe.t7, which is stored external to the docker image. If the file is not present when the service is started, it will be created automatically. However, depending on your system, this could take up to 40 minutes, during which there will be no indicator of progress.  You can check the progress from another command window with either `top` or `ps auxf`. With `top`, watch for luajit to execute and finish; cpu load should remain high throughout. With `ps`, wait for the apis container to execute civilizer.py.
 
 ## Authoring and Running Data Civilizer Pipelines 
 Run the system, then visit [http://localhost:5000](http://localhost:5000).
