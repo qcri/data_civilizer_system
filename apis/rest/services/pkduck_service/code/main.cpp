@@ -117,8 +117,15 @@ void execute(char *table_dir, char *out_dir, char *_columns, double tau)
 		int col_no = reader->tables[i].col_no;
 		for (auto x = 0; x < row_no; x ++)
 			for (auto y = 0; y < col_no; y ++)
-				if (ss.count(reader->tables[i].rows[x][y]))
+//				if (ss.count(reader->tables[i].rows[x][y]))
+//					update = true;
+                        {
+                                string p = reader->tables[i].rows[x][y];
+                                if (ss.count(p) && p.size() > ss[p].size()) {
+                                        reader->tables[i].rows[x][y] = ss[p];
 					update = true;
+				}
+                        }
 		if (! update)
 			continue;
 
@@ -127,13 +134,15 @@ void execute(char *table_dir, char *out_dir, char *_columns, double tau)
 		if (output_file_name.back() != '/')
 			output_file_name += "/";
 		output_file_name += "updated_" + reader->tables[i].table_name;
-		ofstream fout(output_file_name.c_str());
-
+//		ofstream fout(output_file_name.c_str());
+                reader->tables[i].OutputCSV(output_file_name.c_str());
+/*
 		// schema
 		for (auto y = 0; y < col_no; y ++)
 		{
 			if (y) fout << ",";
-			fout << reader->tables[i].schema[y];
+//			fout << reader->tables[i].schema[y];
+			fout << "\"" << reader->tables[i].schema[y] << "\"";
 		}
 		fout << endl;
 		for (auto x = 0; x < row_no; x ++)
@@ -142,13 +151,17 @@ void execute(char *table_dir, char *out_dir, char *_columns, double tau)
 			{
 				if (y) fout << ",";
 				string p = reader->tables[i].rows[x][y];
-				if (!ss.count(p) || p.size() <= ss[p].size())
-					fout << p;
-				else
-					fout << ss[p];
+//				if (!ss.count(p) || p.size() <= ss[p].size())
+//					fout << p;
+//				else
+//					fout << ss[p];
+				if (ss.count(p) && p.size() > ss[p].size())
+					p = ss[p];
+				fout << "\"" << p << "\"";
 			}
 			fout << endl;
 		}
+*/
 	}
 }
 
