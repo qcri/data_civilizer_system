@@ -22,7 +22,7 @@ first, then proceed to the following instructions.
 ## A Hardware Requirements Specification
 The DC system needs at least 4GB RAM. The default memory assigned to Docker is 2GB of RAM. The memory could be adjusted from the Docker preferences.
 
-The DC system needs 60GB disk space to allocated to Docker; this is including the intermediate images, such as Ubuntu and nightseas/cuda-torch. If the user needs to save some space, he can remove the intermediate images such as Ubuntu and nightseas/cuda-torch after you build the DC images. You can clean unused images, containers or volumes using system prune, see https://docs.docker.com/config/pruning/
+The DC system needs 15GB disk space to allocated to Docker; this is including the intermediate images, such as Ubuntu and llsc/cuda-torch. If the user needs to save some space, you can clean unused images, containers or volumes using system prune, see https://docs.docker.com/config/pruning/
 
 	docker system prune 
 
@@ -43,11 +43,15 @@ Get the code
 
     cd data_civilizer_system
     
-Build all and run:
+Build the custom llsc/cuda-torch base image:
+
+    docker-compose build cuda_torch
+
+Build and run all Data Civilizer images at once:
 
     docker-compose up
 
-Build one by one:
+(Or) Build one by one:
 
     docker-compose build apis
     docker-compose build grecord_service
@@ -57,6 +61,7 @@ Run the system:
 
     docker-compose up studio
 
+*Note:* The the apis service requires the [Stanford Global Vectors for Word Representation](https://nlp.stanford.edu/projects/glove/) binary file, GloVe.t7, which is stored external to the docker image. If the file is not present when the service is started, it will be created automatically. However, depending on your system, this could take up to 40 minutes, during which there will be no indicator of progress.  You can check the progress from another command window with either `top` or `ps auxf`. With `top`, watch for luajit to execute and finish; cpu load should remain high throughout. With `ps`, wait for the apis container to execute civilizer.py.
 
 ## Authoring and Running Data Civilizer Pipelines 
 Run the system, then visit [http://localhost:5000](http://localhost:5000).
