@@ -599,11 +599,40 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
   }
 
 
-  $scope.callExecutePlan = function(){
+  $scope.callExecutePlan = function(op_index){
+        if(!op_index) op_index = 0;
+        console.log("executing plan op_index " + op_index);
         $scope.method = 'POST';
         $scope.url = '/api/plan_executions';
-        return $http({method: $scope.method, url: $scope.url, data:plansConversions.get()}).
+        var data = plansConversions.get();
+        data.operators[op_index].parameters['param1'] = 'y';
+        plansConversions.set(data);
+        return $http({method: $scope.method, url: $scope.url, data:plansConversions.get(), timeout:300000}).
         then(function(response) {
+            console.log("processing response for op_index " + op_index);
+            var data = plansConversions.get();
+            data.operators[op_index].parameters['param1'] = '';
+            plansConversions.set(data);
+            console.log("data=" + JSON.stringify(data));
+            if("connects_to" in data.operators[op_index]) {
+              console.log("connects_to in operator");
+              if(data.operators[op_index].selectedConstructor in data.operators[op_index].connects_to) {
+                console.log("selectedConstructor in connects_to");
+                for(var i = 0; i < data.operators[op_index].connects_to[data.operators[op_index].selectedConstructor].length; i++) {
+                  console.log("connects_to index " + i);
+                  for(var key in data.operators[op_index].connects_to[data.operators[op_index].selectedConstructor][i]) {
+                    console.log("connects_to key " + key);
+                    for(var j = 0; j < data.operators.length; j++) {
+                      console.log("connects_to " + key);
+                      if(data.operators[j].name == key) {
+                        console.log("chaining operator " + j);
+                        return($scope.callExecutePlan(j));
+                      }
+                    }
+                  }
+                }
+              }
+            }
             
             if(response && response.data.myURI !== ""){
             console.log("Essam response.data.myURI:" + response.data.myURI);  
