@@ -7,6 +7,10 @@ import shutil
 import subprocess
 import tempfile
 
+import csv
+import numpy as np
+import pandas as pd
+
 SELF_DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 # STORAGE_PATH = SELF_DIR_PATH + '/../../storage/imputedb'
 STORAGE_PATH = SELF_DIR_PATH + '/app/storage/imputedb'
@@ -15,6 +19,90 @@ IMPUTEDB_PATH = SELF_DIR_PATH + '/imputedb/imputedb'
 DB_PATH = STORAGE_PATH + '/tmp.db'
 INPUT_PATH = STORAGE_PATH + '/inputs'
 OUTPUT_PATH = STORAGE_PATH + '/out.csv'
+
+########################################################################
+#
+#   New API (Oct. 2018)
+#
+########################################################################
+
+'''
+@author: giovnani@csail.mit.edu
+
+
+TODO: this function will receive only params as input, which is a JSON with all the information stored there
+The forllowing implementation is to be compieant with the old api
+# def executeService(params):
+
+
+'''
+def executeService(source, out_path, q, r, params={}):
+    dir_in = source['CSV']['dir']
+    dir_out = out_path['CSV']['dir']
+    
+    dir_metadata = dir_in+"metadata_imputeBD/"
+
+    out_path['CSV']['dir']=dir_metadata # The output is redirected to the metadata folder
+                                        # TODO: this will be a paramenter passed though the JSON input file
+
+    if not os.path.exists(dir_metadata):
+        os.makedirs(dir_metadata)
+
+    execute_imputedb(source, out_path, q, r)
+
+    transform_null_to_imVal(dir_in+ source['CSV']['table']+".csv", dir_metadata+"out.csv", dir_out, params)
+
+
+def transform_null_to_imVal(dir_in, dir_metadata, dir_out, params={}):
+    data_in = pd.read_csv(dir_in, encoding='iso-8859-1')
+    imputed_values = pd.read_csv(dir_metadata, encoding='iso-8859-1')
+    cc = list(imputed_values.columns)
+    cols = list(map(lambda c: c.split(".")[1], cc))
+    imputed_values.columns= cols
+    for c in cols:
+        data_in[c] = imputed_values[c]
+
+    data_in.to_csv(dir_out + (dir_in.split("/")[-1]),
+                    sep=',',index=False,
+                    quoting = csv.QUOTE_NONNUMERIC,
+                    header=True
+                    )
+
+
+########################################################################
+#
+#   Old APIs
+#
+########################################################################
+
+def execute_imputedb(src, dst, query, alpha):
+    try:
+        csv_paths = []
+        if 'CSV' in src:
+            csv_paths += get_csv_paths(src)
+        if 'postgres' in src:
+            csv_paths += get_postgres_paths(src)
+
+        load_cmd = [IMPUTEDB_PATH, 'load', '--db', DB_PATH] + csv_paths
+        subprocess.check_call(load_cmd)
+
+        query_cmd = [IMPUTEDB_PATH, 'query', '--db', DB_PATH, '--csv', '-c', query]
+        with open(OUTPUT_PATH, 'w') as f:
+            subprocess.check_call(query_cmd, stdout=f)
+
+        if 'CSV' in dst:
+            put_csv_output(dst)
+        if 'postgres' in dst:
+            put_postgres_output(dst)
+
+    finally:
+        for f in glob.glob(INPUT_PATH + '/*csv'):
+            os.remove(f)
+        if os.path.isdir(DB_PATH):
+            shutil.rmtree(DB_PATH)
+        if os.path.isfile(OUTPUT_PATH):
+            os.remove(OUTPUT_PATH)
+
 
 def get_csv_paths(src):
     csv_dir = src['CSV']['dir'] + '/'
@@ -77,35 +165,6 @@ def put_postgres_output(dst):
     raise RuntimeError('Not implemented.')
 
 
-def execute_imputedb(src, dst, query, alpha):
-    try:
-        csv_paths = []
-        if 'CSV' in src:
-            csv_paths += get_csv_paths(src)
-        if 'postgres' in src:
-            csv_paths += get_postgres_paths(src)
-
-        load_cmd = [IMPUTEDB_PATH, 'load', '--db', DB_PATH] + csv_paths
-        subprocess.check_call(load_cmd)
-
-        query_cmd = [IMPUTEDB_PATH, 'query', '--db', DB_PATH, '--csv', '-c', query]
-        with open(OUTPUT_PATH, 'w') as f:
-            subprocess.check_call(query_cmd, stdout=f)
-
-        if 'CSV' in dst:
-            put_csv_output(dst)
-        if 'postgres' in dst:
-            put_postgres_output(dst)
-
-    finally:
-        for f in glob.glob(INPUT_PATH + '/*csv'):
-            os.remove(f)
-        if os.path.isdir(DB_PATH):
-            shutil.rmtree(DB_PATH)
-        if os.path.isfile(OUTPUT_PATH):
-            os.remove(OUTPUT_PATH)
-
-
 def execute_imputedb_file(src_json, dst_json, query, alpha):
     with open(src_json, 'r') as f:
         src = json.load(f)
@@ -144,3 +203,4 @@ if __name__ == '__main__':
     src = 'src_test.json'
     dst = 'dst_test.json'
     execute_imputedb(src, dst, 'select white_blood_cell_ct from labs;', 0)
+
