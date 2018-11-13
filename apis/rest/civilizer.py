@@ -57,7 +57,8 @@ def post_ExePlan():
         return jsonify(myresponse2)
     elif(class_name=="civilizer.basic.operators.DataCleaning-Fahes"):
         print("DataCleaning-Fahes")
-        fahes_api.execute_fahes(input_source, output_destination)
+        # fahes_api.execute_fahes(input_source, output_destination)
+        fahes_api.executeService(input_source, output_destination)
     elif (class_name == "civilizer.basic.operators.DataCleaning-PKDuck"):
         print("DataCleaning-PKDuck")
         columns = operators[number - 1]["parameters"]["param4"]
@@ -73,7 +74,8 @@ def post_ExePlan():
         q = operators[number - 1]["parameters"]["param5"]
         r = operators[number - 1]["parameters"]["param6"]
         input_source = {'CSV': {'dir': task_sources, 'table': tableName}}
-        imputedb_api.execute_imputedb(input_source, output_destination, q, r)
+        # imputedb_api.execute_imputedb(input_source, output_destination, q, r)
+        imputedb_api.executeService(input_source, output_destination, q, r)
         # inputF = "sources_im.json"
         # outputF = "destination.json"
         # imputedb_api.execute_imputedb_file(inputF, outputF, 'select Dept_Budget_Code from Sis_department;', 0)
