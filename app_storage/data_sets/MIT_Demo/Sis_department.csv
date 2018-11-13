@@ -1,4 +1,4 @@
-Department Code,Department Name,Department Full Name,School Code,School Name,Dept Budget Code,Is Degree Granting,Dept Name In Commencement Bk,School Name In Commencement Bk,Department Name History,Department Last Activity Date,Dlc Key,Warehouse Load Date
+Department Code,Department Name,Department Full Name,School Code,School Name,Dept_Budget_Code,Is Degree Granting,Dept Name In Commencement Bk,School Name In Commencement Bk,Department Name History,Department Last Activity Date,Dlc Key,Warehouse Load Date
 4,Architecture,  4 -Architecture,A,Architecture and Planning,031000,Y,Department of Architecture,School of Architecture and Planning,"",02/17/94 12:00 AM,D_ARCH,01/08/16 12:10 AM
 11,Urban Studies and Planning, 11 -Urban Studies and Planning,A,Architecture and Planning,035000,Y,Department of Urban Studies and Planning,School of Architecture and Planning,"",02/17/94 12:00 AM,D_DUSP,01/08/16 12:10 AM
 RED,Center for Real Estate Develop,RED -Center for Real Estate Develop,A,Architecture and Planning,033000,Y,Center for Real Estate Development,School of Architecture and Planning,"",09/24/09 12:00 AM,D_CRE,01/08/16 12:10 AM
