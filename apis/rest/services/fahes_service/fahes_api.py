@@ -1,12 +1,14 @@
 import os
 from subprocess import Popen
-import json 
+import json
 from os import listdir
 import ctypes
 from ctypes import c_char_p
 import pandas as pd
 import csv
 import numpy as np
+
+from pandas.api.types import is_string_dtype
 
 global tool_loc
 # tool_loc = "./fahes/"
@@ -63,11 +65,9 @@ def transform_dmv_to_null(dir_in, dir_metadata, dir_out, params={}):
         metadata_file_path = dir_metadata + "DMV_" + file # DMV_ is the prefix added by Fahes
         file_out_path = dir_out + file
 
-        print("Outputting file " + file_out_path)
         # apply the transformation (table is a pandas dataframe):
         table = transformSingleFile(file_in_path, metadata_file_path)
 
-        print("Outputting file " + file_out_path)
         table.to_csv(file_out_path,
                     sep=',',index=False,
                     quoting = csv.QUOTE_NONNUMERIC,
@@ -85,46 +85,51 @@ Fahes indicates which values for what attribute should be replaced with a null v
 
 This function allpy this transformation
 '''
+
+
 def transformSingleFile(file_in_path, metadata_file_path):
-    table = pd.read_csv(file_in_path, encoding = "ISO-8859-1")
-    
+    table = pd.read_csv(file_in_path, encoding="ISO-8859-1")
+
     statinfo = os.stat(metadata_file_path)
-    if(statinfo.st_size==0): ## if == 0 : do not read
+    if (statinfo.st_size == 0):  ## if == 0 : do not read
         return table
 
-    df_dmv = pd.read_csv(metadata_file_path, encoding = "ISO-8859-1")
-    
+    df_dmv = pd.read_csv(metadata_file_path, encoding="ISO-8859-1")
 
     dmv_attributes = set(df_dmv[" attribute name"].values)
 
     for attr in dmv_attributes:
-        df_dmv_ = df_dmv[df_dmv[" attribute name"]==attr]
+        df_dmv_ = df_dmv[df_dmv[" attribute name"] == attr]
         if table[attr].dtypes == np.int:
-            tt = set(df_dmv_[df_dmv[" attribute name"]==attr][" DMV"].values)
-            
-            num_null_fahes = sum(list(df_dmv_[df_dmv[" attribute name"]==attr][" frequency"].values))
+            tt = set(df_dmv_[df_dmv[" attribute name"] == attr][" DMV"].values)
+
+            num_null_fahes = sum(list(df_dmv_[df_dmv[" attribute name"] == attr][" frequency"].values))
             num_null_before = table[attr].isnull().values.sum()
 
             table[attr] = table[attr].astype(str)
-            for i,t in enumerate(tt):
-                table[attr] = table[attr].replace(t,np.NaN)
-                
+            for i, t in enumerate(tt):
+                t_string = str(t).split(".")[0]
+                table[attr] = table[attr].replace(t_string, np.NaN)
+
             num_null_after = table[attr].isnull().values.sum()
-            if (num_null_fahes - (num_null_after-num_null_before)) > 0:
+            if (num_null_fahes - (num_null_after - num_null_before)) > 0:
                 raise ValueError('Not all the nulls have been converted correctly.')
         else:
-            df_dmv_.loc[:,(" DMV")].astype(table[attr].dtypes)
-            tt = set(df_dmv_[df_dmv[" attribute name"]==attr][" DMV"].values)
-            
-            num_null_fahes = sum(list(df_dmv_[df_dmv[" attribute name"]==attr][" frequency"].values))
-            
+            df_dmv_.loc[:, (" DMV")].astype(table[attr].dtypes)
+            tt = set(df_dmv_[df_dmv[" attribute name"] == attr][" DMV"].values)
+
+            num_null_fahes = sum(list(df_dmv_[df_dmv[" attribute name"] == attr][" frequency"].values))
+
             num_null_before = table[attr].isnull().values.sum()
             for t in tt:
-                table[attr] = table[attr].replace(t,np.NaN)
+                table[attr] = [(s.strip() if isinstance(s, str) else s) for s in table[attr].values]
+                table[attr] = table[attr].replace(t, np.NaN)
             num_null_after = table[attr].isnull().values.sum()
-            if (int(num_null_fahes) - (num_null_after-num_null_before)) > 0:
-                raise ValueError('Not all the nulls have been converted correctly.\nCheck "transformSingleFile()" in Fahes API')
+            if (int(num_null_fahes) - (num_null_after - num_null_before)) > 0:
+                raise ValueError(
+                    'Not all the nulls have been converted correctly.\nCheck "transformSingleFile()" in Fahes API')
     return table
+
 # def transformSingleFile(file_in_path, metadata_file_path):
 #     table = pd.read_csv(file_in_path, encoding = "ISO-8859-1") # pandas dataframe 
     
@@ -337,4 +342,3 @@ if not os.path.exists(directory):
 For file in input:
     DMV (vedi script)
 '''
-
