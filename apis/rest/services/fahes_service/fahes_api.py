@@ -35,19 +35,20 @@ def executeService(source, out_path, params={}):
     dir_in = source['CSV']['dir']
     dir_out = out_path['CSV']['dir']
     
-    dir_metadata = dir_in+"/metadata_fahes/"
-    out_path['CSV']['dir']=dir_metadata # the output is redirected to the metadata folder
+#   dir_metadata = dir_in+"/metadata_fahes/"
+#   out_path['CSV']['dir']=dir_metadata # the output is redirected to the metadata folder
                                         #The purpose is twofold:
                                         #   - we do not change old API
                                         #   - we keep the meta-data
                                         # TODO: this will be a paramenter passed though the JSON input file
-    if not os.path.exists(dir_metadata):
-        os.makedirs(dir_metadata)
+#   if not os.path.exists(dir_metadata):
+#       os.makedirs(dir_metadata)
 
-    execute_fahes(source, out_path) # not passing dir_metadata but the json for keeping the old API
+#   execute_fahes(source, out_path) # not passing dir_metadata but the json for keeping the old API
 
     # todo with param, define which DMVs to apply
-    transform_dmv_to_null(dir_in, dir_metadata, dir_out, params)
+#   transform_dmv_to_null(dir_in, dir_metadata, dir_out, params)
+    transform_dmv_to_null(dir_in, dir_out, params)
 
 
 '''
@@ -62,11 +63,14 @@ def transform_dmv_to_null(dir_in, dir_metadata, dir_out, params={}):
     # for each file apply the tranformation
     for file in files_in:
         file_in_path = dir_in + file
-        metadata_file_path = dir_metadata + "DMV_" + file # DMV_ is the prefix added by Fahes
-        file_out_path = dir_out + file
+#       metadata_file_path = dir_metadata + "DMV_" + file # DMV_ is the prefix added by Fahes
+#       file_out_path = dir_out + file
 
         # apply the transformation (table is a pandas dataframe):
-        table = transformSingleFile(file_in_path, metadata_file_path)
+#       table = transformSingleFile(file_in_path, metadata_file_path)
+        table, file_out = transformSingleFile(file_in_path)
+
+        file_out_path = dir_out + file_out
 
         table.to_csv(file_out_path,
                     sep=',',index=False,
@@ -87,14 +91,25 @@ This function allpy this transformation
 '''
 
 
-def transformSingleFile(file_in_path, metadata_file_path):
-    table = pd.read_csv(file_in_path, encoding="ISO-8859-1")
+#def transformSingleFile(file_in_path, metadata_file_path):
+def transformSingleFile(file_in_path):
+#   table = pd.read_csv(file_in_path, encoding="ISO-8859-1")
 
-    statinfo = os.stat(metadata_file_path)
+    statinfo = os.stat(file_in_path)
     if (statinfo.st_size == 0):  ## if == 0 : do not read
-        return table
+        return
 
-    df_dmv = pd.read_csv(metadata_file_path, encoding="ISO-8859-1")
+    df_dmv = pd.read_csv(file_in_path, encoding="ISO-8859-1")
+
+    table_reference = df_dmv["table reference"].iloc[0].split("::")
+    if table_reference[0] == "csv":
+        file_out = table_reference[2]
+        table = pd.read_csv("".join(table_reference[1:]), encoding="ISO-8859-1")
+    else:
+        return
+
+    if df_dmv[" attribute name"].count() == 0:
+        return table, file_out
 
     dmv_attributes = set(df_dmv[" attribute name"].values)
 
@@ -128,7 +143,8 @@ def transformSingleFile(file_in_path, metadata_file_path):
             if (int(num_null_fahes) - (num_null_after - num_null_before)) > 0:
                 raise ValueError(
                     'Not all the nulls have been converted correctly.\nCheck "transformSingleFile()" in Fahes API')
-    return table
+
+    return table, file_out
 
 # def transformSingleFile(file_in_path, metadata_file_path):
 #     table = pd.read_csv(file_in_path, encoding = "ISO-8859-1") # pandas dataframe 
