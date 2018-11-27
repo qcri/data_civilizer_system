@@ -115,19 +115,24 @@ def transformSingleFile(file_in_path):
 
     for attr in dmv_attributes:
         df_dmv_ = df_dmv[df_dmv[" attribute name"] == attr]
-        if table[attr].dtypes == np.int:
+        if table[attr].dtypes == np.int or table[attr].dtypes == np.float64:
             tt = set(df_dmv_[df_dmv[" attribute name"] == attr][" DMV"].values)
 
             num_null_fahes = sum(list(df_dmv_[df_dmv[" attribute name"] == attr][" frequency"].values))
-            num_null_before = table[attr].isnull().values.sum()
 
-            table[attr] = table[attr].astype(str)
+            table[attr] = [str(s).split(".0")[0] for s in table[attr].values]  # table[attr].astype(str)
+            num_null_before = table[attr].isnull().values.sum()
             for i, t in enumerate(tt):
-                t_string = str(t).split(".")[0]
+                t_string = str(t).split(".0")[0]
                 table[attr] = table[attr].replace(t_string, np.NaN)
 
             num_null_after = table[attr].isnull().values.sum()
-            if (num_null_fahes - (num_null_after - num_null_before)) > 0:
+            if (int(num_null_fahes) - (num_null_after - num_null_before)) > 0:
+                print(attr + ": (" + str(int(num_null_fahes)) + ") " + str(
+                    int(num_null_fahes) - (num_null_after - num_null_before)) + "\n")
+                print(tt)
+                print()
+            if (num_null_fahes - (num_null_after-num_null_before)) > 0:
                 raise ValueError('Not all the nulls have been converted correctly.')
         else:
             df_dmv_.loc[:, (" DMV")].astype(table[attr].dtypes)
@@ -140,6 +145,7 @@ def transformSingleFile(file_in_path):
                 table[attr] = [(s.strip() if isinstance(s, str) else s) for s in table[attr].values]
                 table[attr] = table[attr].replace(t, np.NaN)
             num_null_after = table[attr].isnull().values.sum()
+
             if (int(num_null_fahes) - (num_null_after - num_null_before)) > 0:
                 raise ValueError(
                     'Not all the nulls have been converted correctly.\nCheck "transformSingleFile()" in Fahes API')
