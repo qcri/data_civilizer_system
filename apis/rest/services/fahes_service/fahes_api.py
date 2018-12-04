@@ -41,8 +41,8 @@ def executeService(source, out_path, params={}):
                                         #   - we do not change old API
                                         #   - we keep the meta-data
                                         # TODO: this will be a paramenter passed though the JSON input file
-#   if not os.path.exists(dir_metadata):
-#       os.makedirs(dir_metadata)
+    if not os.path.exists(dir_out):
+        os.makedirs(dir_out)
 
 #   execute_fahes(source, out_path) # not passing dir_metadata but the json for keeping the old API
 
@@ -54,7 +54,7 @@ def executeService(source, out_path, params={}):
 '''
 Iterate through the files in the input directory
 '''
-def transform_dmv_to_null(dir_in, dir_metadata, dir_out, params={}):
+def transform_dmv_to_null(dir_in, dir_out, params={}):
     files_in = os.listdir(dir_in)
     
     # only .CSV supported, check extension:
@@ -67,16 +67,15 @@ def transform_dmv_to_null(dir_in, dir_metadata, dir_out, params={}):
 #       file_out_path = dir_out + file
 
         # apply the transformation (table is a pandas dataframe):
-#       table = transformSingleFile(file_in_path, metadata_file_path)
         table, file_out = transformSingleFile(file_in_path)
 
-        file_out_path = dir_out + file_out
-
-        table.to_csv(file_out_path,
-                    sep=',',index=False,
-                    quoting = csv.QUOTE_NONNUMERIC,
-                    header=True
-                    )
+        if table is not None:
+            file_out_path = dir_out + file_out
+            table.to_csv(file_out_path,
+                        sep=',',index=False,
+                        quoting = csv.QUOTE_NONNUMERIC,
+                        header=True
+                        )
 
 
 '''
@@ -91,10 +90,7 @@ This function allpy this transformation
 '''
 
 
-#def transformSingleFile(file_in_path, metadata_file_path):
 def transformSingleFile(file_in_path):
-#   table = pd.read_csv(file_in_path, encoding="ISO-8859-1")
-
     statinfo = os.stat(file_in_path)
     if (statinfo.st_size == 0):  ## if == 0 : do not read
         return
