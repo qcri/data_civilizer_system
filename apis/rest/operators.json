@@ -1,216 +1,549 @@
-{"operators":[
-{"supportBroadcast":false,
-  "nb_outputs":1,
-  "class":"civilizer.basic.operators.TextFileSource",
-  "parameters":{
-  	"0":[
-  		{"name":"param0",
-  		"inputType":"String",
-  		"type":"civilizer.basic.operators.TextFileSource"}],
-  	"1":[
-  		{"name":"param0",
-  		"inputType":"String",
-  		"type":"TextFile"},
-  		{"name":"param1",
-  		 "inputType":"String",
-  		 "type":"Format"}]},
-  "nb_inputs":0},
-
-{	"supportBroadcast":false,
-	"nb_outputs":1,
-	"class":"civilizer.basic.operators.TableSource",
-	"parameters":{
-		"0":[
-			{"name":"param0",
-			"inputType":"String",
-			"type":"civilizer.basic.operators.TableSource"}],
-		"1":[
-			{"name":"param0",
-			"inputType":"String",
-			"type":"pandas.DataFrames"},
-			{"name":"param1",
-			"inputType":"String",
-			"type":"Location"}]},
-	"nb_inputs":0},
-
-{"supportBroadcast":false,
-	"nb_outputs":1,
-	"class":"civilizer.basic.operators.CollectionSource",
-	"parameters":{
-		"0":[
-			{"name":"param0",
-			"inputType":"String",
-			"type":"civilizer.basic.operators.CollectionSource"}],
-		"1":[
-			{"name":"param0",
-			"inputType":"String",
-			"type":"Collection Location"},
-			{"name":"param1",
-			"inputType":"String",
-			"type":"DataSetType"}]},
-	"nb_inputs":0},
-
-{"supportBroadcast":true,
-	"nb_outputs":1,
-	"class":"civilizer.basic.operators.DataDiscovery",
-	"parameters":{
-		"0":[
-			{"name":"param0",
-			 "inputType":"Service",
-			 "type":"civilizer.DataDiscovery.Aurum"
-			 },
-			 {"name":"param1",
-			  "inputType":"String",
-			  "type":"civilizer.isActive"},
-			 {"name":"param2",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.source"},
-			 {"name":"param3",
-			  "inputType":"String",
-			   "type":"civilizer.dataCollection.destination"}]},
-	"nb_inputs":1},
-
-{"supportBroadcast":true,
-	"nb_outputs":1,
-	"class":"civilizer.basic.operators.EntityMatching-DeepER",
-	"parameters":{
-		"0":[
-			{"name":"param0",
-			 "inputType":"Service",
-			 "type":"civilizer.EntityMatching.DeepER"
-			 },
-			{"name":"param1",
-			  "inputType":"String",
-			  "type":"civilizer.isActive"}, 
-			{"name":"param2",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.source"},
-			{"name":"param3",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.destination"},
-			{"name":"param4",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.Table1"},
-			{"name":"param5",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.Table2"},
-			{"name":"param6",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.predictionsFileName"},
-			{"name":"param7",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.number_of_pairs"}]},
-	"nb_inputs":1},
-
-{"supportBroadcast":true,
-	"nb_outputs":1,
-	"class":"civilizer.basic.operators.DataCleaning-Fahes",
-	"parameters":{
-		"0":[
-			{"name":"param0",
-			 "inputType":"Service",
-			 "type":"civilizer.DataCleaning.Fahes"
-			 },
-			{"name":"param1",
-			  "inputType":"String",
-			  "type":"civilizer.isActive"},
-			{"name":"param2",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.source"},
-			 {"name":"param3",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.destination"}]},
-	"nb_inputs":1},
-
-{"supportBroadcast":true,
-	"nb_outputs":1,
-	"class":"civilizer.basic.operators.DataCleaning-PKDuck",
-	"parameters":{
-		"0":[
-			{"name":"param0",
-			 "inputType":"Service",
-			 "type":"civilizer.DataCleaning.PKDuck"
-			 },
-			{"name":"param1",
-			  "inputType":"String",
-			  "type":"civilizer.isActive"},
-			 {"name":"param2",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.source"},
-			{"name":"param3",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.destination"},
-			{"name":"param4",
-			  "inputType":"String",
-			  "type":"civilizer.DataCleaning.PKDuck.Columns"},
-			{"name":"param5",
-			  "inputType":"String",
-			  "type":"civilizer.DataCleaning.PKDuck.Tau"}]},
-	"nb_inputs":1},
-
-{"supportBroadcast":true,
-	"nb_outputs":1,
-	"class":"civilizer.basic.operators.DataCleaning-Imputedb",
-	"parameters":{
-		"0":[
-			{"name":"param0",
-			 "inputType":"Service",
-			 "type":"civilizer.DataCleaning.Imputedb"
-			 },
-			{"name":"param1",
-			  "inputType":"String",
-			  "type":"civilizer.isActive"},
-			{"name":"param2",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.source"},
-			{"name":"param3",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.destination"},
-			{"name":"param4",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.tableName"},
-			{"name":"param5",
-			  "inputType":"String",
-			  "type":"civilizer.DataCleaning.Imputedb.Query"},
-			{"name":"param6",
-			  "inputType":"String",
-			  "type":"civilizer.DataCleaning.Imputedb.Ratio"}]},
-	"nb_inputs":1},
-
-{"supportBroadcast":true,
-	"nb_outputs":1,
-	"class":"civilizer.basic.operators.DataCleaning-Profiler",
-	"parameters":{
-		"0":[
-			{"name":"param0",
-			 "inputType":"Service",
-			 "type":"civilizer.DataCleaning.Profiler"
-			 },
-			{"name":"param1",
-			  "inputType":"String",
-			  "type":"civilizer.isActive"},
-			 {"name":"param2",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.destination"}]},
-	"nb_inputs":1},
-
-{"supportBroadcast":true,
-	"nb_outputs":1,
-	"class":"civilizer.basic.operators.EntityConsolidation",
-	"parameters":{
-		"0":[
-			{"name":"param0",
-			 "inputType":"Service",
-			 "type":"civilizer.EntityConsolidation.GoldenRecords"
-			 },
-			{"name":"param1",
-			  "inputType":"String",
-			  "type":"civilizer.isActive"},
-			{"name":"param2",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.source"},
-			{"name":"param3",
-			  "inputType":"String",
-			  "type":"civilizer.dataCollection.destination"}]},
-	"nb_inputs":1}	
-]}
+{
+    "operators": [
+        {
+            "supportBroadcast": false,
+            "interactive": false,
+            "nb_outputs": 1,
+            "class": "civilizer.basic.operators.TextFileSource",
+            "parameters": {
+                "0": [
+                    {
+                        "name": "param0",
+                        "inputType": "String",
+                        "type": "civilizer.basic.operators.TextFileSource"
+                    }
+                ],
+                "1": [
+                    {
+                        "name": "param0",
+                        "inputType": "String",
+                        "type": "TextFile"
+                    },
+                    {
+                        "name": "param1",
+                        "inputType": "String",
+                        "type": "Format"
+                    }
+                ]
+            },
+            "nb_inputs": 0
+        },
+        {
+            "supportBroadcast": false,
+            "interactive": false,
+            "nb_outputs": 1,
+            "class": "civilizer.basic.operators.TableSource",
+            "parameters": {
+                "0": [
+                    {
+                        "name": "param0",
+                        "inputType": "String",
+                        "type": "civilizer.basic.operators.TableSource"
+                    }
+                ],
+                "1": [
+                    {
+                        "name": "param0",
+                        "inputType": "String",
+                        "type": "pandas.DataFrames"
+                    },
+                    {
+                        "name": "param1",
+                        "inputType": "String",
+                        "type": "Location"
+                    }
+                ]
+            },
+            "nb_inputs": 0
+        },
+        {
+            "supportBroadcast": false,
+            "interactive": false,
+            "nb_outputs": 1,
+            "class": "civilizer.basic.operators.CollectionSource",
+            "parameters": {
+                "0": [
+                    {
+                        "name": "param0",
+                        "inputType": "String",
+                        "type": "civilizer.basic.operators.CollectionSource"
+                    }
+                ],
+                "1": [
+                    {
+                        "name": "param0",
+                        "inputType": "String",
+                        "type": "Collection Location"
+                    },
+                    {
+                        "name": "param1",
+                        "inputType": "String",
+                        "type": "DataSetType"
+                    }
+                ]
+            },
+            "nb_inputs": 0
+        },
+        {
+            "supportBroadcast": true,
+            "interactive": false,
+            "nb_outputs": 1,
+            "class": "civilizer.basic.operators.DataDiscovery",
+            "parameters": {
+                "0": [
+                    {
+                        "name": "param0",
+                        "inputType": "Service",
+                        "type": "civilizer.DataDiscovery.Aurum"
+                    },
+                    {
+                        "name": "param1",
+                        "inputType": "String",
+                        "type": "civilizer.isActive"
+                    },
+                    {
+                        "name": "param2",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.source"
+                    },
+                    {
+                        "name": "param3",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.destination"
+                    }
+                ]
+            },
+            "nb_inputs": 1
+        },
+        {
+            "supportBroadcast": true,
+            "interactive": false,
+            "nb_outputs": 1,
+            "class": "civilizer.basic.operators.EntityMatching-DeepER",
+            "parameters": {
+                "0": [
+                    {
+                        "name": "param0",
+                        "inputType": "Service",
+                        "type": "civilizer.EntityMatching.DeepER"
+                    },
+                    {
+                        "name": "param1",
+                        "inputType": "String",
+                        "type": "civilizer.isActive"
+                    },
+                    {
+                        "name": "param2",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.source"
+                    },
+                    {
+                        "name": "param3",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.destination"
+                    },
+                    {
+                        "name": "param4",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.Table1"
+                    },
+                    {
+                        "name": "param5",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.Table2"
+                    },
+                    {
+                        "name": "param6",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.predictionsFileName"
+                    },
+                    {
+                        "name": "param7",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.number_of_pairs"
+                    }
+                ]
+            },
+            "nb_inputs": 1
+        },
+        {
+            "supportBroadcast": true,
+            "interactive": false,
+            "nb_outputs": 1,
+            "class": "civilizer.basic.operators.EntityMatching-DeepER-Train",
+            "parameters": {
+                "0": [
+                    {
+                        "name": "param0",
+                        "inputType": "Service",
+                        "type": "civilizer.EntityMatching.DeepER-Train"
+                    },
+                    {
+                        "name": "param1",
+                        "inputType": "String",
+                        "type": "civilizer.isActive"
+                    },
+                    {
+                        "name": "param2",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.dataset_folder_path"
+                    },
+                    {
+                        "name": "param3",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.out_file_path"
+                    },
+                    {
+                        "name": "param4",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.ltable_file_name"
+                    },
+                    {
+                        "name": "param5",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.rtable_file_name"
+                    },
+                    {
+                        "name": "param6",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.candidates_file"
+                    },
+                    {
+                        "name": "param7",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.lblocking_key"
+                    },
+                    {
+                        "name": "param8",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.rblocking_key"
+                    },
+                    {
+                        "name": "param9",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.lattribute_list"
+                    },
+                    {
+                        "name": "param10",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.rattribute_list"
+                    },
+                    {
+                        "name": "param11",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.dataset_name"
+                    }
+                ]
+            },
+            "nb_inputs": 1
+        },
+        {
+            "supportBroadcast": true,
+            "interactive": false,
+            "nb_outputs": 1,
+            "class": "civilizer.basic.operators.EntityMatching-DeepER-Predict",
+            "parameters": {
+                "0": [
+                    {
+                        "name": "param0",
+                        "inputType": "Service",
+                        "type": "civilizer.EntityMatching.DeepER-Predict"
+                    },
+                    {
+                        "name": "param1",
+                        "inputType": "String",
+                        "type": "civilizer.isActive"
+                    },
+                    {
+                        "name": "param2",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.dataset_folder_path"
+                    },
+                    {
+                        "name": "param3",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.out_file_path"
+                    },
+                    {
+                        "name": "param4",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.ltable_file_name"
+                    },
+                    {
+                        "name": "param5",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.rtable_file_name"
+                    },
+                    {
+                        "name": "param6",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.candidates_file"
+                    },
+                    {
+                        "name": "param7",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.lblocking_key"
+                    },
+                    {
+                        "name": "param8",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.rblocking_key"
+                    },
+                    {
+                        "name": "param9",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.lattribute_list"
+                    },
+                    {
+                        "name": "param10",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.rattribute_list"
+                    },
+                    {
+                        "name": "param11",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.dataset_name"
+                    }
+                ]
+            },
+            "nb_inputs": 1
+        },
+        {
+            "supportBroadcast": true,
+            "interactive": false,
+            "nb_outputs": 1,
+            "class": "civilizer.basic.operators.DataCleaning-Fahes",
+            "parameters": {
+                "0": [
+                    {
+                        "name": "param0",
+                        "inputType": "Service",
+                        "type": "civilizer.DataCleaning.Fahes"
+                    },
+                    {
+                        "name": "param1",
+                        "inputType": "String",
+                        "type": "civilizer.isActive"
+                    },
+                    {
+                        "name": "param2",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.source"
+                    },
+                    {
+                        "name": "param3",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.destination"
+                    }
+                ]
+            },
+            "nb_inputs": 1
+        },
+        {
+            "supportBroadcast": true,
+            "interactive": true,
+            "nb_outputs": 1,
+            "class": "civilizer.basic.operators.DataCleaning-FahesFilter",
+            "parameters": {
+                "0": [
+                    {
+                        "name": "param0",
+                        "inputType": "Service",
+                        "type": "civilizer.DataCleaning.Fahes"
+                    },
+                    {
+                        "name": "param1",
+                        "inputType": "String",
+                        "type": "civilizer.isActive"
+                    },
+                    {
+                        "name": "param2",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.source"
+                    },
+                    {
+                        "name": "param3",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.destination"
+                    }
+                ]
+            },
+            "nb_inputs": 1
+        },
+        {
+            "supportBroadcast": true,
+            "interactive": false,
+            "nb_outputs": 1,
+            "class": "civilizer.basic.operators.DataCleaning-FahesApply",
+            "parameters": {
+                "0": [
+                    {
+                        "name": "param0",
+                        "inputType": "Service",
+                        "type": "civilizer.DataCleaning.Fahes"
+                    },
+                    {
+                        "name": "param1",
+                        "inputType": "String",
+                        "type": "civilizer.isActive"
+                    },
+                    {
+                        "name": "param2",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.source"
+                    },
+                    {
+                        "name": "param3",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.destination"
+                    }
+                ]
+            },
+            "nb_inputs": 1
+        },
+        {
+            "supportBroadcast": true,
+            "interactive": false,
+            "nb_outputs": 1,
+            "class": "civilizer.basic.operators.DataCleaning-PKDuck",
+            "parameters": {
+                "0": [
+                    {
+                        "name": "param0",
+                        "inputType": "Service",
+                        "type": "civilizer.DataCleaning.PKDuck"
+                    },
+                    {
+                        "name": "param1",
+                        "inputType": "String",
+                        "type": "civilizer.isActive"
+                    },
+                    {
+                        "name": "param2",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.source"
+                    },
+                    {
+                        "name": "param3",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.destination"
+                    },
+                    {
+                        "name": "param4",
+                        "inputType": "String",
+                        "type": "civilizer.DataCleaning.PKDuck.Columns"
+                    },
+                    {
+                        "name": "param5",
+                        "inputType": "String",
+                        "type": "civilizer.DataCleaning.PKDuck.Tau"
+                    }
+                ]
+            },
+            "nb_inputs": 1
+        },
+        {
+            "supportBroadcast": true,
+            "interactive": false,
+            "nb_outputs": 1,
+            "class": "civilizer.basic.operators.DataCleaning-Imputedb",
+            "parameters": {
+                "0": [
+                    {
+                        "name": "param0",
+                        "inputType": "Service",
+                        "type": "civilizer.DataCleaning.Imputedb"
+                    },
+                    {
+                        "name": "param1",
+                        "inputType": "String",
+                        "type": "civilizer.isActive"
+                    },
+                    {
+                        "name": "param2",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.source"
+                    },
+                    {
+                        "name": "param3",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.destination"
+                    },
+                    {
+                        "name": "param4",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.tableName"
+                    },
+                    {
+                        "name": "param5",
+                        "inputType": "String",
+                        "type": "civilizer.DataCleaning.Imputedb.Query"
+                    },
+                    {
+                        "name": "param6",
+                        "inputType": "String",
+                        "type": "civilizer.DataCleaning.Imputedb.Ratio"
+                    }
+                ]
+            },
+            "nb_inputs": 1
+        },
+        {
+            "supportBroadcast": true,
+            "interactive": false,
+            "nb_outputs": 1,
+            "class": "civilizer.basic.operators.DataCleaning-Profiler",
+            "parameters": {
+                "0": [
+                    {
+                        "name": "param0",
+                        "inputType": "Service",
+                        "type": "civilizer.DataCleaning.Profiler"
+                    },
+                    {
+                        "name": "param1",
+                        "inputType": "String",
+                        "type": "civilizer.isActive"
+                    },
+                    {
+                        "name": "param2",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.destination"
+                    }
+                ]
+            },
+            "nb_inputs": 1
+        },
+        {
+            "supportBroadcast": true,
+            "interactive": false,
+            "nb_outputs": 1,
+            "class": "civilizer.basic.operators.EntityConsolidation",
+            "parameters": {
+                "0": [
+                    {
+                        "name": "param0",
+                        "inputType": "Service",
+                        "type": "civilizer.EntityConsolidation.GoldenRecords"
+                    },
+                    {
+                        "name": "param1",
+                        "inputType": "String",
+                        "type": "civilizer.isActive"
+                    },
+                    {
+                        "name": "param2",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.source"
+                    },
+                    {
+                        "name": "param3",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.destination"
+                    }
+                ]
+            },
+            "nb_inputs": 1
+        }
+    ]
+}
