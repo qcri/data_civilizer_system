@@ -1,13 +1,16 @@
 FROM llsc/cuda-torch:0.6
 MAINTAINER Essam Mansour <essam.mansour@gmail.com>
 
-RUN apt-get update && \
+RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         build-essential \
         python3 \
+        python3-dev \
         python3-pip \
         python3-setuptools \
+        python3-tk \
         vim \
         unzip \
         wget \
@@ -50,7 +53,7 @@ WORKDIR /app
 
 # install needed libs for python
 COPY ./requirements.txt /app/requirements.txt
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 # Build Torch -- No need
 # COPY ./rest/services/deeper_service/DeepER-Lite /app/DeepER-Lite
@@ -61,6 +64,11 @@ RUN luarocks install csvigo
 RUN luarocks install dp
 
 COPY ./rest /app/rest
+COPY ./fastText /app/fastText
+
+RUN cd ./fastText && \
+    python3 setup.py install
+
 # -- Modify build.sh in place to not install GloVe
 # -- Create symlink to point to external GloVe.t7 file
 RUN sed -i '/GloVe/,/^)$/ s/^[^#]/#&/' /app/rest/services/build.sh && \

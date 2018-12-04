@@ -1,3 +1,10 @@
 flask
 networkx
 pandas
+numpy
+requests
+torch
+ipython
+nltk
+Cython
+py_entitymatching
