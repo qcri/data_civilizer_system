@@ -2,8 +2,8 @@
 
 # This file mostly utility functions to process dataset files to the expected data format
 
-import services.deeper_lite_service.configs as configs
-import services.deeper_lite_service.blocking_utils
+from . import configs
+from . import blocking_utils
 
 import csv
 import os
@@ -14,7 +14,6 @@ from nltk.corpus import stopwords
 
 import fastText as fasttext
 
-#import fasttext
 from scipy.spatial.distance import cosine
 import torch
 

@@ -12,12 +12,12 @@ import numpy as np
 import pandas as pd
 
 import py_entitymatching
-import services.deeper_lite_service.blocking_utils
-from services.deeper_lite_service.process_dataset_sim import split_dataset_by_ratio
+from . import blocking_utils
+from .process_dataset_sim import split_dataset_by_ratio
 import networkx as nx
 import csv
 
-import services.deeper_lite_service.process_dataset_sim as process_dataset
+from . import process_dataset_sim as process_dataset
 
 # DL Specific configs
 BATCH_SIZE = 16

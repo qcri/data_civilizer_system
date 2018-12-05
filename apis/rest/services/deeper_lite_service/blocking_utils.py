@@ -1,7 +1,7 @@
 import py_entitymatching as em
 import csv
 import pandas as pd
-import services.deeper_lite_service.configs
+from . import configs
 import numpy as np
 
 def load_known_dataset(dataset_name):
