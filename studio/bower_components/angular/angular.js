@@ -6353,7 +6353,8 @@ function Browser(window, document, $log, $sniffer) {
 
     // Android Browser BFCache causes location, history reference to become stale.
     if (location !== window.location) location = window.location;
-    if (history !== window.history) history = window.history;
+    //MDH - Why was this necessary...?
+    //if (history !== window.history) history = window.history;
 
     // setter
     if (url) {

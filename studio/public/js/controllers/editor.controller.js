@@ -3,6 +3,7 @@
 appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory', 'flowchartConstants', 'RheemAPI', 'excutionPlan', '$http', 'plansConversions', function($scope, prompt, Modelfactory, flowchartConstants, RheemAPI, excutionPlan, $http, plansConversions) {
 
 
+  $scope.useGEM = false;
 
 
   // Drag Area Collapse Blocks
@@ -399,6 +400,35 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
       return plan;
     }
 
+    var convertRheemToGEMStructure = function(rheemPlan) {
+        var copiedPlan = JSON.parse(JSON.stringify(rheemPlan));
+        var gemPlan = copiedPlan.operators;
+        for(var findex in gemPlan) {
+            var op = gemPlan[findex];
+            op.next = [];
+            if(!("prev" in op)) op.prev = [];
+            if("connects_to" in op) {
+                for(var outnum = 0; outnum < op.np_outputs; outnum++) {
+                    for(var links of op.connects_to[outnum]) {
+                        for(var name in links) {
+                            for(var tindex in gemPlan) {
+                                if(name == gemPlan[tindex].name) {
+                                    op.next.push(tindex);
+                                    var target = gemPlan[tindex];
+                                    if(!("prev" in target)) target.prev = [];
+                                    target.prev.push(findex);
+                                }
+                            }
+                        }
+                    }
+                }
+                delete op.connects_to;
+            }
+        }
+        console.log("GEM " + JSON.stringify(gemPlan));
+        return(gemPlan);
+    }
+
     $scope.savePlan = function(){
         var graph = plansConversions.getNodeFromView($scope.model);
         $scope.plan  = plansConversions.convertToPlan(graph);
@@ -599,69 +629,79 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
   }
 
 
-  $scope.callExecutePlan = function(op_index){
-        if(!op_index) op_index = 0;
-        console.log("executing plan op_index " + op_index);
-        $scope.method = 'POST';
-        $scope.url = '/api/plan_executions';
+  $scope.callExecutePlan = function(op_index) {
+    if(!op_index) op_index = 0;
+    console.log("executing plan op_index " + op_index);
+    $scope.method = 'POST';
+    $scope.url = '/api/plan_executions';
+    var data = plansConversions.get();
+    data.operators[op_index].parameters['param1'] = 'y';
+    plansConversions.set(data);
+    return $http(
+      {
+        method: $scope.method,
+        url: $scope.url,
+        data: $scope.useGEM
+              ? convertRheemToGEMStructure(plansConversions.get())
+              : plansConversions.get()
+      }
+    ).then(
+      function(response) {
         var data = plansConversions.get();
-        data.operators[op_index].parameters['param1'] = 'y';
-        plansConversions.set(data);
-        return $http({method: $scope.method, url: $scope.url, data:plansConversions.get(), timeout:300000}).
-        then(function(response) {
-            console.log("processing response for op_index " + op_index);
-            var data = plansConversions.get();
-            data.operators[op_index].parameters['param1'] = '';
-            plansConversions.set(data);
-            console.log("data=" + JSON.stringify(data));
-            if("connects_to" in data.operators[op_index]) {
-              console.log("connects_to in operator");
-              if(data.operators[op_index].selectedConstructor in data.operators[op_index].connects_to) {
-                console.log("selectedConstructor in connects_to");
-                for(var i = 0; i < data.operators[op_index].connects_to[data.operators[op_index].selectedConstructor].length; i++) {
-                  console.log("connects_to index " + i);
-                  for(var key in data.operators[op_index].connects_to[data.operators[op_index].selectedConstructor][i]) {
-                    console.log("connects_to key " + key);
-                    for(var j = 0; j < data.operators.length; j++) {
-                      console.log("connects_to " + key);
-                      if(data.operators[j].name == key) {
-                        console.log("chaining operator " + j);
-                        return($scope.callExecutePlan(j));
-                      }
+        if(!$scope.useGEM) {
+          console.log("processing response for op_index " + op_index);
+          data.operators[op_index].parameters['param1'] = '';
+          plansConversions.set(data);
+          console.log("data=" + JSON.stringify(data));
+          if("connects_to" in data.operators[op_index]) {
+            console.log("connects_to in operator");
+            if(data.operators[op_index].selectedConstructor in data.operators[op_index].connects_to) {
+              console.log("selectedConstructor in connects_to");
+              for(var i = 0; i < data.operators[op_index].connects_to[data.operators[op_index].selectedConstructor].length; i++) {
+                console.log("connects_to index " + i);
+                for(var key in data.operators[op_index].connects_to[data.operators[op_index].selectedConstructor][i]) {
+                  console.log("connects_to key " + key);
+                  for(var j = 0; j < data.operators.length; j++) {
+                    console.log("connects_to " + key);
+                    if(data.operators[j].name == key) {
+                      console.log("chaining operator " + j);
+                      return($scope.callExecutePlan(j));
                     }
                   }
                 }
               }
             }
-            
-            if(response && response.data.myURI !== ""){
-            console.log("Essam response.data.myURI:" + response.data.myURI);  
-            console.log(response);
-            window.open(response.data.myURI);
           }
+        }
 
-            if(response){
-                var data = response.data;
-                if(typeof data.error != 'undefined'){
-                    alert(data.error);
-                }
-                else{
-                    // $scope.monitorModel  = plansConversions.getViewFromExec(data, 250, 100, {"Java Streams": "brown", "Apache Spark": "orange", "Apache Hadoop": "green"});
-                    // $scope.drawMonitorGraph();
-                    // $interval(function() {
-                    //     $scope.updateProgress(data.run_id || 0);
-                    // }, 500);
+        if(response && response.data.myURI !== "") {
+          console.log("Essam response.data.myURI:" + response.data.myURI);  
+          console.log(response);
+          window.open(response.data.myURI);
+        }
 
-                }
-            }
-            else{
-                alert("No data has been returned");
-            }
-        }, function(response) {
-            console.log("error ", error);
-            alert("Unexptected rror on plan execution");
-        });
-    }
+        if(response) {
+          var data = response.data;
+          if(typeof data.error != 'undefined') {
+            alert(data.error);
+          } else {
+            // $scope.monitorModel  = plansConversions.getViewFromExec(data, 250, 100, {"Java Streams": "brown", "Apache Spark": "orange", "Apache Hadoop": "green"});
+            // $scope.drawMonitorGraph();
+            // $interval(function() {
+            //     $scope.updateProgress(data.run_id || 0);
+            // }, 500);
+          }
+        } else {
+          alert("No data has been returned");
+        }
+      },
+      function(response) {
+        // console.log("error ", error);
+        console.log("Unexpected error on plan execution\r\n" + response.statusText);
+        alert("Unexpected error on plan execution");
+      }
+    );
+  }
 
   $scope.executeClicked = function(){
     var copiedPlan = JSON.parse(JSON.stringify($scope.plan));

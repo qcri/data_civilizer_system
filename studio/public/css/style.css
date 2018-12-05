@@ -149,6 +149,10 @@ body {
 }
 */
 
+#loader {
+  margin-bottom: 20px;
+}
+
 #build-action {
   padding-bottom: 30px;
   margin-bottom: 10px;
