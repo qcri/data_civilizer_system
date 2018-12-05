@@ -10,7 +10,7 @@ from services.pkduck_service import pkduck_api
 # from services.cleaning_service import cleaning_api
 from services.deeper_service import deeper_api
 # from services.aurum_service import aurum_api
-
+from services.deeper_lite_service import deeper_lite_sim_train_predict as deeper_lite_api
 
 app = Flask(__name__)
 
@@ -55,10 +55,19 @@ def post_ExePlan():
         print("Data Discovery")
         # open_chrome('http://localhost:3000/')
         return jsonify(myresponse2)
+
     elif(class_name=="civilizer.basic.operators.DataCleaning-Fahes"):
         print("DataCleaning-Fahes")
-        # fahes_api.execute_fahes(input_source, output_destination)
+        fahes_api.execute_fahes(input_source, output_destination)
+
+#   elif(class_name=="civilizer.basic.operators.DataCleaning-FahesFilter"):
+#       print("DataCleaning-FahesFilter")
+#       fahes_api.executeService(input_source, output_destination)
+
+    elif(class_name=="civilizer.basic.operators.DataCleaning-FahesApply"):
+        print("DataCleaning-FahesApply")
         fahes_api.executeService(input_source, output_destination)
+
     elif (class_name == "civilizer.basic.operators.DataCleaning-PKDuck"):
         print("DataCleaning-PKDuck")
         columns = operators[number - 1]["parameters"]["param4"]
@@ -68,6 +77,7 @@ def post_ExePlan():
         # outputF = "destination.json"
         # columns = "12#11#8#7#1,2,7#10"
         # pkduck_api.execute_pkduck_file(inputF, outputF, columns, 0.8)
+
     elif (class_name == "civilizer.basic.operators.DataCleaning-Imputedb"):
         print("DataCleaning-Imputedb")
         tableName = operators[number - 1]["parameters"]["param4"]
@@ -79,6 +89,7 @@ def post_ExePlan():
         # inputF = "sources_im.json"
         # outputF = "destination.json"
         # imputedb_api.execute_imputedb_file(inputF, outputF, 'select Dept_Budget_Code from Sis_department;', 0)
+
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER"):
         print("DataCleaning-DeepER")
         table1 = operators[number - 1]["parameters"]["param4"]
@@ -86,6 +97,53 @@ def post_ExePlan():
         predictionsFileName = operators[number - 1]["parameters"]["param6"]
         number_of_pairs = operators[number - 1]["parameters"]["param7"]
         deeper_api.execute_deeper(task_sources, table1, table2, number_of_pairs, task_destination, predictionsFileName)
+
+    elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER-Train"):
+        print("DataCleaning-DeepER-Train")
+        dataset_name = operators[number - 1]["parameters"]["param11"]
+        params = {
+            "dataset_name": dataset_name,
+            dataset_name: {
+                "dataset_folder_path": operators[number - 1]["parameters"]["param2"],
+                "ltable_file_name": operators[number - 1]["parameters"]["param4"],
+                "rtable_file_name": operators[number - 1]["parameters"]["param5"],
+                "blocking_key": {
+                    "l": operators[number - 1]["parameters"]["param7"],
+                    "r": operators[number - 1]["parameters"]["param8"]
+                },
+                "candidates_file": operators[number - 1]["parameters"]["param6"],
+                "attribute_list": {
+                    "l": operators[number - 1]["parameters"]["param9"].split(","),
+                    "r": operators[number - 1]["parameters"]["param10"].split(",")
+                }
+            },
+            "out_file_path": operators[number - 1]["parameters"]["param3"]
+        }
+        deeper_lite_api.executeServiceTrain(params)
+
+    elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER-Predict"):
+        print("DataCleaning-DeepER-Predict")
+        dataset_name = operators[number - 1]["parameters"]["param11"]
+        params = {
+            "dataset_name": dataset_name,
+            dataset_name: {
+                "dataset_folder_path": operators[number - 1]["parameters"]["param2"],
+                "ltable_file_name": operators[number - 1]["parameters"]["param4"],
+                "rtable_file_name": operators[number - 1]["parameters"]["param5"],
+                "blocking_key": {
+                    "l": operators[number - 1]["parameters"]["param7"],
+                    "r": operators[number - 1]["parameters"]["param8"]
+                },
+                "candidates_file": operators[number - 1]["parameters"]["param6"],
+                "attribute_list": {
+                    "l": operators[number - 1]["parameters"]["param9"].split(","),
+                    "r": operators[number - 1]["parameters"]["param10"].split(",")
+                }
+            },
+            "out_file_path": operators[number - 1]["parameters"]["param3"]
+        }
+        deeper_lite_api.executeServicePredict(params)
+
     elif(class_name == "civilizer.basic.operators.EntityConsolidation"):
         print("Entity Consolidation")
         # gr_source_file = "/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/civilizer_services/grecord_service/source.txt"
@@ -113,8 +171,10 @@ def post_ExePlan():
         inputF = "sources_p.json"
         outputF = "destination.json"
         # cleaning_api.execute_cleaning(inputF, outputF)
+
     else:
         print("Error")
+
     # return jsonify(operators[number-1])
     return jsonify(myresponse0)
 
@@ -129,8 +189,8 @@ def get_activeNode(request):
     for x in range(number):    
         isActive = operators[x]["parameters"]["param1"]
         if isActive == 'y':
-           active_node_index = x
-        else:
+            active_node_index = x
+#       else:
             break 
 
     return active_node_index

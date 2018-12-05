@@ -3,6 +3,7 @@
         {
             "supportBroadcast": false,
             "interactive": false,
+            "url": "http://apis:8089",
             "nb_outputs": 1,
             "class": "civilizer.basic.operators.TextFileSource",
             "parameters": {
@@ -31,6 +32,7 @@
         {
             "supportBroadcast": false,
             "interactive": false,
+            "url": "http://apis:8089",
             "nb_outputs": 1,
             "class": "civilizer.basic.operators.TableSource",
             "parameters": {
@@ -59,6 +61,7 @@
         {
             "supportBroadcast": false,
             "interactive": false,
+            "url": "http://apis:8089",
             "nb_outputs": 1,
             "class": "civilizer.basic.operators.CollectionSource",
             "parameters": {
@@ -87,6 +90,7 @@
         {
             "supportBroadcast": true,
             "interactive": false,
+            "url": "http://apis:8089",
             "nb_outputs": 1,
             "class": "civilizer.basic.operators.DataDiscovery",
             "parameters": {
@@ -118,6 +122,7 @@
         {
             "supportBroadcast": true,
             "interactive": false,
+            "url": "http://apis:8089",
             "nb_outputs": 1,
             "class": "civilizer.basic.operators.EntityMatching-DeepER",
             "parameters": {
@@ -169,6 +174,7 @@
         {
             "supportBroadcast": true,
             "interactive": false,
+            "url": "http://apis:8089",
             "nb_outputs": 1,
             "class": "civilizer.basic.operators.EntityMatching-DeepER-Train",
             "parameters": {
@@ -240,6 +246,7 @@
         {
             "supportBroadcast": true,
             "interactive": false,
+            "url": "http://apis:8089",
             "nb_outputs": 1,
             "class": "civilizer.basic.operators.EntityMatching-DeepER-Predict",
             "parameters": {
@@ -311,6 +318,7 @@
         {
             "supportBroadcast": true,
             "interactive": false,
+            "url": "http://apis:8089",
             "nb_outputs": 1,
             "class": "civilizer.basic.operators.DataCleaning-Fahes",
             "parameters": {
@@ -342,6 +350,7 @@
         {
             "supportBroadcast": true,
             "interactive": true,
+            "url": "http://apis:8089",
             "nb_outputs": 1,
             "class": "civilizer.basic.operators.DataCleaning-FahesFilter",
             "parameters": {
@@ -373,6 +382,7 @@
         {
             "supportBroadcast": true,
             "interactive": false,
+            "url": "http://apis:8089",
             "nb_outputs": 1,
             "class": "civilizer.basic.operators.DataCleaning-FahesApply",
             "parameters": {
@@ -404,6 +414,7 @@
         {
             "supportBroadcast": true,
             "interactive": false,
+            "url": "http://apis:8089",
             "nb_outputs": 1,
             "class": "civilizer.basic.operators.DataCleaning-PKDuck",
             "parameters": {
@@ -445,6 +456,7 @@
         {
             "supportBroadcast": true,
             "interactive": false,
+            "url": "http://apis:8089",
             "nb_outputs": 1,
             "class": "civilizer.basic.operators.DataCleaning-Imputedb",
             "parameters": {
@@ -491,6 +503,7 @@
         {
             "supportBroadcast": true,
             "interactive": false,
+            "url": "http://apis:8089",
             "nb_outputs": 1,
             "class": "civilizer.basic.operators.DataCleaning-Profiler",
             "parameters": {
@@ -517,6 +530,7 @@
         {
             "supportBroadcast": true,
             "interactive": false,
+            "url": "http://apis:8089",
             "nb_outputs": 1,
             "class": "civilizer.basic.operators.EntityConsolidation",
             "parameters": {

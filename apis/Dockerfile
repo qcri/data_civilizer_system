@@ -64,10 +64,6 @@ RUN luarocks install csvigo
 RUN luarocks install dp
 
 COPY ./rest /app/rest
-COPY ./fastText /app/fastText
-
-RUN cd ./fastText && \
-    python3 setup.py install
 
 # -- Modify build.sh in place to not install GloVe
 # -- Create symlink to point to external GloVe.t7 file
@@ -75,6 +71,11 @@ RUN sed -i '/GloVe/,/^)$/ s/^[^#]/#&/' /app/rest/services/build.sh && \
     /app/rest/services/build.sh && \
     find /app -name '*.o' -exec rm -f {} \; && \
     ln -s /app/storage/glove/GloVe.t7 /app/rest/services/deeper_service/DeepER-Lite/glove/GloVe.t7
+
+COPY ./fastText /root/fastText
+
+RUN cd /root/fastText && \
+    python3 setup.py install
 
 EXPOSE 8089
 #CMD python ./rest/civilizer.py
