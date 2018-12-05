@@ -1,3 +1,6 @@
 [submodule "aurum-datadiscovery"]
 	path = aurum-datadiscovery
 	url = https://github.com/mansoure/aurum-datadiscovery
+[submodule "deeper-lite"]
+	path = deeper-lite
+	url = https://github.com/daqcri/deeper-lite.git
