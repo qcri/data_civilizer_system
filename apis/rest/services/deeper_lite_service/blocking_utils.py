@@ -1,7 +1,12 @@
+# Add local directory to path to allow imports when invoked directly or as part of Data Civilizer
+import os
+import sys
+sys.path.append(os.path.realpath(os.path.dirname(__file__)))
+
 import py_entitymatching as em
 import csv
 import pandas as pd
-from . import configs
+import configs
 import numpy as np
 
 def load_known_dataset(dataset_name):

@@ -1,9 +1,14 @@
 # GiG.
 
+# Add local directory to path to allow imports when invoked directly or as part of Data Civilizer
+import os
+import sys
+sys.path.append(os.path.realpath(os.path.dirname(__file__)))
+
 # This file mostly utility functions to process dataset files to the expected data format
 
-from . import configs
-from . import blocking_utils
+import configs
+import blocking_utils
 
 import csv
 import os

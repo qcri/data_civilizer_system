@@ -1,23 +1,27 @@
 # GiG.
 
+# Add local directory to path to allow imports when invoked directly or as part of Data Civilizer
+import os
+import sys
+sys.path.append(os.path.realpath(os.path.dirname(__file__)))
+
 import torch
 import torch.nn as nn
 import torch.utils.data as Data
 import torch.optim as optim
 
 from sklearn.metrics import f1_score
-import os
 import random
 import numpy as np
 import pandas as pd
 
 import py_entitymatching
-from . import blocking_utils
-from .process_dataset_sim import split_dataset_by_ratio
+import blocking_utils
+from process_dataset_sim import split_dataset_by_ratio
 import networkx as nx
 import csv
 
-from . import process_dataset_sim as process_dataset
+import process_dataset_sim as process_dataset
 
 # DL Specific configs
 BATCH_SIZE = 16
