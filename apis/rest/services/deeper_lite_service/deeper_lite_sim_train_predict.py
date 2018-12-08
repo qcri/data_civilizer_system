@@ -230,7 +230,7 @@ def executeServicePredict(params={}):
 
         blocking_utils.save_candset_compressed(dataset_name, candset_df, "candset.pkl.compress")
 
-        folder_path = process_dataset.get_folder_to_persist_model(dataset_name)
+        folder_path = process_dataset.get_folder_to_persist_model(dataset_name, dataset_config)
 
         candset_df["gold"] = 0
         candset_df_id_oly = candset_df[["ltable_id", "rtable_id", "gold"]]
@@ -243,7 +243,7 @@ def executeServicePredict(params={}):
 
     # predict_file_name, predict_output_file_name
     predict(dataset_name,
-            "predict.csv",  # this file has to be provided (before: test.csv)
+            params[dataset_name]["candidates_file"],  # this file has to be provided (before: test.csv)
             "test_predictions.csv",  # output file
             get_deeper_lite_model_sim)
 
@@ -256,21 +256,47 @@ def executeServicePredict(params={}):
 
     df_matches = df_pred[df_pred.gold == 1]
 
-    df_a['cluster_id'] = df_a.id
-    df_b['cluster_id'] = df_b.id
+    df_a['cluster_id'] = 0
+    df_b['cluster_id'] = 0
 
     G = nx.Graph()
     G.add_edges_from(df_matches[["ltable_id", "rtable_id"]].values)
 
-    cluster = -1
-    cc = 0
-    for component in nx.connected_components(G):
-        cluster += 1
-        for c in component:
-            if c in id1:
-                df_a.loc[df_a.id == c, 'cluster_id'] = cluster
+    limit_low_1 = min(id1)
+    limit_low_2 = min(id2)
+
+    limit_max_1 = max(id1)
+    limit_max_2 = max(id2)
+
+    cluster_id = 1
+    components = nx.connected_components(G)
+    for comp in components:
+        #cluster_matches.add(cluster_id)
+        for el in comp:
+            if (limit_low_1 <= el <= limit_max_1):
+                df_a.loc[df_a.id == el, "cluster_id"] = cluster_id
             else:
-                df_b.loc[df_b.id == c, 'cluster_id'] = cluster
+                df_b.loc[df_b.id == el, "cluster_id"] = cluster_id
+        cluster_id += 1
+
+    # for m in matches_list:
+    #     dfa.loc[dfa.id==m[0], "cluster_id"]=cluster_id
+    #     dfb.loc[dfb.id==m[1], "cluster_id"]=cluster_id
+    #     cluster_id += 1
+
+    clusters = []
+
+    for i in range(0, len(df_a.loc[df_a.cluster_id == 0])):
+        clusters.append(cluster_id)
+        cluster_id += 1
+    df_a.loc[df_a.cluster_id == 0, "cluster_id"] = clusters
+
+    clusters = []
+    for i in range(0, len(df_b.loc[df_b.cluster_id == 0])):
+        clusters.append(cluster_id)
+        cluster_id += 1
+    df_b.loc[df_b.cluster_id == 0, "cluster_id"] = clusters
+
 
     if not os.path.exists(params["out_file_path"]):
         os.makedirs(params["out_file_path"])
