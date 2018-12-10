@@ -111,6 +111,8 @@ def post_ExePlan():
         #Execute service
         executeOperator(service)
 
+    return jsonify(myresponse0)
+
 
 @app.route('/rheem/plan_exec_op', methods=['POST'])
 def post_ExeOperator():
