@@ -127,6 +127,7 @@ This example creates a pipeline of two services to consolidate data available in
     predictionsFileName: matches.csv
     number_of_pairs: 50000         
 
+
 After executing the DeepER node, instantiate another node for EntityConsolidation
     
     Add the following values to the EntityConsolidation parameters:
