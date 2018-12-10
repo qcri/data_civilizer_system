@@ -128,6 +128,7 @@ This example creates a pipeline of two services to consolidate data available in
     number_of_pairs: 50000         
 
 After executing the DeepER node, instantiate another node for EntityConsolidation
+
     
     Add the following values to the EntityConsolidation parameters:
     source: /app/storage/data_sets/deeper/output/
