@@ -213,6 +213,7 @@ def executeServicePredict(params={}):
     r_file_name = params[dataset_name]["dataset_folder_path"] + params[dataset_name]["rtable_file_name"]
 
     generateCandidates = True if params[dataset_name]["candidates_file"] is "" else False
+    generateCandidates = False
 
     if generateCandidates:
         A = py_entitymatching.read_csv_metadata(l_file_name, key="id", encoding='utf-8')
@@ -230,7 +231,7 @@ def executeServicePredict(params={}):
 
         blocking_utils.save_candset_compressed(dataset_name, candset_df, "candset.pkl.compress")
 
-        folder_path = process_dataset.get_folder_to_persist_model(dataset_name, dataset_config)
+        folder_path = process_dataset.get_folder_to_persist_model(dataset_name)
 
         candset_df["gold"] = 0
         candset_df_id_oly = candset_df[["ltable_id", "rtable_id", "gold"]]
@@ -260,32 +261,34 @@ def executeServicePredict(params={}):
     df_b['cluster_id'] = 0
 
     G = nx.Graph()
-    G.add_edges_from(df_matches[["ltable_id", "rtable_id"]].values)
 
-    limit_low_1 = min(id1)
-    limit_low_2 = min(id2)
+    ids_a = list(df_matches["ltable_id"].values)
+    ids_b = list(df_matches["rtable_id"].values)
 
-    limit_max_1 = max(id1)
-    limit_max_2 = max(id2)
+    limit_dataset_a = max(ids_a) + 1
+    ids_b = list(map(lambda x: x + limit_dataset_a, ids_b))
+
+    ids_zip = list(zip(ids_a, ids_b))
+
+    for edge in ids_zip:
+        G.add_edge(edge[0], edge[1])
 
     cluster_id = 1
     components = nx.connected_components(G)
     for comp in components:
-        #cluster_matches.add(cluster_id)
+        # cluster_matches.add(cluster_id)
         for el in comp:
-            if (limit_low_1 <= el <= limit_max_1):
+            if (el < limit_dataset_a):
                 df_a.loc[df_a.id == el, "cluster_id"] = cluster_id
             else:
-                df_b.loc[df_b.id == el, "cluster_id"] = cluster_id
+                df_b.loc[df_b.id == int(el - limit_dataset_a), "cluster_id"] = cluster_id
         cluster_id += 1
 
     # for m in matches_list:
     #     dfa.loc[dfa.id==m[0], "cluster_id"]=cluster_id
     #     dfb.loc[dfb.id==m[1], "cluster_id"]=cluster_id
     #     cluster_id += 1
-
     clusters = []
-
     for i in range(0, len(df_a.loc[df_a.cluster_id == 0])):
         clusters.append(cluster_id)
         cluster_id += 1
@@ -296,7 +299,6 @@ def executeServicePredict(params={}):
         clusters.append(cluster_id)
         cluster_id += 1
     df_b.loc[df_b.cluster_id == 0, "cluster_id"] = clusters
-
 
     if not os.path.exists(params["out_file_path"]):
         os.makedirs(params["out_file_path"])
