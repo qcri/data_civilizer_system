@@ -129,6 +129,7 @@ This example creates a pipeline of two services to consolidate data available in
     
 After executing the DeepER node, instantiate another node for EntityConsolidation
     
+    
     Add the following values to the EntityConsolidation parameters:
     source: /app/storage/data_sets/deeper/output/
     destination: /app/storage/data_sets/deeper/output/GRRows.csv 
