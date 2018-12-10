@@ -3,6 +3,9 @@ import json
 from os import environ as env
 import webbrowser
 from decimal import Decimal
+import time
+import random
+import sys
 # from subprocess import Popen, PIPE
 from services.fahes_service import fahes_api
 from services.imputedb_service import imputedb_api
@@ -38,18 +41,89 @@ def post_plan():
     return jsonify(request.json)
 
 
+# Returns adjacent vertices (next services) for a given service node in the pipeline
+def get_next_services(service):
+    return service['next']
+
+
+# Topological ordering of the workflow graph
+# JSON of ordered services is inserted into ordered_list
+
+def order_tasks(service, service_id, ordered_list, visited, service_id_json_map):
+    print(service_id)
+    visited[service_id] = True
+
+    for next_service in get_next_services(service):
+        next_service_id = int(next_service)
+        if (visited[next_service_id] == False):
+            order_tasks(service_id_json_map[next_service_id], next_service_id, ordered_list, visited, service_id_json_map)
+
+    ordered_list.insert(0, service) # Insert current service into the list
+
+
 @app.route('/rheem/plan_executions', methods=['POST'])
 def post_ExePlan():
     # Posted JSON Plan
     task_request = request.json
-    operators = task_request["operators"]
-    # number = len(operators)
-    number = get_activeNode(request) + 1
-    task_sources = operators[number - 1]["parameters"]["param2"]
-    task_destination = operators[number - 1]["parameters"]["param3"]
-    input_source, output_destination = get_source_destination_objects(task_sources, task_destination)
-    class_name = operators[number-1]["java_class"]
 
+    if "operators" in task_request:
+        operators = task_request["operators"] if "operators" in task_request else task_request
+        # number = len(operators)
+        number = get_activeNode(request)
+        return executeOperator(operators[number])
+
+    pipeline = task_request
+    service_id_json_map = [None]*len(task_request) # this array is used  to map service ids
+                                               # to the service JSON description
+
+    # first, we perform a toplogical sort of the workflow DAG
+    visited = [False]*len(pipeline)
+    ordered_list = []
+
+    for service_id, service in enumerate(pipeline):
+        print(service_id)
+        service_id_json_map[service_id] = service
+
+    for service_id, service in enumerate(pipeline):
+        if visited[service_id] == False:
+            order_tasks(service, service_id, ordered_list, visited, service_id_json_map)
+
+    service_input_dir = {} # this dict is used to keep track of the input dirs of each service
+                           # service_input_dir[s] returns the input dir (if any) for service s 
+
+    for service_id, service in enumerate(ordered_list):
+        print(service_id, file=sys.stderr)
+
+    for service_id, service in enumerate(ordered_list):
+        # the service expects input from a previous service, link the two services
+        # index of input dir is always at index 2 of parameters list
+        # index of output dir is always at index 3 of parameters list
+        if str(service_id) in service_input_dir:
+            service['parameters']['param2'] = service_input_dir[str(service_id)]
+
+        for next_service_id in service['next']: # fill out the input dirs for the next services
+            # if no out dir was specified, assume in dir is same as out dir
+            if not service['parameters']['param3']: 
+                service_input_dir[next_service_id] = service['parameters']['param2']
+            else:
+                service_input_dir[next_service_id] = service['parameters']['param3']
+
+        #Execute service
+        executeOperator(service)
+
+
+@app.route('/rheem/plan_exec_op', methods=['POST'])
+def post_ExeOperator():
+    time.sleep(random.randint(5, 25))
+    return jsonify(myresponse0)
+#   return executeOperator(request.json)
+
+
+def executeOperator(operator):
+    class_name = operator["java_class"]
+    task_sources = operator["parameters"]["param2"]
+    task_destination = operator["parameters"]["param3"]
+    input_source, output_destination = get_source_destination_objects(task_sources, task_destination)
 
     if(class_name == "civilizer.basic.operators.DataDiscovery"):
         print("Data Discovery")
@@ -70,8 +144,8 @@ def post_ExePlan():
 
     elif (class_name == "civilizer.basic.operators.DataCleaning-PKDuck"):
         print("DataCleaning-PKDuck")
-        columns = operators[number - 1]["parameters"]["param4"]
-        tau = operators[number - 1]["parameters"]["param5"]
+        columns = operator["parameters"]["param4"]
+        tau = operator["parameters"]["param5"]
         pkduck_api.execute_pkduck(input_source, output_destination, columns, Decimal(tau))
         # inputF = "sources.json"
         # outputF = "destination.json"
@@ -80,9 +154,9 @@ def post_ExePlan():
 
     elif (class_name == "civilizer.basic.operators.DataCleaning-Imputedb"):
         print("DataCleaning-Imputedb")
-        tableName = operators[number - 1]["parameters"]["param4"]
-        q = operators[number - 1]["parameters"]["param5"]
-        r = operators[number - 1]["parameters"]["param6"]
+        tableName = operator["parameters"]["param4"]
+        q = operator["parameters"]["param5"]
+        r = operator["parameters"]["param6"]
         input_source = {'CSV': {'dir': task_sources, 'table': tableName}}
         # imputedb_api.execute_imputedb(input_source, output_destination, q, r)
         imputedb_api.executeService(input_source, output_destination, q, r)
@@ -92,55 +166,55 @@ def post_ExePlan():
 
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER"):
         print("DataCleaning-DeepER")
-        table1 = operators[number - 1]["parameters"]["param4"]
-        table2 = operators[number - 1]["parameters"]["param5"]
-        predictionsFileName = operators[number - 1]["parameters"]["param6"]
-        number_of_pairs = operators[number - 1]["parameters"]["param7"]
+        table1 = operator["parameters"]["param4"]
+        table2 = operator["parameters"]["param5"]
+        predictionsFileName = operator["parameters"]["param6"]
+        number_of_pairs = operator["parameters"]["param7"]
         deeper_api.execute_deeper(task_sources, table1, table2, number_of_pairs, task_destination, predictionsFileName)
 
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER-Train"):
         print("DataCleaning-DeepER-Train")
-        dataset_name = operators[number - 1]["parameters"]["param11"]
+        dataset_name = operator["parameters"]["param11"]
         params = {
             "dataset_name": dataset_name,
             dataset_name: {
-                "dataset_folder_path": operators[number - 1]["parameters"]["param2"],
-                "ltable_file_name": operators[number - 1]["parameters"]["param4"],
-                "rtable_file_name": operators[number - 1]["parameters"]["param5"],
+                "dataset_folder_path": operator["parameters"]["param2"],
+                "ltable_file_name": operator["parameters"]["param4"],
+                "rtable_file_name": operator["parameters"]["param5"],
                 "blocking_key": {
-                    "l": operators[number - 1]["parameters"]["param7"],
-                    "r": operators[number - 1]["parameters"]["param8"]
+                    "l": operator["parameters"]["param7"],
+                    "r": operator["parameters"]["param8"]
                 },
-                "candidates_file": operators[number - 1]["parameters"]["param6"],
+                "candidates_file": operator["parameters"]["param6"],
                 "attribute_list": {
-                    "l": operators[number - 1]["parameters"]["param9"].split(","),
-                    "r": operators[number - 1]["parameters"]["param10"].split(",")
+                    "l": operator["parameters"]["param9"].split(","),
+                    "r": operator["parameters"]["param10"].split(",")
                 }
             },
-            "out_file_path": operators[number - 1]["parameters"]["param3"]
+            "out_file_path": operator["parameters"]["param3"]
         }
         deeper_lite_api.executeServiceTrain(params)
 
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER-Predict"):
         print("DataCleaning-DeepER-Predict")
-        dataset_name = operators[number - 1]["parameters"]["param11"]
+        dataset_name = operator["parameters"]["param11"]
         params = {
             "dataset_name": dataset_name,
             dataset_name: {
-                "dataset_folder_path": operators[number - 1]["parameters"]["param2"],
-                "ltable_file_name": operators[number - 1]["parameters"]["param4"],
-                "rtable_file_name": operators[number - 1]["parameters"]["param5"],
+                "dataset_folder_path": operator["parameters"]["param2"],
+                "ltable_file_name": operator["parameters"]["param4"],
+                "rtable_file_name": operator["parameters"]["param5"],
                 "blocking_key": {
-                    "l": operators[number - 1]["parameters"]["param7"],
-                    "r": operators[number - 1]["parameters"]["param8"]
+                    "l": operator["parameters"]["param7"],
+                    "r": operator["parameters"]["param8"]
                 },
-                "candidates_file": operators[number - 1]["parameters"]["param6"],
+                "candidates_file": operator["parameters"]["param6"],
                 "attribute_list": {
-                    "l": operators[number - 1]["parameters"]["param9"].split(","),
-                    "r": operators[number - 1]["parameters"]["param10"].split(",")
+                    "l": operator["parameters"]["param9"].split(","),
+                    "r": operator["parameters"]["param10"].split(",")
                 }
             },
-            "out_file_path": operators[number - 1]["parameters"]["param3"]
+            "out_file_path": operator["parameters"]["param3"]
         }
         deeper_lite_api.executeServicePredict(params)
 

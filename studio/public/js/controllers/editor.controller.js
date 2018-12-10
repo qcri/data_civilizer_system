@@ -3,8 +3,8 @@
 appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory', 'flowchartConstants', 'RheemAPI', 'excutionPlan', '$http', 'plansConversions', function($scope, prompt, Modelfactory, flowchartConstants, RheemAPI, excutionPlan, $http, plansConversions) {
 
 
-  $scope.useGEM = false;
-
+  $scope.useGEM = true;
+  $scope.DEMO = false;
 
   // Drag Area Collapse Blocks
   $scope.isCollapsed = false;
@@ -273,6 +273,8 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
         connectors: connectors,
         java_class: node.class,
         parameters: getNodeParams(node.parameters),
+        interactive: node.interactive,
+        url: node.url,
         type: nodeClass,
         selectedConstructor: -1,
         isBroadCast: node.supportBroadcast
@@ -330,7 +332,7 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
 
     nodeCallbacks: {
       'singleClick': function (item) {
-
+        alert("hello");
       },
       'doubleClick': function (item) {
         $scope.item = item;
@@ -386,7 +388,7 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
       $scope.model = model;
     }
 
-    var convertParamtersToRheemStructure = function(plan) {
+    var convertParametersToRheemStructure = function(plan) {
       var rheemParam = {};
       for (var index in plan.operators) {
         if(plan.operators[index].selectedConstructor != -1){
@@ -397,6 +399,7 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
           rheemParam = {};
         }
       }
+      console.log("RHEEM " + JSON.stringify(plan));
       return plan;
     }
 
@@ -489,7 +492,7 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
 
   var generatePlan = function() {
     var copiedPlan = JSON.parse(JSON.stringify($scope.plan));
-    var planWithRheemParams = convertParamtersToRheemStructure(copiedPlan);
+    var planWithRheemParams = convertParametersToRheemStructure(copiedPlan);
 
     $scope.method = 'POST';
     $scope.url = '/api/rheem_plans/generate';
@@ -523,7 +526,7 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
 
   var generatePlanForJava = function() {
     var copiedPlan = JSON.parse(JSON.stringify($scope.plan));
-    var planWithRheemParams = convertParamtersToRheemStructure(copiedPlan);
+    var planWithRheemParams = convertParametersToRheemStructure(copiedPlan);
 
     $scope.method = 'POST';
     $scope.url = '/rheem_plans/java';
@@ -572,7 +575,7 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
 
   $scope.buildPlan = function() {
     var copiedPlan = JSON.parse(JSON.stringify($scope.plan));
-    var planWithRheemParams = convertParamtersToRheemStructure(copiedPlan);
+    var planWithRheemParams = convertParametersToRheemStructure(copiedPlan);
 
     $scope.method = 'POST';
     $scope.url = '/api/rheem_plans';
@@ -634,9 +637,11 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
     console.log("executing plan op_index " + op_index);
     $scope.method = 'POST';
     $scope.url = '/api/plan_executions';
-    var data = plansConversions.get();
-    data.operators[op_index].parameters['param1'] = 'y';
-    plansConversions.set(data);
+    if(!$scope.DEMO) {
+      var data = plansConversions.get();
+      data.operators[op_index].parameters['param1'] = 'y';
+      plansConversions.set(data);
+    }
     return $http(
       {
         method: $scope.method,
@@ -647,6 +652,13 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
       }
     ).then(
       function(response) {
+        if(response && response.data && ("run_id" in response.data)) {
+          $scope.run_id = response.data.run_id;
+          logProgress(response);
+          setTimeout(getProgress, 2000);
+          return;
+        }
+
         var data = plansConversions.get();
         if(!$scope.useGEM) {
           console.log("processing response for op_index " + op_index);
@@ -703,27 +715,105 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
     );
   }
 
-  $scope.executeClicked = function(){
+  $scope.executeClicked = function() {
+// alert(JSON.stringify(model.nodes[0], null, 4));
+
     var copiedPlan = JSON.parse(JSON.stringify($scope.plan));
-    var planWithRheemParams = convertParamtersToRheemStructure(copiedPlan);
+    var planWithRheemParams = convertParametersToRheemStructure(copiedPlan);
 
     $scope.loader_req = true;
     plansConversions.set(planWithRheemParams);
 
-    $scope.ts= (new Date()).getTime()
-    console.log("started", $scope.ts)
+    $scope.ts= (new Date()).getTime();
+    console.log("started", $scope.ts);
+//  if($scope.DEMO) {
+//    SetAllBackground("gray");
+//  }
     $scope.callExecutePlan()
-    .then(function(){
-      var te= (new Date()).getTime()
-      console.log("finished:", te, te - $scope.ts)
+    .then(function() {
+      if($scope.run_id) {
+        return;
+      }
+      var te= (new Date()).getTime();
+      console.log("finished:", te, te - $scope.ts);
       $scope.loader_req = false;
-      if((te - $scope.ts) > 300)
-       alert("Your data is ready.");
-    })
+      if((te - $scope.ts) > 300) {
+        alert("Your data is ready.");
+      }
+    });
 
-      // vafr myVar = setInterval(myTimer, 1000);
-
-
-
+    // vafr myVar = setInterval(myTimer, 1000);
   }
+
+  function getProgress() {
+    return $http(
+      {
+        method: "GET",
+        url: '/api/progress?run_id=' + $scope.run_id
+      }
+    ).then(
+      function(response) {
+        logProgress(response);
+        if(response.data.state == 1) {
+          setTimeout(getProgress, 2000);
+        } else {
+          SetAllBackground("inherit");
+          var te = (new Date()).getTime();
+          console.log("finished:", te, te - $scope.ts);
+          $scope.loader_req = false;
+          $scope.run_id = null;
+          alert("Plan completion state: " + response.data.state);
+        }
+      },
+      function(response) {
+        alert("Error getting plan execution status");
+      }
+    );
+  }
+
+  function logProgress(response) {
+    var data = response.data;
+    SetBackgroundByStatus(response.data);
+    var plan = plansConversions.get();
+    var astat = [];
+    for(var i = 0; i < plan.operators.length; i++) {
+      astat.push(['.', '+', '#', '!'][data.op_stat[plan.operators[i].name]]);
+    }
+    console.log("[" + astat.join("") + "]");
+/*
+    for(var i = 0; i < plan.operators.length; i++) {
+      for(var node of model.nodes) {
+        if(node.name == plan.operators[i].name) {
+          break;
+        }
+      }
+      node.bgcolor = ["lightgray", "lightgreen", "transparent", "red"][data.op_stat[plan.operators[i].name]];
+    }
+*/
+  }
+
+  function SetAllBackground(bgcolor) {
+    var container = document.getElementById("work-area").firstElementChild;
+    for(var i = 0; i < container.children.length; i++) {
+      var element = container.children[i];
+      if(element.tagName == "DIV") {
+        element.style.backgroundColor = bgcolor;
+        //element.firstElementChild.style.borderColor = bgcolor;
+      }
+    }
+  }
+
+  function SetBackgroundByStatus(status) {
+    var colors = ["gray", "lightgreen", "inherit", "lightred"];
+    var plan = plansConversions.get();
+    var container = document.getElementById("work-area").firstElementChild;
+    for(var i = 0; i < container.children.length; i++) {
+      var element = container.children[i];
+      if(element.tagName == "DIV") {
+        var id = parseInt(element.id);
+        element.style.backgroundColor = colors[status.op_stat[plan.operators[id - 1].name].state];
+      }
+    }
+  }
+
 }]);
