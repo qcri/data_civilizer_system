@@ -2,7 +2,7 @@
 
 #This file mostly exists as centralized config for various datasets and other things.
 
-DATASET_ROOT = "/app/storage/data_sets/deeper_lite/"
+DATASET_ROOT = "/home/ubuntu/data_civilizer_system/app_storage/data_sets/deeper_lite/"
 #Note: This contains also the label data!
 CANDSET_IDS_FILE_NAME = "candset_ids_only.csv"
 
@@ -11,7 +11,7 @@ CANDSET_FILE_NAME = "candset.pkl.compress"
 
 #Size of distributed representations
 DR_DIMENSION = 300
-FASTTEXT_MODEL_PATH = "/app/storage/wiki.en/wiki.en.bin"
+FASTTEXT_MODEL_PATH = "/home/ubuntu/data_civilizer_system/app_storage/data_sets/wiki.en.bin"
 
 #Assumptions: partially for interoperability with Magellan/py_entitymatching
 # 1. id column is always named as "id"
@@ -73,6 +73,12 @@ er_dataset_details = {
             "rtable_file_name" : "dataset_b.csv",
             "golden_label_file_name" : "",
         },
+        "restaurants" : {
+            "dataset_folder_path" : DATASET_ROOT + "restaurants/",
+            "ltable_file_name" : "db1.csv",
+            "rtable_file_name" : "db3.csv",
+            "golden_label_file_name" : "",
+        },        
 
 }
 
