@@ -213,6 +213,7 @@ def executeServicePredict(params={}):
     r_file_name = params[dataset_name]["dataset_folder_path"] + params[dataset_name]["rtable_file_name"]
 
     generateCandidates = True if params[dataset_name]["candidates_file"] is "" else False
+    generateCandidates = False
 
     if generateCandidates:
         A = py_entitymatching.read_csv_metadata(l_file_name, key="id", encoding='utf-8')
@@ -243,7 +244,7 @@ def executeServicePredict(params={}):
 
     # predict_file_name, predict_output_file_name
     predict(dataset_name,
-            "predict.csv",  # this file has to be provided (before: test.csv)
+            params[dataset_name]["candidates_file"],  # this file has to be provided (before: test.csv)
             "test_predictions.csv",  # output file
             get_deeper_lite_model_sim)
 
@@ -256,21 +257,48 @@ def executeServicePredict(params={}):
 
     df_matches = df_pred[df_pred.gold == 1]
 
-    df_a['cluster_id'] = df_a.id
-    df_b['cluster_id'] = df_b.id
+    df_a['cluster_id'] = 0
+    df_b['cluster_id'] = 0
 
     G = nx.Graph()
-    G.add_edges_from(df_matches[["ltable_id", "rtable_id"]].values)
 
-    cluster = -1
-    cc = 0
-    for component in nx.connected_components(G):
-        cluster += 1
-        for c in component:
-            if c in id1:
-                df_a.loc[df_a.id == c, 'cluster_id'] = cluster
+    ids_a = list(df_matches["ltable_id"].values)
+    ids_b = list(df_matches["rtable_id"].values)
+
+    limit_dataset_a = max(ids_a) + 1
+    ids_b = list(map(lambda x: x + limit_dataset_a, ids_b))
+
+    ids_zip = list(zip(ids_a, ids_b))
+
+    for edge in ids_zip:
+        G.add_edge(edge[0], edge[1])
+
+    cluster_id = 1
+    components = nx.connected_components(G)
+    for comp in components:
+        # cluster_matches.add(cluster_id)
+        for el in comp:
+            if (el < limit_dataset_a):
+                df_a.loc[df_a.id == el, "cluster_id"] = cluster_id
             else:
-                df_b.loc[df_b.id == c, 'cluster_id'] = cluster
+                df_b.loc[df_b.id == int(el - limit_dataset_a), "cluster_id"] = cluster_id
+        cluster_id += 1
+
+    # for m in matches_list:
+    #     dfa.loc[dfa.id==m[0], "cluster_id"]=cluster_id
+    #     dfb.loc[dfb.id==m[1], "cluster_id"]=cluster_id
+    #     cluster_id += 1
+    clusters = []
+    for i in range(0, len(df_a.loc[df_a.cluster_id == 0])):
+        clusters.append(cluster_id)
+        cluster_id += 1
+    df_a.loc[df_a.cluster_id == 0, "cluster_id"] = clusters
+
+    clusters = []
+    for i in range(0, len(df_b.loc[df_b.cluster_id == 0])):
+        clusters.append(cluster_id)
+        cluster_id += 1
+    df_b.loc[df_b.cluster_id == 0, "cluster_id"] = clusters
 
     if not os.path.exists(params["out_file_path"]):
         os.makedirs(params["out_file_path"])
