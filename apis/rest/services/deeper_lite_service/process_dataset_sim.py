@@ -155,8 +155,8 @@ def compute_distance(fasttext_model, ltable_str, rtable_str):
     # if isinstance(rtable_str, basestring) == False:
     #     rtable_str = unicode(rtable_str)
 
-    lcol_dr = fasttext_model.get_sentence_vector(str(ltable_str))
-    rcol_dr = fasttext_model.get_sentence_vector(str(rtable_str))
+    lcol_dr = fasttext_model.get_sentence_vector(ltable_str)
+    rcol_dr = fasttext_model.get_sentence_vector(rtable_str)
 
     # See the fillna command before for handling nulls
     if ltable_str == rtable_str and ltable_str == " ":
