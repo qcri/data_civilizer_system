@@ -154,6 +154,10 @@ def compute_distance(fasttext_model, ltable_str, rtable_str):
     #     ltable_str = unicode(ltable_str)
     # if isinstance(rtable_str, basestring) == False:
     #     rtable_str = unicode(rtable_str)
+    if isinstance(ltable_str, str) == False:
+        ltable_str = str(ltable_str)
+    if isinstance(rtable_str, str) == False:
+        rtable_str = str(rtable_str)
 
     lcol_dr = fasttext_model.get_sentence_vector(ltable_str)
     rcol_dr = fasttext_model.get_sentence_vector(rtable_str)

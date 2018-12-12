@@ -59,7 +59,7 @@ def train(params,
     validation_features, validation_labels = process_dataset.get_features_and_labels(params, validation_file_name)
 
     # Hack: Assumes that for deeper lite num_features = 2 * num_attributes
-    num_attributes = train_features.shape[1] / 2
+    num_attributes = int(train_features.shape[1] / 2)
     model = model_fn(num_attributes)
 
     train_dataset = Data.TensorDataset(train_features, train_labels)
@@ -109,7 +109,7 @@ def predict(params,
             model_fn):
     test_features = process_dataset.get_features_only(params, predict_file_name)
     # Hack: Assumes that for deeper lite num_features = 2 * num_attributes
-    num_attributes = test_features.shape[1] / 2
+    num_attributes = int(test_features.shape[1] / 2)
     model = model_fn(num_attributes)
 
     folder_path = process_dataset.get_folder_to_persist_model(params)
