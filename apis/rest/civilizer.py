@@ -176,47 +176,24 @@ def executeOperator(operator):
 
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER-Train"):
         print("DataCleaning-DeepER-Train")
-        dataset_name = operator["parameters"]["param11"]
         params = {
-            "dataset_name": dataset_name,
-            dataset_name: {
-                "dataset_folder_path": operator["parameters"]["param2"],
-                "ltable_file_name": operator["parameters"]["param4"],
-                "rtable_file_name": operator["parameters"]["param5"],
-                "blocking_key": {
-                    "l": operator["parameters"]["param7"],
-                    "r": operator["parameters"]["param8"]
-                },
-                "candidates_file": operator["parameters"]["param6"],
-                "attribute_list": {
-                    "l": operator["parameters"]["param9"].split(","),
-                    "r": operator["parameters"]["param10"].split(",")
-                }
-            },
-            "out_file_path": operator["parameters"]["param3"]
+            "dataset_folder_path":operator["parameters"]["param2"],
+            "ltable_file_name":operator["parameters"]["param4"],
+            "rtable_file_name":operator["parameters"]["param5"],
+            "labeled_file":operator["parameters"]["param6"],
+            "lblocking_key":"",
+            "rblocking_key":""
         }
         deeper_lite_api.executeServiceTrain(params)
 
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER-Predict"):
         print("DataCleaning-DeepER-Predict")
-        dataset_name = operator["parameters"]["param11"]
         params = {
-            "dataset_name": dataset_name,
-            dataset_name: {
-                "dataset_folder_path": operator["parameters"]["param2"],
-                "ltable_file_name": operator["parameters"]["param4"],
-                "rtable_file_name": operator["parameters"]["param5"],
-                "blocking_key": {
-                    "l": operator["parameters"]["param7"],
-                    "r": operator["parameters"]["param8"]
-                },
-                "candidates_file": operator["parameters"]["param6"],
-                "attribute_list": {
-                    "l": operator["parameters"]["param9"].split(","),
-                    "r": operator["parameters"]["param10"].split(",")
-                }
-            },
-            "out_file_path": operator["parameters"]["param3"]
+                "dataset_folder_path":operator["parameters"]["param2"],
+                "out_file_path":operator["parameters"]["param3"],
+                "ltable_file_name":operator["parameters"]["param4"],
+                "rtable_file_name":operator["parameters"]["param5"],
+                "candidates_file":operator["parameters"]["param6"]
         }
         deeper_lite_api.executeServicePredict(params)
 

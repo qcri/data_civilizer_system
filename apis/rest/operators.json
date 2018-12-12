@@ -212,32 +212,7 @@
                     {
                         "name": "param6",
                         "inputType": "String",
-                        "type": "civilizer.dataCollection.candidates_file"
-                    },
-                    {
-                        "name": "param7",
-                        "inputType": "String",
-                        "type": "civilizer.dataCollection.lblocking_key"
-                    },
-                    {
-                        "name": "param8",
-                        "inputType": "String",
-                        "type": "civilizer.dataCollection.rblocking_key"
-                    },
-                    {
-                        "name": "param9",
-                        "inputType": "String",
-                        "type": "civilizer.dataCollection.lattribute_list"
-                    },
-                    {
-                        "name": "param10",
-                        "inputType": "String",
-                        "type": "civilizer.dataCollection.rattribute_list"
-                    },
-                    {
-                        "name": "param11",
-                        "inputType": "String",
-                        "type": "civilizer.dataCollection.dataset_name"
+                        "type": "civilizer.dataCollection.labeled_file"
                     }
                 ]
             },
@@ -285,31 +260,6 @@
                         "name": "param6",
                         "inputType": "String",
                         "type": "civilizer.dataCollection.candidates_file"
-                    },
-                    {
-                        "name": "param7",
-                        "inputType": "String",
-                        "type": "civilizer.dataCollection.lblocking_key"
-                    },
-                    {
-                        "name": "param8",
-                        "inputType": "String",
-                        "type": "civilizer.dataCollection.rblocking_key"
-                    },
-                    {
-                        "name": "param9",
-                        "inputType": "String",
-                        "type": "civilizer.dataCollection.lattribute_list"
-                    },
-                    {
-                        "name": "param10",
-                        "inputType": "String",
-                        "type": "civilizer.dataCollection.rattribute_list"
-                    },
-                    {
-                        "name": "param11",
-                        "inputType": "String",
-                        "type": "civilizer.dataCollection.dataset_name"
                     }
                 ]
             },
