@@ -197,7 +197,7 @@ def executeServicePredict(params={}):
     l_file_name = params["dataset_folder_path"] + params["ltable_file_name"]
     r_file_name = params["dataset_folder_path"] + params["rtable_file_name"]
 
-    generateCandidates = True if params["candidates_file"] is "" else False
+    generateCandidates = False if params["lblocking_key"] is "" else True
 
     if generateCandidates:
         A = py_entitymatching.read_csv_metadata(l_file_name, key="id", encoding='utf-8')
@@ -208,9 +208,9 @@ def executeServicePredict(params={}):
         candset_df = ob.block_tables(A, B,
                                      params["lblocking_key"],
                                      params["rblocking_key"],
-                                     l_output_attrs=params["lattributes"],
-                                     r_output_attrs=params["rattributes"],
-                                     overlap_size=1,
+                                     # l_output_attrs=params["lattributes"],
+                                     # r_output_attrs=params["rattributes"],
+                                     overlap_size=3,
                                      show_progress=False)
 
         blocking_utils.save_candset_compressed(params, candset_df, "candset.pkl.compress")

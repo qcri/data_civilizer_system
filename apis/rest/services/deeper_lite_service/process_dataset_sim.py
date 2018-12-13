@@ -215,7 +215,7 @@ def convert_csv_to_features(params,
 
 
 def convert_csv_to_features(params,
-                            input_file_name, ):
+                            input_file_name):
     folder_path = params["dataset_folder_path"]
     ltable_file_name = params["ltable_file_name"]
     rtable_file_name = params["rtable_file_name"]
