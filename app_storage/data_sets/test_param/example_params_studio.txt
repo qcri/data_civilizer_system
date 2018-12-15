@@ -1,0 +1,14 @@
+[DeepER_Train]
+/app/storage/data_sets/test_param/movies/tmp/
+/app/storage/data_sets/test_param/movies/tmp/
+/app/storage/data_sets/test_param/movies/in/dataset_a.csv
+/app/storage/data_sets/test_param/movies/in/dataset_b.csv
+/app/storage/data_sets/test_param/movies/other/labeled_ids_only.csv
+
+[DeepER_Predict]
+/app/storage/data_sets/test_param/movies/tmp/
+/app/storage/data_sets/test_param/movies/out/
+/app/storage/data_sets/test_param/movies/in/dataset_a.csv
+/app/storage/data_sets/test_param/movies/in/dataset_b.csv
+[eith this] /app/storage/data_sets/test_param/movies/other/predict.csv
+[or this]   movie_name
