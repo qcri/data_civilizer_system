@@ -25,23 +25,29 @@ import torch
 FASTTEXT_MODEL_PATH = "/app/storage/wiki.en/wiki.en.bin"
 
 
+
 # This function splits an input file from a given path into three : train, validation and test
 # then output files train.csv, validation.csv, test.csv in the folder folder_path
 # conservatively, the split is done in a stratified manner by manually splitting data into duplicates and non duplicates
 # this is relevant when we test very small number of training data
 
-def split_dataset_by_ratio(folder_path, candset_ids_file_name, split_ratio=[0.3, 0.2, 0.5], label_field_name='gold',
-                           random_state=12345, train_file_name="train.csv", validation_file_name="validation.csv",
+def split_dataset_by_ratio(metadata_path,  # folder_path,
+                           candset_ids_file_path,  # candset_ids_file_name,
+                           split_ratio,
+                           label_field_name='gold',
+                           random_state=12345,
+                           train_file_name="train.csv",
+                           validation_file_name="validation.csv",
                            test_file_name="test.csv"):
-    df = pd.read_csv(os.path.join(folder_path, candset_ids_file_name), encoding="utf-8")
+    df = pd.read_csv(candset_ids_file_path, encoding="utf-8")
     duplicates_df = df[df[label_field_name] == 1]
     non_duplicates_df = df[df[label_field_name] == 0]
 
     train_duplicates, validation_duplicates, test_duplicates = local_train_validate_test_split(duplicates_df,
                                                                                                split_ratio,
                                                                                                random_state)
-    train_non_duplicates, validation_non_duplicates, test_non_duplicates = local_train_validate_test_split(
-        non_duplicates_df, split_ratio, random_state)
+    train_non_duplicates, validation_non_duplicates, test_non_duplicates = \
+        local_train_validate_test_split(non_duplicates_df, split_ratio, random_state)
 
     # The last sample is to shuffle the data so that duplicates and non_duplicates mix
     train_df = pd.concat([train_duplicates, train_non_duplicates]).sample(frac=1)
@@ -49,12 +55,15 @@ def split_dataset_by_ratio(folder_path, candset_ids_file_name, split_ratio=[0.3,
     test_df = pd.concat([test_duplicates, test_non_duplicates]).sample(frac=1)
 
     # verify_split(df, train_df, validation_df, test_df, split_ratio, label_field_name)
-    for partition_df, file_name in [(train_df, train_file_name), (validation_df, validation_file_name),
+    for partition_df, file_name in [(train_df, train_file_name),
+                                    (validation_df, validation_file_name),
                                     (test_df, test_file_name)]:
-        partition_df.to_csv(os.path.join(folder_path, file_name), encoding="utf-8", index=False)
+        partition_df.to_csv(os.path.join(metadata_path, file_name), encoding="utf-8", index=False)
 
 
-def local_train_validate_test_split(df, split_ratio=[0.3, 0.2, 0.5], random_state=12345):
+def local_train_validate_test_split(df,
+                                    split_ratio=[0.3, 0.2, 0.5],
+                                    random_state=12345):
     np.random.seed(random_state)
     random_shuffle = np.random.permutation(df.index)
     num_tuples = len(df)
@@ -70,7 +79,11 @@ def local_train_validate_test_split(df, split_ratio=[0.3, 0.2, 0.5], random_stat
 
 
 # Trivial manual validation to check correctness of the split
-def verify_split(df, train_df, validation_df, test_df, split_ratio, label_field_name):
+def verify_split(df,
+                 train_df,
+                 validation_df,
+                 test_df, split_ratio,
+                 label_field_name):
     num_duplicates_df = len(df[df[label_field_name] == 1])
     num_non_duplicates_df = len(df[df[label_field_name] == 0])
 
@@ -89,11 +102,14 @@ def verify_split(df, train_df, validation_df, test_df, split_ratio, label_field_
 # First is the folder, second is the train|validation|test file, and the last two are the csv files of the left and right datasets
 # Output file name is obtained from input_file_name and is put in the same folder as folder_path
 # This is not very efficient - partially to avoid storing large intermediate matrices
-def dataset_to_matrix(params, input_file_name):
-    ltable_df = pd.read_csv(os.path.join(params["dataset_folder_path"], params["ltable_file_name"]), encoding="utf-8")
-    rtable_df = pd.read_csv(os.path.join(params["dataset_folder_path"], params["rtable_file_name"]), encoding="utf-8")
+def dataset_to_matrix(metadata_path,
+                      ltable_file_path,
+                      rtable_file_path,
+                      predict_file_path):
+    ltable_df = pd.read_csv(ltable_file_path, encoding="utf-8")
+    rtable_df = pd.read_csv(rtable_file_path, encoding="utf-8")
 
-    candset_with_ids_df = pd.read_csv(os.path.join(params["dataset_folder_path"], input_file_name), encoding="utf-8")
+    candset_with_ids_df = pd.read_csv(predict_file_path, encoding="utf-8")
 
     # Find common attributes of ltable and rtable
     common_attributes = ltable_df.columns.intersection(rtable_df.columns)
@@ -144,8 +160,8 @@ def dataset_to_matrix(params, input_file_name):
             dist_repr_similarity_matrix[row_index][num_attributes + col_index] = normed_abs_dist
             dist_repr_similarity_matrix[row_index][-1] = gold
 
-    output_file_name = input_file_name.replace(".csv", "")
-    np.save(os.path.join(params["dataset_folder_path"], output_file_name), dist_repr_similarity_matrix)
+    output_file_name = predict_file_path.split("/")[-1].replace(".csv", "")
+    np.save(os.path.join(metadata_path, output_file_name), dist_repr_similarity_matrix)
 
 
 # This function takes two strings, converts to utf-8, computes their cosine and absolute error distance
@@ -176,76 +192,34 @@ def compute_distance(fasttext_model, ltable_str, rtable_str):
     return cosine_dist, normed_abs_dist
 
 
-# This is a helper function to create distributional similarity matrix for all datasets
-# and calls the dist similarity computation for each of train, validation and test files
-def compute_dist_similarity_matrix_wrapper(params,
-                                           train_file_name="train.csv",
-                                           validation_file_name="validation.csv",
-                                           test_file_name="test.csv"):
-    # dataset = configs.er_dataset_details[dataset_name]
-    folder = params["dataset_folder_path"]
-    # input_file = "candset_ids_only.csv"
+def convert_csv_to_features(metadata_path,
+                            ltable_file_path,
+                            rtable_file_path,
+                            predict_file_path):
 
-    # dataset_to_matrix("/Users/neo/Desktop/QCRI/DataCleaning/datasets/BenchmarkDatasets/Fodors_Zagat/", "candset_ids_only.csv", "fodors.csv", "zagats.csv")
-    # dataset_to_matrix(folder, "candset_ids_only.csv", ltable_file, rtable_file)
-
-    dataset_to_matrix(params, train_file_name)
-
-    dataset_to_matrix(params, validation_file_name)
-
-    dataset_to_matrix(params, test_file_name)
-
-
-def convert_csv_to_features(params,
-                            input_file_name):
-    folder_path = params["dataset_folder_path"]
-    ltable_file_name = params["ltable_file_name"]
-    rtable_file_name = params["rtable_file_name"]
-
-    feature_file_name = input_file_name.replace(".csv", ".npy")
+    feature_file_name = predict_file_path.split("/")[-1].replace(".csv", ".npy")
 
     # Check if the npy file already exists
-    file_path = os.path.join(folder_path, feature_file_name)
+    file_path = os.path.join(metadata_path, feature_file_name)
     if os.path.exists(file_path):
         print("File {} already exists. Reusing it.".format(feature_file_name))
     else:
         print("File {} does not exist. Creating and persisting it.".format(feature_file_name))
-        dataset_to_matrix(params, input_file_name)
+        dataset_to_matrix(metadata_path,
+                          ltable_file_path,
+                          rtable_file_path,
+                          predict_file_path)
     return np.load(file_path)
 
 
-def convert_csv_to_features(params,
-                            input_file_name):
-    folder_path = params["dataset_folder_path"]
-    ltable_file_name = params["ltable_file_name"]
-    rtable_file_name = params["rtable_file_name"]
-
-    feature_file_name = input_file_name.replace(".csv", ".npy")
-
-    # Check if the npy file already exists
-    file_path = os.path.join(folder_path, feature_file_name)
-    if os.path.exists(file_path):
-        print("File {} already exists. Reusing it.".format(feature_file_name))
-    else:
-        print("File {} does not exist. Creating and persisting it.".format(feature_file_name))
-        dataset_to_matrix(params, input_file_name)
-    return np.load(file_path)
-
-
-def get_features_and_labels(params,
+def get_features_and_labels(metadata_path,
+                            ltable_file_path,
+                            rtable_file_path,
                             file_name):
-    matrix = convert_csv_to_features(params,
+    matrix = convert_csv_to_features(metadata_path,
+                                     ltable_file_path,
+                                     rtable_file_path,
                                      file_name)
-    features, labels = matrix[:, :-1], matrix[:, -1]
-
-    # Convert to torch format from numpy format
-    features, labels = torch.from_numpy(features), torch.from_numpy(labels).type(torch.LongTensor)
-    return features, labels
-
-
-def get_features_and_labels(params,
-                            file_name):
-    matrix = convert_csv_to_features(params, file_name)
     features, labels = matrix[:, :-1], matrix[:, -1]
 
     # Convert to torch format from numpy format
@@ -255,9 +229,14 @@ def get_features_and_labels(params,
 
 # @author gio
 # when Ground Truth is not available
-def get_features_only(params,
-                      file_name):
-    matrix = convert_csv_to_features(params, file_name)
+def get_features_only(metadata_path,
+                      ltable_file_path,
+                      rtable_file_path,
+                      predict_file_path):
+    matrix = convert_csv_to_features(metadata_path,
+                                     ltable_file_path,
+                                     rtable_file_path,
+                                     predict_file_path)
     features = matrix[:, :-1]
 
     # Convert to torch format from numpy format
@@ -275,13 +254,3 @@ def get_replacement_list():
 
 def load_fasttext_model():
     return fasttext.load_model(FASTTEXT_MODEL_PATH)
-
-
-def get_folder_to_persist_model(params):
-    folder = params["dataset_folder_path"]
-    return folder
-
-
-def get_folder_to_persist_model(params):
-    folder = params["dataset_folder_path"]
-    return folder
