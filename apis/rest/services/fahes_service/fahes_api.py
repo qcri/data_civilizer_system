@@ -184,17 +184,17 @@ def transformSingleFile(file_in_path):
 
 
 def read_csv_directory(dir_name):
-    csv_tables_names = []
+    # csv_tables_names = []
     data_path = os.path.abspath(dir_name);
-    if csv_tables_names:
-        for i in range(len(csv_tables_names)):
-            csv_datafreames.remove(csv_tables_names[0])     
+    # if csv_tables_names:
+    #     for i in range(len(csv_tables_names)):
+    #         csv_datafreames.remove(csv_tables_names[0])
     file_extension = '.csv'
     try:
         filenames = listdir(data_path)
     except Exception as e:
         if hasattr(e, 'message'):
-            print ("Error occured (", a, ")")
+            print ("Error occured (", e, ")")
         else:
             print ("Error occured (", e, ")")        
         return None
