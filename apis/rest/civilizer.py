@@ -181,8 +181,6 @@ def executeOperator(operator):
             "ltable_file_name":operator["parameters"]["param4"],
             "rtable_file_name":operator["parameters"]["param5"],
             "labeled_file":operator["parameters"]["param6"],
-            "lblocking_key":"",
-            "rblocking_key":""
         }
         deeper_lite_api.executeServiceTrain(params)
 
@@ -193,7 +191,9 @@ def executeOperator(operator):
                 "out_file_path":operator["parameters"]["param3"],
                 "ltable_file_name":operator["parameters"]["param4"],
                 "rtable_file_name":operator["parameters"]["param5"],
-                "candidates_file":operator["parameters"]["param6"]
+                "candidates_file":operator["parameters"]["param6"],
+                "lblocking_key":operator["parameters"]["param7"],
+                "rblocking_key":operator["parameters"]["param7"]
         }
         deeper_lite_api.executeServicePredict(params)
 

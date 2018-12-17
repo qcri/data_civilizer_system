@@ -260,6 +260,11 @@
                         "name": "param6",
                         "inputType": "String",
                         "type": "civilizer.dataCollection.candidates_file"
+                    },
+                    {
+                        "name": "param7",
+                        "inputType": "String",
+                        "type": "civilizer.dataCollection.blockingAttributeKey"
                     }
                 ]
             },
