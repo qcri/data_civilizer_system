@@ -233,7 +233,15 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
           }
           connectorsArr.push(outputPortOperatorNode);
 
-          if(node.nb_inputs >= 2){
+          if(node.nb_outputs >= 2){
+             var outputPortOperatorNode = {
+              id: nextConnectorID++,
+              type: flowchartConstants.bottomConnectorType
+            }
+            connectorsArr.push(outputPortOperatorNode);
+          }
+
+          if(node.nb_outputs >= 3){
              var outputPortOperatorNode = {
               id: nextConnectorID++,
               type: flowchartConstants.bottomConnectorType
