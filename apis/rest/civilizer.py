@@ -5,7 +5,8 @@ import webbrowser
 from decimal import Decimal
 import time
 import random
-import sys
+import os
+import glob
 # from subprocess import Popen, PIPE
 from services.fahes_service import fahes_api
 from services.imputedb_service import imputedb_api
@@ -34,6 +35,18 @@ myresponse0 = {'myURI': u''}
 #         'nb_outputs': 1
 #     },
 # ]
+
+tmpdir = "/app/storage/tmp/"
+
+try:
+    docker_log = open("/proc/1/fd/1", "w")
+except:
+    docker_log = None
+
+def log(text):
+    print(text)
+    if docker_log is not None:
+        print(text, file = docker_log)
 
 @app.route('/rheem/rheem_plans', methods=['POST'])
 def post_plan():
@@ -67,7 +80,7 @@ def post_ExePlan():
     task_request = request.json
 
     if "operators" in task_request:
-        operators = task_request["operators"] if "operators" in task_request else task_request
+        operators = task_request["operators"]
         # number = len(operators)
         number = get_activeNode(request)
         return executeOperator(operators[number])
@@ -92,26 +105,48 @@ def post_ExePlan():
                            # service_input_dir[s] returns the input dir (if any) for service s 
 
     for service_id, service in enumerate(ordered_list):
-        print(service_id, file=sys.stderr)
+        print(service_id)
 
+    op_response = {}
     for service_id, service in enumerate(ordered_list):
         # the service expects input from a previous service, link the two services
         # index of input dir is always at index 2 of parameters list
         # index of output dir is always at index 3 of parameters list
         if str(service_id) in service_input_dir:
+            log(str(service_id) + " in service_input_dir")
             service['parameters']['param2'] = service_input_dir[str(service_id)]
 
         for next_service_id in service['next']: # fill out the input dirs for the next services
             # if no out dir was specified, assume in dir is same as out dir
-            if not service['parameters']['param3']: 
-                service_input_dir[next_service_id] = service['parameters']['param2']
-            else:
-                service_input_dir[next_service_id] = service['parameters']['param3']
+            if 'param3' in service['parameters']:
+                if not service['parameters']['param3']: 
+                    service_input_dir[next_service_id] = service['parameters']['param2']
+                else:
+                    service_input_dir[next_service_id] = service['parameters']['param3']
+
+        log(str(service_id) + ": " + service['name'])
+        log("  param2: " + service['parameters']['param2'] if 'param2' in service['parameters'] else "Not set")
+        log("  param3: " + service['parameters']['param3'] if 'param3' in service['parameters'] else "Not set")
+
+        for key, value in op_response.items():
+            service['parameters'][key] = value
+
+        service['parameters']['civilizer.dataCollection.tmpdir'] = tmpdir
+
+        log("input " + str(service_id) + ": " + service['name'])
+        log(json.dumps(service, sort_keys=True, indent=4))
 
         #Execute service
-        executeOperator(service)
+        op_response = executeOperator(service).json
 
-    return jsonify(myresponse0)
+        if not op_response:
+            op_response = {}
+        log("output " + str(service_id) + ": " + service['name'])
+        log(json.dumps(op_response, sort_keys=True, indent=4))
+
+
+    return jsonify(op_response)
+#   return jsonify(myresponse0)
 
 
 @app.route('/rheem/plan_exec_op', methods=['POST'])
@@ -123,18 +158,39 @@ def post_ExeOperator():
 
 def executeOperator(operator):
     class_name = operator["java_class"]
-    task_sources = operator["parameters"]["param2"]
-    task_destination = operator["parameters"]["param3"]
+    parameters = operator["parameters"]
+    task_sources = parameters["param2"] if 'param2' in parameters else ""
+    task_destination = parameters["param3"] if 'param3' in parameters else ""
     input_source, output_destination = get_source_destination_objects(task_sources, task_destination)
 
-    if(class_name == "civilizer.basic.operators.DataDiscovery"):
+    op_retval = None
+
+    if(class_name == "civilizer.basic.operators.noop"):
+        log("No op")
+        return jsonify(myresponse0)
+
+    elif(class_name == "civilizer.basic.operators.CollectionSource"):
+        log("CollectionSource")
+        files_in = parameters["param0"].splitlines()
+        files_out = list()
+        for files in list(map(glob.glob, files_in)):
+            files_out.extend(files)
+        op_response = {
+            "civilizer.dataCollection.filelist": list(map(os.path.abspath, files_out))
+        }
+        return jsonify(op_response)
+
+    elif(class_name == "civilizer.basic.operators.DataDiscovery"):
         print("Data Discovery")
         # open_chrome('http://localhost:3000/')
         return jsonify(myresponse2)
 
     elif(class_name=="civilizer.basic.operators.DataCleaning-Fahes"):
         print("DataCleaning-Fahes")
-        fahes_api.execute_fahes(input_source, output_destination)
+        if "civilizer.dataCollection.filelist" in parameters:
+            op_retval = fahes_api.execute_fahes_explicit(parameters)
+        else:
+            fahes_api.execute_fahes(input_source, output_destination)
 
 #   elif(class_name=="civilizer.basic.operators.DataCleaning-FahesFilter"):
 #       print("DataCleaning-FahesFilter")
@@ -142,12 +198,15 @@ def executeOperator(operator):
 
     elif(class_name=="civilizer.basic.operators.DataCleaning-FahesApply"):
         print("DataCleaning-FahesApply")
-        fahes_api.executeService(input_source, output_destination)
+        if "civilizer.dataCollection.filelist" in parameters:
+            op_retval = fahes_api.executeService_explicit(parameters)
+        else:
+            fahes_api.executeService(input_source, output_destination)
 
     elif (class_name == "civilizer.basic.operators.DataCleaning-PKDuck"):
         print("DataCleaning-PKDuck")
-        columns = operator["parameters"]["param4"]
-        tau = operator["parameters"]["param5"]
+        columns = parameters["param4"]
+        tau = parameters["param5"]
         pkduck_api.execute_pkduck(input_source, output_destination, columns, Decimal(tau))
         # inputF = "sources.json"
         # outputF = "destination.json"
@@ -156,9 +215,9 @@ def executeOperator(operator):
 
     elif (class_name == "civilizer.basic.operators.DataCleaning-Imputedb"):
         print("DataCleaning-Imputedb")
-        tableName = operator["parameters"]["param4"]
-        q = operator["parameters"]["param5"]
-        r = operator["parameters"]["param6"]
+        tableName = parameters["param4"]
+        q = parameters["param5"]
+        r = parameters["param6"]
         input_source = {'CSV': {'dir': task_sources, 'table': tableName}}
         # imputedb_api.execute_imputedb(input_source, output_destination, q, r)
         imputedb_api.executeService(input_source, output_destination, q, r)
@@ -168,19 +227,19 @@ def executeOperator(operator):
 
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER"):
         print("DataCleaning-DeepER")
-        table1 = operator["parameters"]["param4"]
-        table2 = operator["parameters"]["param5"]
-        predictionsFileName = operator["parameters"]["param6"]
-        number_of_pairs = operator["parameters"]["param7"]
+        table1 = parameters["param4"]
+        table2 = parameters["param5"]
+        predictionsFileName = parameters["param6"]
+        number_of_pairs = parameters["param7"]
         deeper_api.execute_deeper(task_sources, table1, table2, number_of_pairs, task_destination, predictionsFileName)
 
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER-Train"):
         print("DataCleaning-DeepER-Train")
         params = {
-            "dataset_folder_path":operator["parameters"]["param2"],
-            "ltable_file_name":operator["parameters"]["param4"],
-            "rtable_file_name":operator["parameters"]["param5"],
-            "labeled_file":operator["parameters"]["param6"],
+            "dataset_folder_path":parameters["param2"],
+            "ltable_file_name":parameters["param4"],
+            "rtable_file_name":parameters["param5"],
+            "labeled_file":parameters["param6"],
             "lblocking_key":"",
             "rblocking_key":""
         }
@@ -189,11 +248,11 @@ def executeOperator(operator):
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER-Predict"):
         print("DataCleaning-DeepER-Predict")
         params = {
-                "dataset_folder_path":operator["parameters"]["param2"],
-                "out_file_path":operator["parameters"]["param3"],
-                "ltable_file_name":operator["parameters"]["param4"],
-                "rtable_file_name":operator["parameters"]["param5"],
-                "candidates_file":operator["parameters"]["param6"]
+                "dataset_folder_path":parameters["param2"],
+                "out_file_path":parameters["param3"],
+                "ltable_file_name":parameters["param4"],
+                "rtable_file_name":parameters["param5"],
+                "candidates_file":parameters["param6"]
         }
         deeper_lite_api.executeServicePredict(params)
 
@@ -229,7 +288,7 @@ def executeOperator(operator):
         print("Error")
 
     # return jsonify(operators[number-1])
-    return jsonify(myresponse0)
+    return jsonify(myresponse0 if not op_retval else op_retval)
 
 
 def get_activeNode(request):
