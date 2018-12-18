@@ -236,23 +236,23 @@ def executeOperator(operator):
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER-Train"):
         print("DataCleaning-DeepER-Train")
         params = {
-            "dataset_folder_path":parameters["param2"],
-            "ltable_file_name":parameters["param4"],
-            "rtable_file_name":parameters["param5"],
-            "labeled_file":parameters["param6"],
-            "lblocking_key":"",
-            "rblocking_key":""
+            "metadata_path":parameters["param2"],
+            "ltable_file_path":parameters["param4"],
+            "rtable_file_path":parameters["param5"],
+            "labeled_file_path":parameters["param6"]
         }
         deeper_lite_api.executeServiceTrain(params)
 
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER-Predict"):
         print("DataCleaning-DeepER-Predict")
         params = {
-                "dataset_folder_path":parameters["param2"],
+                "metadata_path":parameters["param2"],
                 "out_file_path":parameters["param3"],
-                "ltable_file_name":parameters["param4"],
-                "rtable_file_name":parameters["param5"],
-                "candidates_file":parameters["param6"]
+                "ltable_file_path":parameters["param4"],
+                "rtable_file_path":parameters["param5"],
+                "candidates_file_path":parameters["param6"],
+                "lblocking_key":parameters["param7"],
+                "rblocking_key":parameters["param7"]
         }
         deeper_lite_api.executeServicePredict(params)
 
