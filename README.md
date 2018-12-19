@@ -47,7 +47,7 @@ Build the custom llsc/cuda-torch base image:
 
     docker-compose build cuda_torch
 
-Build and run all Data Civilizer images at once:
+<!-- Build and run all Data Civilizer images at once:
 
     docker-compose up
 
@@ -56,10 +56,17 @@ Build and run all Data Civilizer images at once:
     docker-compose build apis
     docker-compose build grecord_service
     docker-compose build studio    
+-->
 
-Run the system:
+Build and run all Data Civilizer images:
+```
+docker-compose build apis && docker-compose build grecord_service && docker-compose build studio && docker-compose up studio
+```
 
-    docker-compose up studio
+Run the system (if already built):
+```
+docker-compose up studio
+```
 
 *Note:* The the apis service requires the [Stanford Global Vectors for Word Representation](https://nlp.stanford.edu/projects/glove/) binary file, GloVe.t7, which is stored external to the docker image. If the file is not present when the service is started, it will be created automatically. However, depending on your system, this could take up to 40 minutes, during which there will be no indicator of progress.  You can check the progress from another command window with either `top` or `ps auxf`. With `top`, watch for luajit to execute and finish; cpu load should remain high throughout. With `ps`, wait for the apis container to execute civilizer.py.
 
