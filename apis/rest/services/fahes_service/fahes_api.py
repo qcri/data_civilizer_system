@@ -7,6 +7,9 @@ from ctypes import c_char_p
 import pandas as pd
 import csv
 import numpy as np
+import shutil
+
+
 
 from pandas.api.types import is_string_dtype
 
@@ -14,6 +17,7 @@ global tool_loc
 # tool_loc = "./fahes/"
 # tool_loc = "../civilizer_services/fahes_service/fahes/"
 tool_loc = "/app/rest/services/fahes_service/fahes/"
+#tool_loc = "/home/ubuntu/data_civilizer_system/apis/rest/services/fahes_service/fahes/"
 
 ########################################################################
 #
@@ -34,21 +38,51 @@ The forllowing implementation is to be compieant with the old api
 def executeService(source, out_path, params={}):
     dir_in = source['CSV']['dir']
     dir_out = out_path['CSV']['dir']
-    
-#   dir_metadata = dir_in+"/metadata_fahes/"
-#   out_path['CSV']['dir']=dir_metadata # the output is redirected to the metadata folder
+    dir_metadata = dir_out + 'fahes_metadata/'
+    #out_path['CSV']['dir']=dir_metadata # the output is redirected to the metadata folder
                                         #The purpose is twofold:
                                         #   - we do not change old API
                                         #   - we keep the meta-data
                                         # TODO: this will be a paramenter passed though the JSON input file
+
+
+    out_path_extended = {'CSV': {'dir': dir_out, 'metadata': dir_metadata}}
+
+
     if not os.path.exists(dir_out):
         os.makedirs(dir_out)
 
-#   execute_fahes(source, out_path) # not passing dir_metadata but the json for keeping the old API
+    if not os.path.exists(dir_metadata):
+        os.makedirs(dir_metadata)        
+
+    execute_fahes(source, out_path_extended) # not passing dir_metadata but the json for keeping the old API
 
     # todo with param, define which DMVs to apply
-#   transform_dmv_to_null(dir_in, dir_metadata, dir_out, params)
-    transform_dmv_to_null(dir_in, dir_out, params)
+    #transform_dmv_to_null(dir_in, dir_metadata, dir_out, params)
+    #transform_dmv_to_null(dir_metadata, dir_out, params)
+    transform_dmv_to_null_per_input(dir_in, dir_metadata, dir_out, params)
+
+
+def transform_dmv_to_null_per_input(source_dir, dir_in, dir_out, params={}):
+    files_in = os.listdir(source_dir)
+    
+    # only .CSV supported, check extension:
+    files_in = list(filter(lambda x: len(x.split(".csv"))>1,files_in))
+
+    # for each file apply the tranformation
+    for file in files_in:
+        file_in_path = dir_in + "DMV_" + file
+
+        # apply the transformation (table is a pandas dataframe):
+        table, file_out = transformSingleFile(file_in_path)
+
+        if table is not None:
+            file_out_path = dir_out + file_out
+            table.to_csv(file_out_path,
+                        sep=',',index=False,
+                        quoting = csv.QUOTE_NONNUMERIC,
+                        header=True
+                        )
 
 
 '''
@@ -63,7 +97,7 @@ def transform_dmv_to_null(dir_in, dir_out, params={}):
     # for each file apply the tranformation
     for file in files_in:
         file_in_path = dir_in + file
-#       metadata_file_path = dir_metadata + "DMV_" + file # DMV_ is the prefix added by Fahes
+        #metadata_file_path = dir_metadata + "DMV_" + file # DMV_ is the prefix added by Fahes
 #       file_out_path = dir_out + file
 
         # apply the transformation (table is a pandas dataframe):
@@ -96,6 +130,8 @@ def transformSingleFile(file_in_path):
         return
 
     df_dmv = pd.read_csv(file_in_path, encoding="ISO-8859-1")
+
+    print("opening file", file_in_path)
 
     table_reference = df_dmv["table reference"].iloc[0].split("::")
     if table_reference[0] == "csv":
@@ -208,7 +244,7 @@ def execute_fahes(source, out_path, debug=0):
     #     if EL.lower() == 'csv':
     #         out_dir = out_path[EL]['dir']
 
-    out_dir = out_path['CSV']['dir']
+    out_dir = out_path['CSV']['metadata']
 
     output_dir = ""
     if out_dir:
@@ -348,6 +384,15 @@ def callFahes(tab_ref, tab_full_name, output_dir, debug):
     Fahes=ctypes.cdll.LoadLibrary(path)
     Fahes.execute(ref, tab_name, out_dir, debug)
 
+
+if __name__ == "__main__":
+    with open('sources.json') as sourceFile:
+        source = json.load(sourceFile)
+
+    with open('destination.json') as destinationFile:
+        destination = json.load(destinationFile)
+
+    executeService(source, destination)
 
 
 '''
