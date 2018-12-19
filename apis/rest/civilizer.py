@@ -188,7 +188,7 @@ def executeOperator(operator):
     elif(class_name=="civilizer.basic.operators.DataCleaning-Fahes"):
         print("DataCleaning-Fahes")
         if "civilizer.dataCollection.filelist" in parameters:
-            op_retval = fahes_api.execute_fahes_explicit(parameters)
+            op_retval = fahes_api.execute_fahes_params(parameters)
         else:
             fahes_api.execute_fahes(input_source, output_destination)
 
@@ -199,7 +199,7 @@ def executeOperator(operator):
     elif(class_name=="civilizer.basic.operators.DataCleaning-FahesApply"):
         print("DataCleaning-FahesApply")
         if "civilizer.dataCollection.filelist" in parameters:
-            op_retval = fahes_api.executeService_explicit(parameters)
+            op_retval = fahes_api.executeService_params(parameters)
         else:
             fahes_api.executeService(input_source, output_destination)
 

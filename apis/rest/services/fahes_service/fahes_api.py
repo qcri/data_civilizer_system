@@ -1,12 +1,13 @@
 import os
 from subprocess import Popen
 import json
-from os import listdir
 import ctypes
 from ctypes import c_char_p
 import pandas as pd
 import csv
 import numpy as np
+import uuid
+import tempfile
 
 from pandas.api.types import is_string_dtype
 
@@ -49,6 +50,35 @@ def executeService(source, out_path, params={}):
     # todo with param, define which DMVs to apply
 #   transform_dmv_to_null(dir_in, dir_metadata, dir_out, params)
     transform_dmv_to_null(dir_in, dir_out, params)
+
+
+def executeService_params(parameters):
+    try:
+        output_dir = getOutputDirectory(parameters)
+    except OSError as err:
+        return { "error": "OSError: {0}".format(err) }
+
+    input_files = parameters['civilizer.dataCollection.filelist']
+
+    if input_files is not None:
+        output_files = []
+        for file_in_path in input_files:
+            if os.path.exists(file_in_path):
+                # apply the transformation (table is a pandas dataframe):
+                table, file_out = transformSingleFile(file_in_path)
+
+                if table is not None:
+                    file_out_path = output_dir + file_out
+                    table.to_csv(file_out_path,
+                                sep=',',index=False,
+                                quoting = csv.QUOTE_NONNUMERIC,
+                                header=True
+                                )
+                    output_files += [ file_out_path ]
+
+        return { "civilizer.dataCollection.filelist": output_files }
+    else:
+        return { "error": "Unknown source" }
 
 
 '''
@@ -183,6 +213,17 @@ def transformSingleFile(file_in_path):
 ########################################################################
 
 
+def getOutputDirectory(parameters):
+    tmpdir = parameters['civilizer.dataCollection.tmpdir']
+    if not tmpdir:
+        tmpdir = tempfile.gettempdir()
+    output_dir = os.path.abspath(tmpdir + "/" + str(uuid.uuid4()))
+
+    # Will raise an exception if output_dir already exists or cannot be created
+    os.makedirs(output_dir)
+
+    return output_dir + "/"
+
 def read_csv_directory(dir_name):
     # csv_tables_names = []
     data_path = os.path.abspath(dir_name);
@@ -191,7 +232,7 @@ def read_csv_directory(dir_name):
     #         csv_datafreames.remove(csv_tables_names[0])
     file_extension = '.csv'
     try:
-        filenames = listdir(data_path)
+        filenames = os.listdir(data_path)
     except Exception as e:
         if hasattr(e, 'message'):
             print ("Error occured (", e, ")")
@@ -243,6 +284,29 @@ def execute_fahes(source, out_path, debug=0):
                 else:
                     tName = myDir + '/' + i
                 callFahes(tab_ref, tName, output_dir, debug)
+
+
+
+def execute_fahes_params(parameters, debug=0):
+    try:
+        output_dir = getOutputDirectory(parameters)
+    except OSError as err:
+        return { "error": "OSError: {0}".format(err) }
+
+    input_files = parameters['civilizer.dataCollection.filelist']
+
+    if input_files is not None:
+        for tName in input_files:
+            if os.path.exists(tName):
+                tDir, tFile = os.path.split(tName)
+                if not tDir.endswith("/"):
+                    tDir += "/"
+                tab_ref = "csv::" + tDir + "::" + tFile
+                callFahes(tab_ref, tName, output_dir, debug)
+        output_files = [ output_dir + filename for filename in os.listdir(output_dir) ]
+        return { "civilizer.dataCollection.filelist": output_files }
+    else:
+        return { "error": "Unknown source" }
 
 
 
