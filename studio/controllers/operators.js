@@ -10,9 +10,12 @@ Operator.getByType = function(req, res){
     // console.log(req.getallheaders);
     // console.log(JSON.stringify(req.headers, null, 4));
 
-    proxy.forwardRequest(req, res);
-
-
+    try {
+        proxy.forwardRequest(req, res);
+    }
+    catch(e) {
+        return res.json([])
+    }
 }
 
 module.exports = Operator;
