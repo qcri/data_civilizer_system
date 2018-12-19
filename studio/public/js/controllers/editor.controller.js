@@ -391,9 +391,13 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
     var convertParametersToRheemStructure = function(plan) {
       var rheemParam = {};
       for (var index in plan.operators) {
-        if(plan.operators[index].selectedConstructor != -1){
-          for (var item in plan.operators[index].parameters[plan.operators[index].selectedConstructor]) {
-            rheemParam[plan.operators[index].parameters[plan.operators[index].selectedConstructor][item].name] =  plan.operators[index].parameters[plan.operators[index].selectedConstructor][item].value;
+        var selectedConstructor = plan.operators[index].selectedConstructor;
+        if((selectedConstructor == -1) && (plan.operators[index].parameters.length == 1)) {
+          selectedConstructor = 0;
+        }
+        if(selectedConstructor != -1){
+          for (var item in plan.operators[index].parameters[selectedConstructor]) {
+            rheemParam[plan.operators[index].parameters[selectedConstructor][item].name] =  plan.operators[index].parameters[selectedConstructor][item].value;
           }
           plan.operators[index].parameters = rheemParam;
           rheemParam = {};
