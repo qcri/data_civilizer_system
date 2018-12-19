@@ -20,9 +20,11 @@ and [Docker Compose](https://docs.docker.com/compose/install/)
 first, then proceed to the following instructions.
 
 ## A Hardware Requirements Specification
-The DC system needs at least 4GB RAM. The default memory assigned to Docker is 2GB of RAM. The memory could be adjusted from the Docker preferences.
+The DC system needs at least **8GB RAM**. The default memory assigned to Docker is 2GB of RAM. The memory could be adjusted from the Docker preferences.
 
-The DC system needs 15GB disk space to allocated to Docker; this is including the intermediate images, such as Ubuntu and llsc/cuda-torch. If the user needs to save some space, you can clean unused images, containers or volumes using system prune, see https://docs.docker.com/config/pruning/
+We recommend to set Docker CPUs to 4, if possible.
+
+The DC system needs **15GB disk space** to allocated to Docker; this is including the intermediate images, such as Ubuntu and llsc/cuda-torch. If the user needs to save some space, you can clean unused images, containers or volumes using system prune, see https://docs.docker.com/config/pruning/
 
 	docker system prune 
 
