@@ -3,8 +3,8 @@
 appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory', 'flowchartConstants', 'RheemAPI', 'excutionPlan', '$http', 'plansConversions', function($scope, prompt, Modelfactory, flowchartConstants, RheemAPI, excutionPlan, $http, plansConversions) {
 
 
-  $scope.useGEM = true;
-  $scope.DEMO = false;
+  $scope.useGEM = false;
+  $scope.simulate = false;
 
   // Drag Area Collapse Blocks
   $scope.isCollapsed = false;
@@ -233,7 +233,15 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
           }
           connectorsArr.push(outputPortOperatorNode);
 
-          if(node.nb_inputs >= 2){
+          if(node.nb_outputs >= 2){
+             var outputPortOperatorNode = {
+              id: nextConnectorID++,
+              type: flowchartConstants.bottomConnectorType
+            }
+            connectorsArr.push(outputPortOperatorNode);
+          }
+
+          if(node.nb_outputs >= 3){
              var outputPortOperatorNode = {
               id: nextConnectorID++,
               type: flowchartConstants.bottomConnectorType
@@ -389,18 +397,20 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
     }
 
     var convertParametersToRheemStructure = function(plan) {
-      var rheemParam = {};
-      for (var index in plan.operators) {
+      for(var index in plan.operators) {
         var selectedConstructor = plan.operators[index].selectedConstructor;
-        if((selectedConstructor == -1) && (plan.operators[index].parameters.length == 1)) {
+        if((selectedConstructor == -1) && ("0" in plan.operators[index].parameters) && (Object.keys(plan.operators[index].parameters).length == 1)) {
           selectedConstructor = 0;
         }
-        if(selectedConstructor != -1){
-          for (var item in plan.operators[index].parameters[selectedConstructor]) {
-            rheemParam[plan.operators[index].parameters[selectedConstructor][item].name] =  plan.operators[index].parameters[selectedConstructor][item].value;
+        if(selectedConstructor != -1) {
+          var rheemParam = {};
+          for(var item in plan.operators[index].parameters[selectedConstructor]) {
+            rheemParam[plan.operators[index].parameters[selectedConstructor][item].name] = plan.operators[index].parameters[selectedConstructor][item].value;
+          }
+          if($scope.simulate) {
+            plan.operators[index].simulate = true;
           }
           plan.operators[index].parameters = rheemParam;
-          rheemParam = {};
         }
       }
       console.log("RHEEM " + JSON.stringify(plan));
@@ -636,16 +646,9 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
   }
 
 
-  $scope.callExecutePlan = function(op_index) {
-    if(!op_index) op_index = 0;
-    console.log("executing plan op_index " + op_index);
+  $scope.callExecutePlan = function() {
     $scope.method = 'POST';
     $scope.url = '/api/plan_executions';
-    if(!$scope.DEMO) {
-      var data = plansConversions.get();
-      data.operators[op_index].parameters['param1'] = 'y';
-      plansConversions.set(data);
-    }
     return $http(
       {
         method: $scope.method,
@@ -661,33 +664,6 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
           logProgress(response);
           setTimeout(getProgress, 2000);
           return;
-        }
-
-        var data = plansConversions.get();
-        if(!$scope.useGEM) {
-          console.log("processing response for op_index " + op_index);
-          data.operators[op_index].parameters['param1'] = '';
-          plansConversions.set(data);
-          console.log("data=" + JSON.stringify(data));
-          if("connects_to" in data.operators[op_index]) {
-            console.log("connects_to in operator");
-            if(data.operators[op_index].selectedConstructor in data.operators[op_index].connects_to) {
-              console.log("selectedConstructor in connects_to");
-              for(var i = 0; i < data.operators[op_index].connects_to[data.operators[op_index].selectedConstructor].length; i++) {
-                console.log("connects_to index " + i);
-                for(var key in data.operators[op_index].connects_to[data.operators[op_index].selectedConstructor][i]) {
-                  console.log("connects_to key " + key);
-                  for(var j = 0; j < data.operators.length; j++) {
-                    console.log("connects_to " + key);
-                    if(data.operators[j].name == key) {
-                      console.log("chaining operator " + j);
-                      return($scope.callExecutePlan(j));
-                    }
-                  }
-                }
-              }
-            }
-          }
         }
 
         if(response && response.data.myURI !== "") {
@@ -722,6 +698,8 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
   $scope.executeClicked = function() {
 // alert(JSON.stringify(model.nodes[0], null, 4));
 
+    modelservice.deselectAll();
+
     var copiedPlan = JSON.parse(JSON.stringify($scope.plan));
     var planWithRheemParams = convertParametersToRheemStructure(copiedPlan);
 
@@ -730,9 +708,6 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
 
     $scope.ts= (new Date()).getTime();
     console.log("started", $scope.ts);
-//  if($scope.DEMO) {
-//    SetAllBackground("gray");
-//  }
     $scope.callExecutePlan()
     .then(function() {
       if($scope.run_id) {
@@ -791,32 +766,25 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
           break;
         }
       }
-      node.bgcolor = ["lightgray", "lightgreen", "transparent", "red"][data.op_stat[plan.operators[i].name]];
+      node.bgcolor = ["lightgray", "lightgreen", "yellow", "blue", "transparent", "red"][data.op_stat[plan.operators[i].name]];
     }
 */
   }
 
   function SetAllBackground(bgcolor) {
-    var container = document.getElementById("work-area").firstElementChild;
-    for(var i = 0; i < container.children.length; i++) {
-      var element = container.children[i];
-      if(element.tagName == "DIV") {
-        element.style.backgroundColor = bgcolor;
-        //element.firstElementChild.style.borderColor = bgcolor;
-      }
+    var nodes = document.getElementsByClassName("fc-node");
+    for(var i = 0; i < nodes.length; i++) {
+      nodes[i].style.backgroundColor = bgcolor;
     }
   }
 
   function SetBackgroundByStatus(status) {
-    var colors = ["gray", "lightgreen", "inherit", "lightred"];
+    var colors = ["lightgray", "lightgreen", "yellow", "lightblue", "inherit", "lightred"];
     var plan = plansConversions.get();
-    var container = document.getElementById("work-area").firstElementChild;
-    for(var i = 0; i < container.children.length; i++) {
-      var element = container.children[i];
-      if(element.tagName == "DIV") {
-        var id = parseInt(element.id);
-        element.style.backgroundColor = colors[status.op_stat[plan.operators[id - 1].name].state];
-      }
+    var nodes = document.getElementsByClassName("fc-node");
+    for(var i = 0; i < nodes.length; i++) {
+      var id = parseInt(nodes[i].id);
+      nodes[i].style.backgroundColor = colors[status.op_stat[plan.operators[id - 1].name].state];
     }
   }
 
