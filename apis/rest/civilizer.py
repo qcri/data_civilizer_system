@@ -1,12 +1,12 @@
 from flask import Flask, request, jsonify
 import json
-from os import environ as env
 import webbrowser
 from decimal import Decimal
 import time
 import random
 import os
 import glob
+import shutil
 # from subprocess import Popen, PIPE
 from services.fahes_service import fahes_api
 from services.imputedb_service import imputedb_api
@@ -79,6 +79,11 @@ def post_ExePlan():
     # Posted JSON Plan
     task_request = request.json
 
+    log("task_request:")
+    log(json.dumps(task_request, sort_keys=True, indent=4))
+
+    # To support legacy plan execution, where an entire rheem plan is passed
+    # and the "active" operator is indicated with param1 == 'y'
     if "operators" in task_request:
         operators = task_request["operators"]
         # number = len(operators)
@@ -131,19 +136,8 @@ def post_ExePlan():
         for key, value in op_response.items():
             service['parameters'][key] = value
 
-        service['parameters']['civilizer.dataCollection.tmpdir'] = tmpdir
-
-        log("input " + str(service_id) + ": " + service['name'])
-        log(json.dumps(service, sort_keys=True, indent=4))
-
         #Execute service
         op_response = executeOperator(service).json
-
-        if not op_response:
-            op_response = {}
-        log("output " + str(service_id) + ": " + service['name'])
-        log(json.dumps(op_response, sort_keys=True, indent=4))
-
 
     return jsonify(op_response)
 #   return jsonify(myresponse0)
@@ -151,9 +145,15 @@ def post_ExePlan():
 
 @app.route('/rheem/plan_exec_op', methods=['POST'])
 def post_ExeOperator():
-    time.sleep(random.randint(5, 25))
-    return jsonify(myresponse0)
-#   return executeOperator(request.json)
+    op_request = request.json
+    if 'simulate' in op_request and op_request['simulate']:
+        log("simulating op_request:")
+        log(json.dumps(op_request, sort_keys=True, indent=4))
+        time.sleep(random.randint(5, 25))
+        return jsonify(myresponse0)
+    log("op_request:")
+    log(json.dumps(op_request, sort_keys=True, indent=4))
+    return executeOperator(op_request)
 
 
 def executeOperator(operator):
@@ -162,6 +162,14 @@ def executeOperator(operator):
     task_sources = parameters["param2"] if 'param2' in parameters else ""
     task_destination = parameters["param3"] if 'param3' in parameters else ""
     input_source, output_destination = get_source_destination_objects(task_sources, task_destination)
+
+    if isinstance(parameters, list):
+        parameters[0]['civilizer.dataCollection.tmpdir'] = tmpdir
+    else:
+        parameters['civilizer.dataCollection.tmpdir'] = tmpdir
+
+    log("input: " + operator['name'])
+    log(json.dumps(operator, sort_keys=True, indent=4))
 
     op_retval = None
 
@@ -175,10 +183,40 @@ def executeOperator(operator):
         files_out = list()
         for files in list(map(glob.glob, files_in)):
             files_out.extend(files)
-        op_response = {
+        op_retval = {
             "civilizer.dataCollection.filelist": list(map(os.path.abspath, files_out))
         }
-        return jsonify(op_response)
+
+    elif(class_name == "civilizer.basic.operators.CollectionSink"):
+        log("CollectionSink")
+        dir_out = parameters["civilizer.collectionSink.location"]
+        try:
+            if not os.path.isdir(dir_out):
+                os.makedirs(dir_out)
+        except OSError as err:
+            op_restval = {
+                "error": "OSError: {0}".format(err)
+            }
+        else:
+            try:
+                for file_in in parameters['civilizer.dataCollection.filelist']:
+                    shutil.copy(file_in, dir_out)
+            except IOError as err:
+                op_retval = {
+                    "error": "IOError: {0}".format(err)
+                }
+            else:
+                op_retval = {}
+
+    elif(class_name == "civilizer.basic.operators.Gather"):
+        log("Gather")
+        filelist = []
+        for input in parameters['inputs']:
+            if 'civilizer.dataCollection.filelist' in input:
+                filelist.extend(input['civilizer.dataCollection.filelist'])
+        op_retval = {
+            'civilizer.dataCollection.filelist': filelist
+        }
 
     elif(class_name == "civilizer.basic.operators.DataDiscovery"):
         print("Data Discovery")
@@ -235,26 +273,47 @@ def executeOperator(operator):
 
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER-Train"):
         print("DataCleaning-DeepER-Train")
-        params = {
-            "metadata_path":parameters["param2"],
-            "ltable_file_path":parameters["param4"],
-            "rtable_file_path":parameters["param5"],
-            "labeled_file_path":parameters["param6"]
-        }
-        deeper_lite_api.executeServiceTrain(params)
+        if 'civilizer.dataCollection.filelist' in parameters:
+            ltable_file_path = parameters['civilizer.dataCollection.filelist'][0]
+            if len(parameters['civilizer.dataCollection.filelist']) > 1:
+                rtable_file_path = parameters['civilizer.dataCollection.filelist'][1]
+            else:
+                rtable_file_path = ltable_file_path
+        parameters["ltable_file_path"] = ltable_file_path
+        parameters["rtable_file_path"] = rtable_file_path
+        parameters["labeled_file_path"] = parameters["param6"]
+#       params = {
+#           "metadata_path":parameters["param2"],
+#           "ltable_file_path":parameters["param4"],
+#           "rtable_file_path":parameters["param5"],
+#           "labeled_file_path":parameters["param6"],
+#       }
+        op_retval = deeper_lite_api.executeServiceTrain(parameters)
 
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER-Predict"):
         print("DataCleaning-DeepER-Predict")
-        params = {
-                "metadata_path":parameters["param2"],
-                "out_file_path":parameters["param3"],
-                "ltable_file_path":parameters["param4"],
-                "rtable_file_path":parameters["param5"],
-                "candidates_file_path":parameters["param6"],
-                "lblocking_key":parameters["param7"],
-                "rblocking_key":parameters["param7"]
-        }
-        deeper_lite_api.executeServicePredict(params)
+        if 'civilizer.dataCollection.filelist' in parameters:
+            ltable_file_path = parameters['civilizer.dataCollection.filelist'][0]
+            if len(parameters['civilizer.dataCollection.filelist']) > 1:
+                rtable_file_path = parameters['civilizer.dataCollection.filelist'][1]
+            else:
+                rtable_file_path = ltable_file_path
+        parameters["metadata_path"] = parameters["civilizer.DeepER.metadataPath"]
+        parameters["ltable_file_path"] = ltable_file_path
+        parameters["rtable_file_path"] = rtable_file_path
+        parameters["candidates_file_path"] = parameters["param6"]
+        parameters["lblocking_key"] = parameters["param7"]
+        parameters["rblocking_key"] = parameters["param7"]
+#       params = {
+#               "metadata_path":parameters["param2"],
+#               "out_file_path":parameters["param3"],
+#               "ltable_file_path":parameters["param4"],
+#               "rtable_file_path":parameters["param5"],
+#               "candidates_file_path":parameters["param6"],
+#               "lblocking_key":parameters["param7"],
+#               "rblocking_key":parameters["param7"],
+#       }
+        op_retval = deeper_lite_api.executeServicePredict(parameters)
 
     elif(class_name == "civilizer.basic.operators.EntityConsolidation"):
         print("Entity Consolidation")
@@ -288,6 +347,9 @@ def executeOperator(operator):
         print("Error")
 
     # return jsonify(operators[number-1])
+    if op_retval is not None:
+        log("output: " + operator['name'])
+        log(json.dumps(op_retval, sort_keys=True, indent=4))
     return jsonify(myresponse0 if not op_retval else op_retval)
 
 
@@ -356,7 +418,7 @@ def init_modules():
 if __name__ == '__main__':
     # app.run(debug=True)
     # init_modules()
-    port = env.get('PORT')
+    port = os.environ.get('PORT')
     if not port: 
         port = "8089"
     app.run(host='0.0.0.0', port=int(port))
