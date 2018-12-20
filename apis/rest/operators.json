@@ -88,6 +88,35 @@
             "nb_inputs": 0
         },
         {
+            "supportBroadcast": false,
+            "interactive": false,
+            "url": "http://apis:8089",
+            "nb_outputs": 0,
+            "class": "civilizer.basic.operators.CollectionSink",
+            "parameters": {
+                "0": [
+                    {
+                        "name": "param0",
+                        "inputType": "String",
+                        "type": "civilizer.basic.operators.CollectionSink"
+                    }
+                ],
+                "1": [
+                    {
+                        "name": "civilizer.collectionSink.location",
+                        "inputType": "String",
+                        "type": "Sink Location"
+                    },
+                    {
+                        "name": "param1",
+                        "inputType": "String",
+                        "type": "DataSetType"
+                    }
+                ]
+            },
+            "nb_inputs": 1
+        },
+        {
             "supportBroadcast": true,
             "interactive": false,
             "url": "http://apis:8089",
@@ -513,6 +542,23 @@
                 ]
             },
             "nb_inputs": 1
+        },
+        {
+            "supportBroadcast": true,
+            "interactive": false,
+            "url": "http://apis:8089",
+            "nb_outputs": 1,
+            "class": "civilizer.basic.operators.Gather",
+            "parameters": {
+                "0": [
+                    {
+                        "name": "param0",
+                        "inputType": "Service",
+                        "type": "civilizer.basic.operators.Gather"
+                    }
+                ]
+            },
+            "nb_inputs": 2
         }
     ]
 }
