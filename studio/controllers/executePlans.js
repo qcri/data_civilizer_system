@@ -12,8 +12,10 @@ var client = request.createClient(process.env.API_SERVER_URL);
 
 const STATE_WAITING = 0;
 const STATE_ACTIVE  = 1;
-const STATE_DONE    = 2;
-const STATE_ERROR   = 3;
+const STATE_USER    = 2;
+const STATE_LOOP    = 3;
+const STATE_DONE    = 4;
+const STATE_ERROR   = 5;
 
 var planStatus = {};
 
@@ -84,13 +86,25 @@ function ExecutePlans_gem(gemPlan) {
 
 function ExecutePlans_rheem(rheemPlan) {
   // Create local associative array of plan operators indexed by op.name
+  console.log("");
+  console.log("Execute rheem plan");
+  console.log(JSON.stringify(rheemPlan, null, 4));
+
+  console.log("");
   console.log("Info: Building ops index and depends_on lists");
   var ops = {};
   for(var op of rheemPlan.operators) {
     console.log("..adding op.name: " + op.name);
     ops[op.name] = op;
     op.depends_on = [];
-    op.links_to = [];
+//  op.links_to = [];
+    op.links_to = {};
+//  if(op.np_inputs > 1) {
+//    op.parameters = [op.parameters];
+//    for(var i = 0; i < op.np_inputs; i++) {
+//      op.parameters.push({});
+//    }
+//  }
   }
 
   // Build "depends_on" array for each operator element to aid execution
@@ -104,7 +118,8 @@ function ExecutePlans_rheem(rheemPlan) {
           for(var name in link) {
             console.log("....link name: " + name);
             ops[name].depends_on.push(op.name);
-            op.links_to.push(name);
+//          op.links_to.push(name);
+            op.links_to[name] = link[name];
           }
         }
       }
@@ -137,32 +152,32 @@ function ExecutePlans_rheem(rheemPlan) {
 
   function executePlan(keys) {
     console.log("executePlan() - Looking for operators to execute");
-//  var active = 0;
     for(var key of keys) {
       var op = ops[key];
       console.log("Checking op: " + op.name);
-      switch(status.op_stat[op.name].state) {
-        case STATE_WAITING:
-          var waiting = op.depends_on.length;
-          for(var name of op.depends_on) {
-            if(status.op_stat[name].state == STATE_DONE) {
-              waiting--;
-            }
+      if(status.op_stat[op.name].state == STATE_WAITING) {
+        var waiting = op.depends_on.length;
+        for(var name of op.depends_on) {
+          if(status.op_stat[name].state == STATE_DONE) {
+            waiting--;
           }
-          if(waiting) {
-            break;
-          }
+        }
+        if(!waiting) {
           executeNode(op);
           // return; // uncomment to serialize execution
-        case STATE_ACTIVE:
-//        active++;
-        default:
-          break;
+        }
       }
     }
     console.log("Activity: " + active);
+
     if(!active) {
-      status.state = STATE_DONE;
+      // No activity detected -- execution is done
+      for(var name in ops) {
+        status.state = Math.max(status.state, status.op_stat[name].state);
+        if(status.op_stat[name].state == STATE_ERROR) {
+          status.error = status.op_stat[name].error;
+        }
+      }
       setTimeout(clearStatus, 1 * 60 * 60 * 1000); // cache results for 1 hour
     }
   }
@@ -171,22 +186,54 @@ function ExecutePlans_rheem(rheemPlan) {
     active++;
     console.log("Executing: " + op.name);
     status.op_stat[op.name].state = STATE_ACTIVE;
+    status.op_stat[op.name].input = op;
+    var url = "http://apis:8089/rheem/plan_exec_op";
 //  http({ method:"POST:, url:"http://apis:8089/rheem/plan_exec_op", data:JSON.stringify(op) }, function(err, data) {
-    client.post("http://apis:8089/rheem/plan_exec_op", JSON.stringify(op), function(err, data) {
+    console.log("Sending: " + JSON.stringify(op, null, 4));
+    client.post(url, op, function(err, data) {
       active--;
       if(err) {
-        console.log("Error from: " + op.name);
-        console.log("..error=" + JSON.stringify(err));
+        // HTTP errors connecting to opertor service
+        console.log("HTTP error from POST " + url + " for " + op.name);
+        console.log(JSON.stringify(err, null, 4));
         status.op_stat[op.name].state = STATE_ERROR;
         status.op_stat[op.name].error = err;
       } else {
-        console.log("Success from: " + op.name);
-        status.op_stat[op.name].state = STATE_DONE;
-        status.op_stat[op.name].data = data;
+        console.log("Status "  + data.statusCode + " from " + op.name);
+        if(data.statusCode == 200) {
+          status.op_stat[op.name].state = STATE_DONE;
+          status.op_stat[op.name].output = data.body;
 
-        // Code to pass results on to 'next' operators goes here
+          // Pass return data onto all 'next' operators
+//        for(var op_key of op.links_to) {
+          for(var op_key in op.links_to) {
+            var next_op = ops[op_key];
+            if(!("inputs" in next_op.parameters)) {
+              next_op.parameters.inputs = [];
+            }
+            for(var key in data.body) {
+//            next_op.parameters[key] = data.body[key];
+              if(!(op.links_to[op_key] in next_op.parameters.inputs)) {
+                next_op.parameters.inputs[op.links_to[op_key]] = {};
+              }
+              next_op.parameters.inputs[op.links_to[op_key]][key] = data.body[key];
+//            if(next_op.np_inputs > 1) {
+//              next_op.parameters[op.links_to[op_key] + 1][key] = data.body[key];
+//            } else {
+//              next_op.parameters[key] = data.body[key];
+//            }
+              if(next_op.np_inputs == 1) {
+                next_op.parameters[key] = data.body[key];
+              }
+            }
+          }
+        } else {
+          status.op_stat[op.name].state = STATE_ERROR;
+          status.op_stat[op.name].error = data.body;
+        }
       }
-      executePlan(op.links_to);
+//    executePlan(op.links_to);
+      executePlan(Object.keys(op.links_to));
     });
     console.log("After client post to apis");
   }
