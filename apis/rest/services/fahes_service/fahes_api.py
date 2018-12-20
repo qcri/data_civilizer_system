@@ -214,7 +214,9 @@ def transformSingleFile(file_in_path):
 
 
 def getOutputDirectory(parameters):
-    tmpdir = parameters['civilizer.dataCollection.tmpdir']
+    tmpdir = ""
+    if 'civilizer.dataCollection.tmpdir' in parameters:
+        tmpdir = parameters['civilizer.dataCollection.tmpdir']
     if not tmpdir:
         tmpdir = tempfile.gettempdir()
     output_dir = os.path.abspath(tmpdir + "/" + str(uuid.uuid4()))
