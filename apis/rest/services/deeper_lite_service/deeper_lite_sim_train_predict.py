@@ -1,8 +1,11 @@
 # GiG.
 
-# Add local directory to path to allow imports when invoked directly or as part of Data Civilizer
 import os
 import sys
+import uuid
+import tempfile
+
+# Add local directory to path to allow imports when invoked directly or as part of Data Civilizer
 sys.path.append(os.path.realpath(os.path.dirname(__file__)))
 
 import torch
@@ -32,6 +35,20 @@ EPSILON = 1e-9
 RANDOM_STATE = 12345
 HIDDEN_X = 2
 MODEL_FILE_NAME = "best_validation_model_params.torch"
+
+
+def getOutputDirectory(parameters):
+    tmpdir = ""
+    if 'civilizer.dataCollection.tmpdir' in parameters:
+        tmpdir = parameters['civilizer.dataCollection.tmpdir']
+    if not tmpdir:
+        tmpdir = tempfile.gettempdir()
+    output_dir = os.path.abspath(tmpdir + "/" + str(uuid.uuid4()))
+
+    # Will raise an exception if output_dir already exists or cannot be created
+    os.makedirs(output_dir)
+
+    return output_dir + "/"
 
 
 def save_candset_compressed(params, candset_df, file_name):
@@ -172,6 +189,12 @@ def executeServiceTrain(params={}):
     # no test, only train and validation
     split_ratio = [0.8, 0.2, 0.0]
 
+    # Create intermediate directory for metadata 
+    try:
+        params["metadata_path"] = getOutputDirectory(params)
+    except OSError as err:
+        return { "error": "OSError: {0}".format(err) }
+
     split_dataset_by_ratio(params["metadata_path"],
                            params["labeled_file_path"],
                            split_ratio=split_ratio,
@@ -187,6 +210,11 @@ def executeServiceTrain(params={}):
           params["metadata_path"] + "train.csv",
           params["metadata_path"] + "validation.csv",
           get_deeper_lite_model_sim)
+
+    return {
+        "civilizer.dataCollection.filelist": params["civilizer.dataCollection.filelist"],
+        "civilizer.DeepER.metadataPath": params["metadata_path"]
+    }
 
 
 '''
@@ -208,6 +236,12 @@ def executeServicePredict(params={}):
     #
     l_file_name = params["ltable_file_path"]
     r_file_name = params["rtable_file_path"]
+
+    # Create intermediate directory for output files 
+    try:
+        params["out_file_path"] = getOutputDirectory(params)
+    except OSError as err:
+        return { "error": "OSError: {0}".format(err) }
 
     generateCandidates = True if params["lblocking_key"] is not "" else False
 
@@ -318,6 +352,8 @@ def executeServicePredict(params={}):
                 quoting=csv.QUOTE_NONNUMERIC,
                 header=True
                 )
+
+    return { "civilizer.dataCollection.filelist": [ file_out_path_a, file_out_path_b ] }
 
 
 if __name__ == "__main__":
