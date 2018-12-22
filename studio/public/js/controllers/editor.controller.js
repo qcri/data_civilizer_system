@@ -736,12 +736,12 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
         if(response.data.state == 1) {
           setTimeout(getProgress, 2000);
         } else {
-          SetAllBackground("inherit");
           var te = (new Date()).getTime();
           console.log("finished:", te, te - $scope.ts);
           $scope.loader_req = false;
           $scope.run_id = null;
           alert("Plan completion state: " + response.data.state);
+          SetAllBackground("inherit");
         }
       },
       function(response) {
@@ -752,23 +752,13 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
 
   function logProgress(response) {
     var data = response.data;
-    SetBackgroundByStatus(response.data);
+    SetBackgroundByStatus(data);
     var plan = plansConversions.get();
     var astat = [];
     for(var i = 0; i < plan.operators.length; i++) {
-      astat.push(['.', '+', '#', '!'][data.op_stat[plan.operators[i].name]]);
+      astat.push(['.', '+', '#', '!'][data.op_status[plan.operators[i].name]]);
     }
     console.log("[" + astat.join("") + "]");
-/*
-    for(var i = 0; i < plan.operators.length; i++) {
-      for(var node of model.nodes) {
-        if(node.name == plan.operators[i].name) {
-          break;
-        }
-      }
-      node.bgcolor = ["lightgray", "lightgreen", "yellow", "blue", "transparent", "red"][data.op_stat[plan.operators[i].name]];
-    }
-*/
   }
 
   function SetAllBackground(bgcolor) {
@@ -784,7 +774,7 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
     var nodes = document.getElementsByClassName("fc-node");
     for(var i = 0; i < nodes.length; i++) {
       var id = parseInt(nodes[i].id);
-      nodes[i].style.backgroundColor = colors[status.op_stat[plan.operators[id - 1].name].state];
+      nodes[i].style.backgroundColor = colors[status.op_status[plan.operators[id - 1].name].state];
     }
   }
 

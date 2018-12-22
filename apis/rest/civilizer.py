@@ -159,19 +159,17 @@ def post_ExeOperator():
 def executeOperator(operator):
     class_name = operator["java_class"]
     parameters = operator["parameters"]
+    inputs = operator["inputs"]
     task_sources = parameters["param2"] if 'param2' in parameters else ""
     task_destination = parameters["param3"] if 'param3' in parameters else ""
     input_source, output_destination = get_source_destination_objects(task_sources, task_destination)
 
-    if isinstance(parameters, list):
-        parameters[0]['civilizer.dataCollection.tmpdir'] = tmpdir
-    else:
-        parameters['civilizer.dataCollection.tmpdir'] = tmpdir
+    parameters['civilizer.dataCollection.tmpdir'] = tmpdir
 
     log("input: " + operator['name'])
     log(json.dumps(operator, sort_keys=True, indent=4))
 
-    op_retval = None
+    output = None
 
     if(class_name == "civilizer.basic.operators.noop"):
         log("No op")
@@ -183,7 +181,7 @@ def executeOperator(operator):
         files_out = list()
         for files in list(map(glob.glob, files_in)):
             files_out.extend(files)
-        op_retval = {
+        output = {
             "civilizer.dataCollection.filelist": list(map(os.path.abspath, files_out))
         }
 
@@ -193,28 +191,19 @@ def executeOperator(operator):
         try:
             if not os.path.isdir(dir_out):
                 os.makedirs(dir_out)
+            for file_in in inputs[0]['civilizer.dataCollection.filelist']:
+                shutil.copy(file_in, dir_out)
+            output = {}
         except OSError as err:
-            op_restval = {
-                "error": "OSError: {0}".format(err)
-            }
-        else:
-            try:
-                for file_in in parameters['civilizer.dataCollection.filelist']:
-                    shutil.copy(file_in, dir_out)
-            except IOError as err:
-                op_retval = {
-                    "error": "IOError: {0}".format(err)
-                }
-            else:
-                op_retval = {}
+            output = { "error": "OSError: {0}".format(err) }
 
     elif(class_name == "civilizer.basic.operators.Gather"):
         log("Gather")
         filelist = []
-        for input in parameters['inputs']:
+        for input in inputs:
             if 'civilizer.dataCollection.filelist' in input:
                 filelist.extend(input['civilizer.dataCollection.filelist'])
-        op_retval = {
+        output = {
             'civilizer.dataCollection.filelist': filelist
         }
 
@@ -225,8 +214,8 @@ def executeOperator(operator):
 
     elif(class_name=="civilizer.basic.operators.DataCleaning-Fahes"):
         print("DataCleaning-Fahes")
-        if "civilizer.dataCollection.filelist" in parameters:
-            op_retval = fahes_api.execute_fahes_params(parameters)
+        if inputs:
+            output = fahes_api.execute_fahes_params(parameters, inputs)
         else:
             fahes_api.execute_fahes(input_source, output_destination)
 
@@ -236,17 +225,17 @@ def executeOperator(operator):
 
     elif(class_name=="civilizer.basic.operators.DataCleaning-FahesApply"):
         print("DataCleaning-FahesApply")
-        if "civilizer.dataCollection.filelist" in parameters:
-            op_retval = fahes_api.executeService_params(parameters)
+        if inputs:
+            output = fahes_api.executeService_params(parameters, inputs)
         else:
             fahes_api.executeService(input_source, output_destination)
 
     elif (class_name == "civilizer.basic.operators.DataCleaning-PKDuck"):
         print("DataCleaning-PKDuck")
-        if "civilizer.dataCollection.filelist" in parameters:
+        if inputs:
             parameters['civilizer.PKDuck.columnSelect'] = parameters['param4'].splitlines()
             parameters['civilizer.PKDuck.tau'] = Decimal(parameters['param5'])
-            op_retval = pkduck_api.execute_pkduck_params(parameters)
+            output = pkduck_api.execute_pkduck_params(parameters, inputs)
         else:
             columns = parameters["param4"]
             tau = parameters["param5"]
@@ -278,12 +267,15 @@ def executeOperator(operator):
 
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER-Train"):
         print("DataCleaning-DeepER-Train")
-        if 'civilizer.dataCollection.filelist' in parameters:
-            ltable_file_path = parameters['civilizer.dataCollection.filelist'][0]
-            if len(parameters['civilizer.dataCollection.filelist']) > 1:
-                rtable_file_path = parameters['civilizer.dataCollection.filelist'][1]
-            else:
+        if inputs:
+            ltable_file_path = inputs[0]['civilizer.dataCollection.filelist'][0]
+            rtable_file_path = inputs[0]['civilizer.dataCollection.filelist'][1]
+            if not rtable_file_path:
                 rtable_file_path = ltable_file_path
+        else:
+            parameters["metadata_path"] = parameters["param2"]
+            ltable_file_path = parameters["param4"]
+            rtable_file_path = parameters["param5"]
         parameters["ltable_file_path"] = ltable_file_path
         parameters["rtable_file_path"] = rtable_file_path
         parameters["labeled_file_path"] = parameters["param6"]
@@ -293,17 +285,20 @@ def executeOperator(operator):
 #           "rtable_file_path":parameters["param5"],
 #           "labeled_file_path":parameters["param6"],
 #       }
-        op_retval = deeper_lite_api.executeServiceTrain(parameters)
+        output = deeper_lite_api.executeServiceTrain(parameters, inputs)
 
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER-Predict"):
         print("DataCleaning-DeepER-Predict")
-        if 'civilizer.dataCollection.filelist' in parameters:
-            ltable_file_path = parameters['civilizer.dataCollection.filelist'][0]
-            if len(parameters['civilizer.dataCollection.filelist']) > 1:
-                rtable_file_path = parameters['civilizer.dataCollection.filelist'][1]
-            else:
+        if inputs:
+            parameters["metadata_path"] = inputs[0]["civilizer.DeepER.metadataPath"]
+            ltable_file_path = inputs[0]['civilizer.dataCollection.filelist'][0]
+            rtable_file_path = inputs[0]['civilizer.dataCollection.filelist'][1]
+            if not rtable_file_path:
                 rtable_file_path = ltable_file_path
-        parameters["metadata_path"] = parameters["civilizer.DeepER.metadataPath"]
+        else:
+            parameters["metadata_path"] = parameters["param2"]
+            ltable_file_path = parameters["param4"]
+            rtable_file_path = parameters["param5"]
         parameters["ltable_file_path"] = ltable_file_path
         parameters["rtable_file_path"] = rtable_file_path
         parameters["candidates_file_path"] = parameters["param6"]
@@ -318,7 +313,7 @@ def executeOperator(operator):
 #               "lblocking_key":parameters["param7"],
 #               "rblocking_key":parameters["param7"],
 #       }
-        op_retval = deeper_lite_api.executeServicePredict(parameters)
+        output = deeper_lite_api.executeServicePredict(parameters, inputs)
 
     elif(class_name == "civilizer.basic.operators.EntityConsolidation"):
         print("Entity Consolidation")
@@ -352,10 +347,10 @@ def executeOperator(operator):
         print("Error")
 
     # return jsonify(operators[number-1])
-    if op_retval is not None:
+    if output is not None:
         log("output: " + operator['name'])
-        log(json.dumps(op_retval, sort_keys=True, indent=4))
-    return jsonify(myresponse0 if not op_retval else op_retval)
+        log(json.dumps(output, sort_keys=True, indent=4))
+    return jsonify(myresponse0 if not output else output)
 
 
 def get_activeNode(request):

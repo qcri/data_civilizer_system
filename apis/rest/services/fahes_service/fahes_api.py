@@ -52,13 +52,13 @@ def executeService(source, out_path, params={}):
     transform_dmv_to_null(dir_in, dir_out, params)
 
 
-def executeService_params(parameters):
+def executeService_params(params, inputs):
     try:
-        output_dir = getOutputDirectory(parameters)
+        output_dir = getOutputDirectory(params)
     except OSError as err:
         return { "error": "OSError: {0}".format(err) }
 
-    input_files = parameters['civilizer.dataCollection.filelist']
+    input_files = inputs[0]['civilizer.dataCollection.filelist']
 
     if input_files is not None:
         output_files = []
@@ -289,13 +289,13 @@ def execute_fahes(source, out_path, debug=0):
 
 
 
-def execute_fahes_params(parameters, debug=0):
+def execute_fahes_params(params, inputs, debug=0):
     try:
-        output_dir = getOutputDirectory(parameters)
+        output_dir = getOutputDirectory(params)
     except OSError as err:
         return { "error": "OSError: {0}".format(err) }
 
-    input_files = parameters['civilizer.dataCollection.filelist']
+    input_files = inputs[0]['civilizer.dataCollection.filelist']
 
     if input_files is not None:
         for tName in input_files:

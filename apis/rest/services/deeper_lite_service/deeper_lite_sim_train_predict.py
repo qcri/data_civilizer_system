@@ -184,7 +184,7 @@ Required input:
 '''
 
 
-def executeServiceTrain(params={}):
+def executeServiceTrain(params={}, inputs={}):
     # split_ratio = [0.7, 0.3, 0.0]
     # no test, only train and validation
     split_ratio = [0.8, 0.2, 0.0]
@@ -212,7 +212,7 @@ def executeServiceTrain(params={}):
           get_deeper_lite_model_sim)
 
     return {
-        "civilizer.dataCollection.filelist": params["civilizer.dataCollection.filelist"],
+        "civilizer.dataCollection.filelist": inputs[0]["civilizer.dataCollection.filelist"],
         "civilizer.DeepER.metadataPath": params["metadata_path"]
     }
 
@@ -227,7 +227,7 @@ Optional:
 '''
 
 
-def executeServicePredict(params={}):
+def executeServicePredict(params={}, inputs={}):
     #
     # This is a default blocking. (overlap blocking from Magellan, a.k.a. Standard Blocking)
     # Please refer to the documentation of DeepER (and Magellan) for custom blocking

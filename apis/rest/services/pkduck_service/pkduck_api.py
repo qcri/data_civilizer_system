@@ -79,8 +79,8 @@ def getColumnIndexes(filelist, query):
     return filepath[0], ",".join(columns)
 
 
-def execute_pkduck_params(params):
-    filelist = params['civilizer.dataCollection.filelist']
+def execute_pkduck_params(params, inputs):
+    filelist = inputs[0]['civilizer.dataCollection.filelist']
 
     copylist = filelist.copy()
 
