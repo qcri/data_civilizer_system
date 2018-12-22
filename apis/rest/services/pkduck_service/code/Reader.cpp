@@ -63,6 +63,33 @@ bool CSVReader::reading(string &datafilespath, bool normalize) {
 	return true;
 }
 
+bool CSVReader::read_files(vector<string> &filepaths, bool normalize) {
+        for (auto i = 0; i < filepaths.size(); i++) {
+		int id = 0;
+		max_val_len = 0;
+
+		// cout << "LOADING AND PROFILING : " << filepaths[i];
+		if (filesize(filepaths[i].c_str()) > MAX_CSV_FILE_SIZE) {
+			cerr << "WARNING: Skipped a large file " << filepaths[i] << endl;
+			continue;
+		}
+
+		const char *pd = filepaths[i].c_str();
+		for(const char *pc = pd; *pc; pc++) if(*pc == '/') pd = pc + 1;
+		string filename(pd);
+
+		tables.emplace_back(id, filename);
+		if (get_table(filepaths[i], tables.back().schema, tables.back().cols, tables.back().rows, normalize)) {
+			// successfully added, profile and increase the id
+			id = id + 1;
+			// cout << " Added. " << tables.back().schema.size() << " columns and " << tables.back().rows.size() << " rows " << endl;
+		} else {
+			tables.pop_back();
+		}
+	}
+	return true;
+}
+
 bool CSVReader::get_table(const string &filepath, vector<string> &headers, vector<unordered_map<string, int>> &columns, vector<vector<string>> &rows, bool normalize) {
 
 	ifstream in(filepath, ios::in);

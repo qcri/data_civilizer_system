@@ -26,19 +26,41 @@ void split(vector<string> &strs, string _s, char delimiter)
 }
 
 
+void execute_common(CSVReader *reader, char *out_dir, char *_columns, double tau, char *meta_dir);
+
+
+extern "C"
+void execute_params(int cfiles, char **files_in, char *output_dir, char *columns, double tau, char *meta_dir)
+{
+	vector<string> filepaths(files_in, files_in + cfiles);
+
+	// read csvs
+	CSVReader *reader = new CSVReader();
+	reader->read_files(filepaths, false);
+
+	return execute_common(reader, output_dir, columns, tau, meta_dir);
+}
+
+
 extern "C"
 void execute(char *table_dir, char *out_dir, char *_columns, double tau)
+{
+	//read csvs
+	CSVReader *reader = new CSVReader();
+	string dir(table_dir);
+	reader->reading(dir, false);
+
+	execute_common(reader, out_dir, _columns, tau, out_dir);
+}
+
+
+void execute_common(CSVReader *reader, char *out_dir, char *_columns, double tau, char *meta_dir)
 {
 	Common::JAC_THRESHOLD = tau;
 
 	string col_str = string(_columns);
 	vector<string> table_names, col_id_strs;
 	split(col_id_strs, col_str, '#');
-
-	//read csvs
-	CSVReader *reader = new CSVReader();
-	string dir(table_dir);
-	reader->reading(dir, false);
 
 	for (auto i = 0; i < reader->tables.size(); i ++)
 	{
@@ -66,7 +88,7 @@ void execute(char *table_dir, char *out_dir, char *_columns, double tau)
 	vector<pair<string, string>> results = solver.solve();
 
 	//write sim string file
-	string output_file_name1(out_dir);
+	string output_file_name1(meta_dir);
 	if (output_file_name1.back() != '/')
 		output_file_name1 += "/";
 	output_file_name1 += "simstring_pkduck.csv";
@@ -77,7 +99,7 @@ void execute(char *table_dir, char *out_dir, char *_columns, double tau)
 	fout1.close();
 
 	//write auxiliary table file
-	string output_file_name2(out_dir);
+	string output_file_name2(meta_dir);
 	if (output_file_name2.back() != '/')
 		output_file_name2 += "/";
 	output_file_name2 += "auxiliary_pkduck.csv";
@@ -133,7 +155,8 @@ void execute(char *table_dir, char *out_dir, char *_columns, double tau)
 		string output_file_name(out_dir);
 		if (output_file_name.back() != '/')
 			output_file_name += "/";
-		output_file_name += "updated_" + reader->tables[i].table_name;
+//		output_file_name += "updated_" + reader->tables[i].table_name;
+		output_file_name += reader->tables[i].table_name;
 //		ofstream fout(output_file_name.c_str());
                 reader->tables[i].OutputCSV(output_file_name.c_str());
 /*

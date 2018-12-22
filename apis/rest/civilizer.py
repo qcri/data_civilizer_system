@@ -151,8 +151,8 @@ def post_ExeOperator():
         log(json.dumps(op_request, sort_keys=True, indent=4))
         time.sleep(random.randint(5, 25))
         return jsonify(myresponse0)
-    log("op_request:")
-    log(json.dumps(op_request, sort_keys=True, indent=4))
+#   log("op_request:")
+#   log(json.dumps(op_request, sort_keys=True, indent=4))
     return executeOperator(op_request)
 
 
@@ -243,9 +243,14 @@ def executeOperator(operator):
 
     elif (class_name == "civilizer.basic.operators.DataCleaning-PKDuck"):
         print("DataCleaning-PKDuck")
-        columns = parameters["param4"]
-        tau = parameters["param5"]
-        pkduck_api.execute_pkduck(input_source, output_destination, columns, Decimal(tau))
+        if "civilizer.dataCollection.filelist" in parameters:
+            parameters['civilizer.PKDuck.columnSelect'] = parameters['param4'].splitlines()
+            parameters['civilizer.PKDuck.tau'] = Decimal(parameters['param5'])
+            op_retval = pkduck_api.execute_pkduck_params(parameters)
+        else:
+            columns = parameters["param4"]
+            tau = parameters["param5"]
+            pkduck_api.execute_pkduck(input_source, output_destination, columns, Decimal(tau))
         # inputF = "sources.json"
         # outputF = "destination.json"
         # columns = "12#11#8#7#1,2,7#10"

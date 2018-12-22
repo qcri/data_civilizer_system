@@ -57,6 +57,7 @@ private:
 	int max_val_len;
 public:
 	CSVReader() {}
+	bool read_files(vector<string> &filepaths, bool normalize);
 	bool reading(string &datafilespath, bool normalize);
 	bool get_table(const string &filepath, vector<string> &headers, vector<unordered_map<string, int>> &columns, vector<vector<string>> &rows, bool normalize);
 	int get_max_val_len() { return max_val_len; };
