@@ -58,7 +58,8 @@ def getColumnIndexes(filelist, query):
 
     # Identify the CSV from filelist associated with the table name from query
     table_name = match.group(2)
-    filepath = [x for x in filelist if x.endswith("/" + table_name + ".csv")]
+    re_table = re.compile("/" + re.escape(table_name) + "\\.[Cc][Ss][Vv]$")
+    filepath = [x for x in filelist if re_table.search(x)]
     if len(filepath) == 0:
         raise NameError("Unrecognized table name, '{0}'.".format(table_name))
     if len(filepath) > 1:
@@ -90,10 +91,11 @@ def execute_pkduck_params(params, inputs):
     try:
         for select in params['civilizer.PKDuck.columnSelect']:
             filepath, columns = getColumnIndexes(filelist, select)
+            if filepath in pkfiles:
+                raise NameError("Duplicate table name in query list, '{0}'.".format(table_name))
             pkfiles.append(filepath)
             indexes.append(columns)
-            if filepath in copylist:
-                copylist.remove(filepath)
+            copylist.remove(filepath)
 
         output_dir = getOutputDirectory(params)
         for filepath in copylist:
