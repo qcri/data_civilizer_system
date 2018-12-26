@@ -247,15 +247,20 @@ def executeOperator(operator):
 
     elif (class_name == "civilizer.basic.operators.DataCleaning-Imputedb"):
         print("DataCleaning-Imputedb")
-        tableName = parameters["param4"]
-        q = parameters["param5"]
-        r = parameters["param6"]
-        input_source = {'CSV': {'dir': task_sources, 'table': tableName}}
-        # imputedb_api.execute_imputedb(input_source, output_destination, q, r)
-        imputedb_api.executeService(input_source, output_destination, q, r)
-        # inputF = "sources_im.json"
-        # outputF = "destination.json"
-        # imputedb_api.execute_imputedb_file(inputF, outputF, 'select Dept_Budget_Code from Sis_department;', 0)
+        if inputs:
+            parameters['civilizer.DataCleaning.Imputedb.Query'] = parameters['param5'].splitlines()
+            parameters['civilizer.DataCleaning.Imputedb.Ratio'] = parameters['param6']
+            output = imputedb_api.executeService_params(parameters, inputs)
+        else:
+            tableName = parameters["param4"]
+            q = parameters["param5"]
+            r = parameters["param6"]
+            input_source = {'CSV': {'dir': task_sources, 'table': tableName}}
+            # imputedb_api.execute_imputedb(input_source, output_destination, q, r)
+            imputedb_api.executeService(input_source, output_destination, q, r)
+            # inputF = "sources_im.json"
+            # outputF = "destination.json"
+            # imputedb_api.execute_imputedb_file(inputF, outputF, 'select Dept_Budget_Code from Sis_department;', 0)
 
     elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER"):
         print("DataCleaning-DeepER")

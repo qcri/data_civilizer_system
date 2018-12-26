@@ -6,6 +6,8 @@ import os
 import shutil
 import subprocess
 import tempfile
+import uuid
+import re
 
 import csv
 import numpy as np
@@ -67,6 +69,89 @@ def transform_null_to_imVal(dir_in, dir_metadata, dir_out, params={}):
                     quoting = csv.QUOTE_NONNUMERIC,
                     header=True
                     )
+
+
+def getOutputDirectory(parameters):
+    tmpdir = ""
+    if 'civilizer.dataCollection.tmpdir' in parameters:
+        tmpdir = parameters['civilizer.dataCollection.tmpdir']
+    if not tmpdir:
+        tmpdir = tempfile.gettempdir()
+    output_dir = os.path.abspath(tmpdir + "/" + str(uuid.uuid4()))
+
+    # Will raise an exception if output_dir already exists or cannot be created
+    os.makedirs(output_dir)
+
+    return output_dir + "/"
+
+
+def getTableName(filelist, query):
+    # Use regex to perform simplistic query parsing
+    re_query = re.compile("^\\s*SELECT\\s*([^;]*\\S)\\s*FROM\\s*([^;]*\\S)\\s*;\\s*$", re.IGNORECASE)
+    match = re_query.match(query)
+    if not match:
+        raise SyntaxError("Unrecognized column name query, '{0}'.".format(query))
+
+    # Identify the CSV from filelist associated with the table name from query
+    table_name = match.group(2)
+    re_table = re.compile("/" + re.escape(table_name) + "\\.[Cc][Ss][Vv]$")
+    filepath = [x for x in filelist if re_table.search(x)]
+    if len(filepath) == 0:
+        raise NameError("Unrecognized table name, '{0}'.".format(table_name))
+    if len(filepath) > 1:
+        raise NameError("Ambiguous table name, '{0}'.".format(table_name))
+
+    return filepath[0], table_name
+
+
+def executeService_params(params, inputs):
+    filelist = inputs[0]['civilizer.dataCollection.filelist']
+
+    copylist = filelist.copy()
+
+    dbfiles = {}
+
+    try:
+        metadata_dir = getOutputDirectory(params)
+
+        for query in params['civilizer.DataCleaning.Imputedb.Query']:
+            filepath, table_name = getTableName(filelist, query)
+            if filepath in dbfiles:
+                raise NameError("Duplicate table name in query list, '{0}'.".format(table_name))
+            dbfiles[filepath] = query
+            copylist.remove(filepath)
+
+        output_dir = getOutputDirectory(params)
+        for filepath in copylist:
+            shutil.copy(filepath, output_dir)
+
+    except (NameError, OSError, SyntaxError) as err:
+        return { "error": "{0}: {1}".format(type(err).__name__, err) }
+
+    try:
+        load_cmd = [IMPUTEDB_PATH, 'load', '--db', DB_PATH] + list(dbfiles.keys())
+        subprocess.check_call(load_cmd)
+
+        for filepath, query in dbfiles.items():
+            query_cmd = [IMPUTEDB_PATH, 'query', '--db', DB_PATH, '--csv', '-c', query]
+            with open(OUTPUT_PATH, 'w') as f:
+                subprocess.check_call(query_cmd, stdout=f)
+
+            transform_null_to_imVal(filepath, OUTPUT_PATH, output_dir, params)
+
+            os.remove(OUTPUT_PATH)
+
+    finally:
+        for f in glob.glob(INPUT_PATH + '/*csv'):
+            os.remove(f)
+        if os.path.isdir(DB_PATH):
+            shutil.rmtree(DB_PATH)
+
+    output = {
+        'civilizer.dataCollection.filelist': [output_dir + os.path.basename(x) for x in filelist]
+    }
+
+    return output
 
 
 ########################################################################
