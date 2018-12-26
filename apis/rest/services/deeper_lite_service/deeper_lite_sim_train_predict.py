@@ -37,20 +37,6 @@ HIDDEN_X = 2
 MODEL_FILE_NAME = "best_validation_model_params.torch"
 
 
-def getOutputDirectory(parameters):
-    tmpdir = ""
-    if 'civilizer.dataCollection.tmpdir' in parameters:
-        tmpdir = parameters['civilizer.dataCollection.tmpdir']
-    if not tmpdir:
-        tmpdir = tempfile.gettempdir()
-    output_dir = os.path.abspath(tmpdir + "/" + str(uuid.uuid4()))
-
-    # Will raise an exception if output_dir already exists or cannot be created
-    os.makedirs(output_dir)
-
-    return output_dir + "/"
-
-
 def save_candset_compressed(params, candset_df, file_name):
     output_file_name = params["metadata_path"] + file_name
     candset_df.to_pickle(output_file_name, compression="gzip")
@@ -185,6 +171,8 @@ Required input:
 
 
 def executeServiceTrain(params={}, inputs={}):
+    from civilizer import getOutputDirectory
+
     # split_ratio = [0.7, 0.3, 0.0]
     # no test, only train and validation
     split_ratio = [0.8, 0.2, 0.0]
@@ -228,6 +216,8 @@ Optional:
 
 
 def executeServicePredict(params={}, inputs={}):
+    from civilizer import getOutputDirectory
+
     #
     # This is a default blocking. (overlap blocking from Magellan, a.k.a. Standard Blocking)
     # Please refer to the documentation of DeepER (and Magellan) for custom blocking

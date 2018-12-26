@@ -6,7 +6,11 @@ import time
 import random
 import os
 import glob
+import re
 import shutil
+import tempfile
+import uuid
+
 # from subprocess import Popen, PIPE
 from services.fahes_service import fahes_api
 from services.imputedb_service import imputedb_api
@@ -47,6 +51,52 @@ def log(text):
     print(text)
     if docker_log is not None:
         print(text, file = docker_log)
+
+def getOutputDirectory(parameters):
+    tmpdir = ""
+    if 'civilizer.dataCollection.tmpdir' in parameters:
+        tmpdir = parameters['civilizer.dataCollection.tmpdir']
+    if not tmpdir:
+        tmpdir = tempfile.gettempdir()
+    output_dir = os.path.abspath(tmpdir + "/" + str(uuid.uuid4()))
+
+    # Will raise an exception if output_dir already exists or cannot be created
+    os.makedirs(output_dir)
+
+    return output_dir + "/"
+
+def parseQuery(filelist, query, returnColumns=False):
+    # Use regex to perform simplistic query parsing
+    re_query = re.compile("^\\s*SELECT\\s*([^;]*\\S)\\s*FROM\\s*([^;]*\\S)\\s*;\\s*$", re.IGNORECASE)
+    match = re_query.match(query)
+    if not match:
+        raise SyntaxError("Unrecognized column name query, '{0}'.".format(query))
+
+    # Identify the CSV from filelist associated with the table name from query
+    table_name = match.group(2)
+    re_table = re.compile("/" + re.escape(table_name) + "\\.[Cc][Ss][Vv]$")
+    filepath = [x for x in filelist if re_table.search(x)]
+    if len(filepath) == 0:
+        raise NameError("Unrecognized table name, '{0}'.".format(table_name))
+    if len(filepath) > 1:
+        raise NameError("Ambiguous table name, '{0}'.".format(table_name))
+
+    if not returnColumns:
+        return filepath[0], table_name
+
+    # Read the header line of the CSV file
+    with open(filepath[0]) as f:
+        headers = [x.strip() for x in f.readline().split(",")]
+
+    # Convert the column names from query to index numbers from file headers
+    columns = [x.strip() for x in match.group(1).split(",")]
+    for i, column in enumerate(columns):
+        try:
+            columns[i] = str(headers.index(column))
+        except ValueError:
+            raise NameError("Unrecognized column name '{0}' for table '{1}'.".format(column, table_name))
+
+    return filepath[0], table_name, ",".join(columns)
 
 @app.route('/rheem/rheem_plans', methods=['POST'])
 def post_plan():
@@ -157,6 +207,8 @@ def post_ExeOperator():
 
 
 def executeOperator(operator):
+    global tmpdir
+
     class_name = operator["java_class"]
     parameters = operator["parameters"]
     inputs = operator["inputs"]
@@ -164,10 +216,10 @@ def executeOperator(operator):
     task_destination = parameters["param3"] if 'param3' in parameters else ""
     input_source, output_destination = get_source_destination_objects(task_sources, task_destination)
 
-    parameters['civilizer.dataCollection.tmpdir'] = tmpdir
-
     log("input: " + operator['name'])
     log(json.dumps(operator, sort_keys=True, indent=4))
+
+    parameters['civilizer.dataCollection.tmpdir'] = tmpdir + operator['run_id'] + "/"
 
     output = None
 
@@ -235,7 +287,7 @@ def executeOperator(operator):
         if inputs:
             parameters['civilizer.PKDuck.columnSelect'] = parameters['param4'].splitlines()
             parameters['civilizer.PKDuck.tau'] = Decimal(parameters['param5'])
-            output = pkduck_api.execute_pkduck_params(parameters, inputs)
+            output = pkduck_api.executeService_params(parameters, inputs)
         else:
             columns = parameters["param4"]
             tau = parameters["param5"]

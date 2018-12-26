@@ -6,6 +6,8 @@ http = require('http');
 fs = require('fs');
 request = require('request-json');
 
+const uuid = require('uuid');
+
 var client = request.createClient(process.env.API_SERVER_URL);
 
 // Independent execution engine for gemPlans -- not yet implemented
@@ -30,7 +32,8 @@ function ExecutePlans_rheem(rheemPlan) {
 
   // Assign a unique id for this plan execution
   // Create a status object to track and report plan execution
-  var run_id = ("0000000" + Math.floor(Math.random() * 2147483647).toString(16)).slice(-8);
+//var run_id = ("0000000" + Math.floor(Math.random() * 2147483647).toString(16)).slice(-8);
+  var run_id = uuid.v1();
   var ops = {};
   console.log("run_id: " + run_id);
   var status = planStatus[run_id] = {

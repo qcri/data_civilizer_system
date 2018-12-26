@@ -6,8 +6,6 @@ from ctypes import c_char_p
 import pandas as pd
 import csv
 import numpy as np
-import uuid
-import tempfile
 
 from pandas.api.types import is_string_dtype
 
@@ -53,6 +51,8 @@ def executeService(source, out_path, params={}):
 
 
 def executeService_params(params, inputs):
+    from civilizer import getOutputDirectory
+
     try:
         output_dir = getOutputDirectory(params)
     except OSError as err:
@@ -213,19 +213,6 @@ def transformSingleFile(file_in_path):
 ########################################################################
 
 
-def getOutputDirectory(parameters):
-    tmpdir = ""
-    if 'civilizer.dataCollection.tmpdir' in parameters:
-        tmpdir = parameters['civilizer.dataCollection.tmpdir']
-    if not tmpdir:
-        tmpdir = tempfile.gettempdir()
-    output_dir = os.path.abspath(tmpdir + "/" + str(uuid.uuid4()))
-
-    # Will raise an exception if output_dir already exists or cannot be created
-    os.makedirs(output_dir)
-
-    return output_dir + "/"
-
 def read_csv_directory(dir_name):
     # csv_tables_names = []
     data_path = os.path.abspath(dir_name);
@@ -290,6 +277,8 @@ def execute_fahes(source, out_path, debug=0):
 
 
 def execute_fahes_params(params, inputs, debug=0):
+    from civilizer import getOutputDirectory
+
     try:
         output_dir = getOutputDirectory(params)
     except OSError as err:

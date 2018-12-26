@@ -4,9 +4,6 @@ import ctypes
 from ctypes import c_double
 from ctypes import c_char_p
 from sys import platform
-import re
-import uuid
-import tempfile
 import shutil
 
 SELF_DIR_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -34,53 +31,9 @@ def execute_pkduck(input_json, output_json, columns, tau):
     pkduck.execute(input_dir, output_dir, columns, tau)
 
 
-def getOutputDirectory(parameters):
-    tmpdir = ""
-    if 'civilizer.dataCollection.tmpdir' in parameters:
-        tmpdir = parameters['civilizer.dataCollection.tmpdir']
-    if not tmpdir:
-        tmpdir = tempfile.gettempdir()
-    output_dir = os.path.abspath(tmpdir + "/" + str(uuid.uuid4()))
+def executeService_params(params, inputs):
+    from civilizer import getOutputDirectory, parseQuery
 
-    # Will raise an exception if output_dir already exists or cannot be created
-    os.makedirs(output_dir)
-
-    return output_dir + "/"
-
-
-def getColumnIndexes(filelist, query):
-
-    # Use regex to perform simplistic query parsing
-    re_query = re.compile("^\\s*SELECT\\s*([^;]*\\S)\\s*FROM\\s*([^;]*\\S)\\s*;\\s*$", re.IGNORECASE)
-    match = re_query.match(query)
-    if not match:
-        raise SyntaxError("Unrecognized column name query, '{0}'.".format(query))
-
-    # Identify the CSV from filelist associated with the table name from query
-    table_name = match.group(2)
-    re_table = re.compile("/" + re.escape(table_name) + "\\.[Cc][Ss][Vv]$")
-    filepath = [x for x in filelist if re_table.search(x)]
-    if len(filepath) == 0:
-        raise NameError("Unrecognized table name, '{0}'.".format(table_name))
-    if len(filepath) > 1:
-        raise NameError("Ambiguous table name, '{0}'.".format(table_name))
-
-    # Read the header line of the CSV file
-    with open(filepath[0]) as f:
-        headers = [x.strip() for x in f.readline().split(",")]
-
-    # Convert the column names from query to index numbers from file headers
-    columns = [x.strip() for x in match.group(1).split(",")]
-    for i, column in enumerate(columns):
-        try:
-            columns[i] = str(headers.index(column))
-        except ValueError:
-            raise NameError("Unrecognized column name '{0}' for table '{1}'.".format(column, table_name))
-
-    return filepath[0], ",".join(columns)
-
-
-def execute_pkduck_params(params, inputs):
     filelist = inputs[0]['civilizer.dataCollection.filelist']
 
     copylist = filelist.copy()
@@ -89,8 +42,8 @@ def execute_pkduck_params(params, inputs):
     pkfiles = []
 
     try:
-        for select in params['civilizer.PKDuck.columnSelect']:
-            filepath, columns = getColumnIndexes(filelist, select)
+        for query in params['civilizer.PKDuck.columnSelect']:
+            filepath, table_name, columns = parseQuery(filelist, query, True)
             if filepath in pkfiles:
                 raise NameError("Duplicate table name in query list, '{0}'.".format(table_name))
             pkfiles.append(filepath)
