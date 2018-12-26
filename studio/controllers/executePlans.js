@@ -20,68 +20,6 @@ const STATE_ERROR   = 5;
 var planStatus = {};
 
 function ExecutePlans_gem(gemPlan) {
-  var run_id = Math.floor(Math.random() * (1 << 32)).toString(16);
-  planStatus[run_id] = {
-    "run_id": run_id,
-    "state": STATE_ACTIVE
-  };
-  for(var op in gemPlan) {
-    planStatus[op.id] = {
-      "state": STATE_WAITING,
-      "data": null
-    };
-  }
-
-  executePlan();
-
-  function executePlan() {
-    var active = 0;
-    for(var op in gemPlan) {
-      switch(planStatus) {
-        case STATE_WAITING:
-          var waiting = op.prev.length;
-          for(var index of op.prev) {
-            if(planStatus[index].state == STATE_DONE) {
-              waiting--;
-            }
-          }
-          if(waiting) {
-            break;
-          }
-          executeNode(op);
-        case STATE_ACTIVE:
-          active++;
-        default:
-          break;
-      }
-    }
-    if(!active) {
-      planStatus.state = STATE_DONE;
-      setTimeout(clearStatus, 1 * 60 * 60 * 1000); // cache results for 1 hour
-    }
-  }
-
-  function executeNode(op) {
-    planStatus[op.id].state = STATE_ACTIVE;
-    http.post({url:"http://apis:8089", data:""}, function(err, data) {
-      if(err) {
-        planStatus[op.id].state = STATE_ERROR;
-        planStatus[op.id].error = err;
-      } else {
-        planStatus[op.id].state = STATE_DONE;
-        planStatus[op.id].data = data;
-
-        // Code to pass results on to 'next' operators goes here
-      }
-      executePlan();
-    });
-  }
-
-  function clearStatus() {
-    delete planStatus[run_id];
-  }
-
-  return JSON.stringify(planStatus);
 }
 
 function ExecutePlans_rheem(rheemPlan) {
@@ -106,6 +44,7 @@ function ExecutePlans_rheem(rheemPlan) {
   for(var op of rheemPlan.operators) {
     console.log("..adding op.name: " + op.name);
     ops[op.name] = op;
+    op.run_id = run_id;
     op.state = STATE_WAITING;
     op.inputs = [];
     op.depends_on = [];
@@ -144,8 +83,7 @@ function ExecutePlans_rheem(rheemPlan) {
   console.log("Past initial executePlans() call");
 
   function executePlan(keys) {
-    console.log("executePlan() - Looking for operators to execute");
-console.log("..checking: " + keys);
+    console.log("executePlan(" + keys + ") - Looking for operators to execute");
     for(var key of keys) {
       var op = ops[key];
       console.log("Checking op: " + op.name);
@@ -184,6 +122,7 @@ console.log("..checking: " + keys);
     console.log("Sending: " + JSON.stringify(op, null, 4));
     client.post(url, op, function(err, data) {
       active--;
+      var next_keys = [];
       if(err) {
         // HTTP errors connecting to opertor service
         console.log("HTTP error from POST " + url + " for " + op.name);
@@ -196,26 +135,31 @@ console.log("..checking: " + keys);
           op.state = STATE_ERROR;
           op.error = data.body;
         } else {
-          op.state = STATE_DONE;
-          op.output = data.body;
+          if(("error" in data.body) && data.body.error) {
+            console.log("Error from " + op.name + ": " + data.body.error);
+            op.state = STATE_ERROR;
+            op.error = data.body;
+          } else {
+            op.state = STATE_DONE;
+            op.output = data.body;
 
-          // Pass output(s) onto all 'next' operators
-          var next_keys = [];
-          op.outputs = data.body;
-          if(op.outputs.toString != "[object Array]") {
-            op.outputs = [op.outputs];
-          }
-          for(var onum = 0; onum < op.links_to.length; onum++) {
-            next_keys = next_keys.concat(Object.keys(op.links_to[onum]));
-            for(var op_key in op.links_to[onum]) {
-              var next_op = ops[op_key];
-              next_op.inputs[op.links_to[onum][op_key]] =
-                onum < op.outputs.length ? op.outputs[onum] : {};
+            // Pass output(s) onto all 'next' operators
+            op.outputs = data.body;
+            if(op.outputs.toString != "[object Array]") {
+              op.outputs = [op.outputs];
+            }
+            for(var onum = 0; onum < op.links_to.length; onum++) {
+              next_keys = next_keys.concat(Object.keys(op.links_to[onum]));
+              for(var op_key in op.links_to[onum]) {
+                var next_op = ops[op_key];
+                next_op.inputs[op.links_to[onum][op_key]] =
+                  onum < op.outputs.length ? op.outputs[onum] : {};
+              }
             }
           }
-          executePlan(next_keys);
         }
       }
+      executePlan(next_keys);
     });
     console.log("After client post to apis");
   }

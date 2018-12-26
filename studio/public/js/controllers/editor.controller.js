@@ -699,6 +699,7 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
 // alert(JSON.stringify(model.nodes[0], null, 4));
 
     modelservice.deselectAll();
+    $scope.showParamPanel = false;
 
     var copiedPlan = JSON.parse(JSON.stringify($scope.plan));
     var planWithRheemParams = convertParametersToRheemStructure(copiedPlan);
@@ -769,7 +770,7 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
   }
 
   function SetBackgroundByStatus(status) {
-    var colors = ["lightgray", "lightgreen", "yellow", "lightblue", "inherit", "lightred"];
+    var colors = ["lightgray", "lightgreen", "yellow", "lightblue", "inherit", "pink"];
     var plan = plansConversions.get();
     var nodes = document.getElementsByClassName("fc-node");
     for(var i = 0; i < nodes.length; i++) {
