@@ -90,6 +90,8 @@ def parseQuery(filelist, query, returnColumns=False):
 
     # Convert the column names from query to index numbers from file headers
     columns = [x.strip() for x in match.group(1).split(",")]
+    if columns[0] == '*':
+        columns = headers.copy()
     for i, column in enumerate(columns):
         try:
             columns[i] = str(headers.index(column))
