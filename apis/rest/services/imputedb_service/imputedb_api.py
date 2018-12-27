@@ -94,6 +94,9 @@ def executeService_params(params, inputs):
     except (NameError, OSError, SyntaxError) as err:
         return { "error": "{0}: {1}".format(type(err).__name__, err) }
 
+    DB_PATH = metadata_dir + '/tmp.db'
+    OUTPUT_PATH = metadata_dir + '/out.csv'
+
     try:
         load_cmd = [IMPUTEDB_PATH, 'load', '--db', DB_PATH] + list(dbfiles.keys())
         subprocess.check_call(load_cmd)
@@ -108,8 +111,8 @@ def executeService_params(params, inputs):
             os.remove(OUTPUT_PATH)
 
     finally:
-        for f in glob.glob(INPUT_PATH + '/*csv'):
-            os.remove(f)
+#       for f in glob.glob(INPUT_PATH + '/*csv'):
+#           os.remove(f)
         if os.path.isdir(DB_PATH):
             shutil.rmtree(DB_PATH)
 
