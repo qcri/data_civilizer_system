@@ -1,6 +1,270 @@
-<html>
-<header><title>Data Civilizer</title></header>
-<body>
-Hello world from Data Civilizer
-</body>
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Scrolling Nav - Start Bootstrap Template</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/scrolling-nav.css" rel="stylesheet">
+
+  </head>
+
+  <body id="page-top">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+      <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="#page-top">Data Civilizer</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#Overview">Overview</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#Installation">Installation</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#Tutorials">Tutorials</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#Papers">Papers</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#contact">Contact</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <header class="bg-primary text-white">
+      <div class="container text-center">
+        <h1>Data Civilizer</h1>
+        <p class="lead">The end-to-end data preparation system</p>
+      </div>
+    </header>
+
+    <section id="Overview">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <h2>Overview</h2>
+            <p class="lead"><b>Data Civilizer</b> is an end-to-end data preparation system. Data Civilizer provides <b>data discovery and cleaning</b> services. The main components of the civilizer are shown in the below figure. 
+            <br>
+            <img src="img/dc_arc.jpg" alt="DC" width="700">
+            <br>
+            <br>
+            Data Civilizer contains three primary layers, namely the CIVILIZER frontend, the CIVILIZER engine, and the CIVILIZER services. The workflow engine allows a user to string together any of the CIVILIZER services in a directed graph to accomplish her data integration goal. Then the engine manages the execution of services in the directed graph. Users interact with the system via the Civilizer Studio.
+            <br>
+            <br>
+
+            <b>In a nutshell, Data Civilizer has the following primary services:</b>
+            <ul>
+
+              <li>A data discovery module, Aurum, to help find datasets of interest. Aurum builds an enterprise knowledge graph (EKG) to connect similar tables. Aurum allows a user to browse the graph, run similarity searches on tables in the graph, and perform keyword searches. Aurum can also help find all join paths that connect these tables.</li>
+
+              <li>An entity resolution module to form clusters of records thought to represent the same entity. We are currently using DeepER, a deep learning-based entity resolution module. This can be easily replaced with another module which can do the same job.</li>
+
+              <li>A golden record module. This component has the effect of collapsing clusters representing the same entity into single representative records. Our golden record system excels at cleaning when there are multiple sources of the same information.</li>
+
+              <li>Other cleaning tools in the system include an abbreviation system, a disguised missing values detection tool (fahes), and ImputeDB for filling in missing values.</li>
+            </ul>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="Installation" class="bg-light">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <h2>Installation</h2>
+            <h3>Docker Installation</h3>
+            <p class="lead">
+              You need to install
+              <a href="https://www.docker.com/products/docker-engine" rel="nofollow">Docker</a> and 
+              <a href="https://docs.docker.com/compose/install/" rel="nofollow">Docker Compose</a> 
+              first, then proceed to the following instructions.
+            </p>
+
+            <h3>Hardware Requirements Specification</h3>
+            <p class="lead">
+              The DC system needs at least <b>8GB RAM</b>.
+              The default memory assigned to Docker is 2GB of RAM. 
+              The memory could be adjusted from the Docker preferences.
+              We recommend to set Docker CPUs to 4, if possible.
+              The DC system needs <b>15GB disk space</b> to allocated to Docker; this is including the intermediate images, such as Ubuntu and llsc/cuda-torch.
+              <br>
+              <br>
+              If the user needs to save some space, you can clean unused images, containers or volumes using system prune:
+              <br>
+              <code>
+                $ docker system prune
+              </code>
+              <br>
+              <br>
+              You can also browse the docker images and delete the ones you do not need
+              <br>
+              <code>
+                $ docker images
+                <br>
+                $ docker rmi <REPOSITORY Name> 
+              </code>
+              <br>
+              <br>
+
+            </p>
+
+            <h3>Development</h3>
+            <p class="lead">
+              Get the code<br>
+              <code>
+                # clone using https<br>
+                $ git clone --recursive https://github.com/qcri/data_civilizer_system.git<br>
+                # or if you prefer ssh<br>
+                $ git clone git@github.com:qcri/data_civilizer_system.git<br>
+
+              cd data_civilizer_system<br>
+            </code>
+            <br>
+            <br>
+            Build the custom llsc/cuda-torch base image:<br>
+            <code>
+              $ docker-compose build cuda_torch
+            </code>
+
+            <br>
+            <br>
+            Build and run all Data Civilizer images:
+            <br>
+            <code>
+              $ docker-compose build apis && docker-compose build grecord_service && docker-compose build studio && docker-compose up studio
+            </code>
+            <br>
+            <br>
+            
+            </p>
+
+            <h3>Running Data Civilizer Pipelines</h3>
+            <p class="lead">
+              Run the system (if already built):
+            <br>
+            <code>
+              $ docker-compose up studio
+            </code>
+            <br>
+            <br>
+              Then visit <a href="http://localhost:5000" rel="nofollow">http://localhost:5000</a>.
+            </p>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="Tutorials" class="">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <h2>Tutorials</h2>
+            <h3>
+              Hello, World!
+            </h3>
+
+            <p class="lead">
+              In this workflow we want to identify DMVs (<a href="http://da.qcri.org/ntang/pubs/icde2018demofahes.pdf">Disguised Missing Values</a>), e.g., 11111111 for a phone number, in a data set from the
+              <a href="https://archive.ics.uci.edu/ml/datasets.html">UCI Repository</a> and to transform the identified DMVs to null values.
+              <br>
+              <br>
+              We load data from:
+              <br>
+              <code>
+              /app/storage/data_sets/demo/UCI/adult.csv
+              </code>
+              <br>
+              and we store the result in:
+              <br>
+              <code>
+              /app/storage/data_sets/demo/UCIResults/
+              </code>
+              <br>
+              <br>
+              NOTE: The paths are relative to the Docker Container. See the "app_storage" folder in the Data Civilizer project, if you want to browse the files locally.
+            </p>
+            <br>            
+            <iframe width="850" height="500" src="https://www.youtube.com/embed/Zj8hwpGMEj8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+            <br>
+            <br>
+            <h3>
+              Movie Example
+            </h3>
+            <p class="lead">Movie Pipeline</p>
+
+            <br>
+            <br>
+            <h3>
+              Restaurants Example
+            </h3>
+            <p class="lead">Restaurant Pipeline</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="Papers" class="bg-light">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <h2>Papers</h2>
+            <p class="lead">List</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <h2>Contact us</h2>
+            <p class="lead">People.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-5 bg-dark">
+      <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; QCRI 2019</p>
+      </div>
+      <!-- /.container -->
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom JavaScript for this theme -->
+    <script src="js/scrolling-nav.js"></script>
+
+  </body>
+
 </html>
