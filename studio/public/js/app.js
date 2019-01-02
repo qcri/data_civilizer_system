@@ -30,7 +30,8 @@ rheem.config(function($stateProvider, $urlRouterProvider, $locationProvider, $co
 
   $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
 
-  $urlRouterProvider.otherwise('/');
+//$urlRouterProvider.otherwise('/');
+  $urlRouterProvider.otherwise('editor');
 
   $stateProvider
     .state('main', {
