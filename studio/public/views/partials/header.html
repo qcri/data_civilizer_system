@@ -6,11 +6,11 @@
   <div class="navbar-header">
     <ul class="nav navbar-nav">
       <li><a ui-sref="main.editor"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Editor</a></li>
-      <li><a ui-sref="main.monitor"><i class="fa fa-bar-chart" aria-hidden="true"></i>Monitor</a></li>
+      <!-- li><a ui-sref="main.monitor"><i class="fa fa-bar-chart" aria-hidden="true"></i>Monitor</a></li -->
     </ul>
   </div>
 
-  <ul id="header-buttons" class="pull-right" ng-show="'main.editor' | isState">
+  <!-- ul id="header-buttons" class="pull-right" ng-show="'main.editor' | isState">
     <span class="header-button-title">Show Execution Plan</span>
     <li class="onoffswitch">
       <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" ng-change="switchPanelState()" ng-model="planSwitch">
@@ -19,13 +19,13 @@
           <span class="onoffswitch-switch"></span>
       </label>
     </li>
-  </ul>
+  </ul -->
 </div>
 
 <div class="full-height" ui-view>
   <div id="landing-page">
     <img src="/images/rheem.png" alt="Rheem">
     <a href="#!/editor" class="landing-button">Editor</a>
-    <a href="#!/monitor" class="landing-button">Monitor</a>
+    <!-- a href="#!/monitor" class="landing-button">Monitor</a -->
   </div>
 </div>
