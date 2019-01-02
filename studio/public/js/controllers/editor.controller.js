@@ -365,6 +365,9 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
           $scope.selectedParam = [];
         }
         $scope.showParamPanel = true;
+
+        // Automatically selected the first parameter set to display it
+        $scope.paramClicked($scope.paramIndex != -1 ? $scope.paramIndex : 0);
       }
     }
   };
