@@ -25,6 +25,8 @@ appServices.service('plansConversions', function() {
         operator["parameters"] = nodes[node].parameters;
         operator["selectedConstructor"] = nodes[node].selectedConstructor;
         operator["isBroadCast"] = nodes[node].isBroadCast;
+        operator["features"] = nodes[node].features;
+        operator["baseurl"] = nodes[node].baseurl;
         operator["type"] = nodes[node].type;
         operator["connects_to"] = {}
         operator["broadcasts_to"] = {}
@@ -87,6 +89,8 @@ appServices.service('plansConversions', function() {
             model["nodes"][node]["parameters"],
             model["nodes"][node]["selectedConstructor"],
             model["nodes"][node]["isBroadCast"],
+            model["nodes"][node]["features"],
+            model["nodes"][node]["baseurl"],
             model["nodes"][node]["type"]
         );
       top_ids.map(function(top_id) {
@@ -106,8 +110,8 @@ appServices.service('plansConversions', function() {
     return nodes;
   };
 
-  var createNode =  function (id, name, java_class, x, y, color, tops, buttons, broadcasts, parameters, selectedConstructor, isBroadCast, type) {
-    var Node = function (id, name, java_class, x, y, color, tops, buttons, broadcasts, parameters, selectedConstructor, isBroadCast, type){
+  var createNode =  function (id, name, java_class, x, y, color, tops, buttons, broadcasts, parameters, selectedConstructor, isBroadCast, features, baseurl, type) {
+    var Node = function (id, name, java_class, x, y, color, tops, buttons, broadcasts, parameters, selectedConstructor, isBroadCast, features, baseurl, type){
       this.id = id;
       this.y = y;
       this.x = x;
@@ -120,6 +124,8 @@ appServices.service('plansConversions', function() {
       this.parameters = parameters;
       this.selectedConstructor = selectedConstructor;
       this.isBroadCast = isBroadCast;
+      this.features = features;
+      this.baseurl = baseurl;
       this.type = type;
       this.broadcastNodes = {};
       this.nextNodes = {};
@@ -141,7 +147,7 @@ appServices.service('plansConversions', function() {
         }
       };
     };
-    return new Node(id, name, java_class, x, y, color, tops, buttons, broadcasts, parameters, selectedConstructor, isBroadCast, type);
+    return new Node(id, name, java_class, x, y, color, tops, buttons, broadcasts, parameters, selectedConstructor, isBroadCast, features, baseurl, type);
   };
 
   var getNodesFromDB =  function (plan) {
@@ -157,12 +163,14 @@ appServices.service('plansConversions', function() {
       var parameters = plan["operators"][operator]["parameters"];
       var selectedConstructor = plan["operators"][operator]["selectedConstructor"];
       var isBroadCast = plan["operators"][operator]["isBroadCast"];
+      var features = plan["operators"][operator]["features"];
+      var baseurl = plan["operators"][operator]["baseurl"];
       var type = plan["operators"][operator]["type"];
       var color = plan["operators"][operator]["color"];
       var np_inputs = plan["operators"][operator]["np_inputs"];
       var np_outputs = plan["operators"][operator]["np_outputs"];
       var id = gid++;
-      node = createNode(id, name, java_class, x, y, color, [], [], [], parameters, selectedConstructor, isBroadCast, type);
+      node = createNode(id, name, java_class, x, y, color, [], [], [], parameters, selectedConstructor, isBroadCast, features, baseurl, type);
       for(var connectors in plan["operators"][operator]["connects_to"]){
         var via;
         var nodeName;
@@ -224,6 +232,8 @@ appServices.service('plansConversions', function() {
       node["parameters"] = nodes[name].parameters;
       node["selectedConstructor"] = nodes[name].selectedConstructor;
       node["isBroadCast"] = nodes[name].isBroadCast;
+      node["features"] = nodes[name].features;
+      node["baseurl"] = nodes[name].baseurl;
       node["type"] = nodes[name].type;
       node["connectors"] = [];
       nodes[name].tops.map(function(top_id) {
