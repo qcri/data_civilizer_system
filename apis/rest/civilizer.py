@@ -195,17 +195,47 @@ def post_ExePlan():
 #   return jsonify(myresponse0)
 
 
+progress = {}
+
 @app.route('/rheem/plan_exec_op', methods=['POST'])
 def post_ExeOperator():
     op_request = request.json
+
+    key = None
+    if 'features' in op_request and 'progress' in op_request["features"] and op_request["features"]["progress"]:
+        run_id = op_request["run_id"]
+        name = op_request["name"]
+        key = run_id + "." + name
+
+        # To call the proper progress function for a service, we have to know
+        # it's class name.  So, if the operator supports advanced progress
+        # reporting, we build a key name from the run_id and operator name and
+        # track the operator class globally.  We delete this item from the
+        # progress tracking dictionary before exiting so as to not leak memory.
+        progress[key] = {
+            "class_name": op_request["java_class"],
+            "progress": 0
+        }
+
     if 'simulate' in op_request and op_request['simulate']:
         log("simulating op_request:")
         log(json.dumps(op_request, sort_keys=True, indent=4))
-        time.sleep(random.randint(5, 25))
-        return jsonify(myresponse0)
-#   log("op_request:")
-#   log(json.dumps(op_request, sort_keys=True, indent=4))
-    return executeOperator(op_request)
+        if not key:
+            # For services that don't support advanced progress reporting, simply wait 2-10 seconds
+            time.sleep(random.randint(2, 10))
+        else:
+            # For services that support advanced progress reporting, simulate inceasing progress over 20 seconds
+            for i in range(1, 10):
+                progress[key]["progress"] = i * 10 / 100
+                time.sleep(2)
+        retval = jsonify(myresponse0)
+    else:
+        retval = executeOperator(op_request)
+
+    if key:
+        progress.pop(key, None)
+
+    return retval
 
 
 def executeOperator(operator):
@@ -455,6 +485,22 @@ def open_chrome(url):
 #     json_obj["CSV"]["dir"] = "<dir for tables, fix from config>"
 #     json_obj["CSV"]["tables"] = str_tables
 #     return jsonify(json_obj)
+
+
+@app.route('/rheem/progress', methods=['GET'])
+def get_Progress():
+    run_id = request.args.get('run_id')
+    names = request.args.getlist('name')
+    retval = {}
+    for name in names:
+        key = run_id + "." + name
+        if key in progress:
+            # Branch out to service specific progress functions here.
+            #
+            # Gather only reports as supporting advanced progress when testing...
+            if progress[key]["class_name"] == "civilizer.basic.operators.Gather":
+                retval[name] = progress[key]
+    return jsonify(retval)
 
 
 @app.route('/rheem/rheem_operators', methods=['GET'])
