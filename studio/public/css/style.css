@@ -200,6 +200,27 @@ body {
   float: right;
 }
 
+#build-port {
+  padding-top: 10px;
+}
+
+#build-port i.fa {
+  margin-right: 5px;
+}
+
+#build-port a {
+  cursor: pointer;
+}
+
+#build-port a:first-of-type {
+  margin-right: 10px;
+  float: left;
+}
+
+#build-port a:last-of-type {
+  float: right;
+}
+
 #info-panel:after {
   content: ".";
   visibility: hidden;
