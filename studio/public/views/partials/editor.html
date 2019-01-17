@@ -3,7 +3,7 @@
     <div id="info-panel">
       <div id="build-action">
         <a ng-click="createNewPlan()"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>New</a>
-        <a id="save-plan" ng-click="savePlan()"><i class="fa fa-floppy-o" aria-hidden="true"></i>Save</a>
+        <a id="save-plan" ng-click="savePlan()"><i class="fa fa-floppy-o" aria-hidden="true"></i>Save<span ng-show="ctrlDown"> As</span></a>
       </div>
       <label for="currentPlan"> Load Another Plan </label>
       <div class="styled-select slate" name="currentPlanDiv" id="currentPlanDiv">
@@ -12,9 +12,14 @@
       </select>
       </div>
       <div id="build-execute">
-        <a ng-click="buildPlan()" class="top-button"><i ng-click="buildPlan()" class="fa fa-gavel" aria-hidden="true"></i>Build</a>
+        <a ng-click="buildPlan()" class="top-button"><i ng-click="buildPlan()" class="fa fa-gavel" aria-hidden="true"></i><span ng-show="ctrlDown">Reb</span></span ng-hide="ctrlDown">B</span>uild</a>
         <!--<a href="#!/monitor" class="top-button" ng-click="executeClicked()"><i class="fa fa-paper-plane-o" aria-hidden="true"></i>Execute</a>-->
         <a class="top-button" ng-click="executeClicked()"><i class="fa fa-gavel" aria-hidden="true"></i>Execute</a>
+      </div>
+      <br>
+      <div id="build-port" ng-show="ctrlDown">
+        <a class="top-button" ng-click="openImport()"><i class="fa fa-caret-right" aria-hidden="true"></i>Import</a>
+        <a class="top-button" ng-click="openExport()"><i class="fa fa-caret-left" aria-hidden="true"></i>Export</a>
       </div>
     </div>
 
