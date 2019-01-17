@@ -289,3 +289,19 @@ body {
   font-size: 16px;
 }
 
+.progressBar {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  z-index: -10;
+  width: 100%;
+  height: 100%;
+}
+
+.progressBar div {
+  display: block;
+  position: absolute;
+  width: 0%;
+  height: 100%;
+}
+
