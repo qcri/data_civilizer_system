@@ -7,9 +7,12 @@
       </div>
       <label for="currentPlan"> Load Another Plan </label>
       <div class="styled-select slate" name="currentPlanDiv" id="currentPlanDiv">
+<!--
       <select name="currentPlan" id="currentPlan" ng-change="showCurrentPlan()"  ng-model="currentPlan">
         <option ng-repeat="plan in plans" value="{{plan._id}}">&nbsp;{{plan.name}}&nbsp;</option>
       </select>
+-->
+      <select name="currentPlan" id="currentPlan" ng-change="showCurrentPlan()"  ng-model="currentPlan" ng-options="plan._id as ('&nbsp;' + plan.name + '&nbsp;') for plan in plans"></select>
       </div>
       <div id="build-execute">
         <a ng-click="buildPlan()" class="top-button"><i ng-click="buildPlan()" class="fa fa-gavel" aria-hidden="true"></i><span ng-show="ctrlDown">Reb</span><span ng-hide="ctrlDown">B</span>uild</a>

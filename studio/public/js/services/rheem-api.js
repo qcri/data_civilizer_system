@@ -20,7 +20,7 @@ appServices.factory('RheemAPI', ['$resource',
             method: 'GET',
             url: '/api/plans',
             isArray: true,
-            cache: true,
+            cache: false,
         },
         getPlanById: {
             method: 'GET',

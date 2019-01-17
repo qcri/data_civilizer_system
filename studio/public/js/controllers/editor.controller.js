@@ -362,9 +362,13 @@ if($scope.simulate) operator.features.parallel = false;
     $scope.plans = data;
   });
 
+  $scope.createNewPlan = function() {
+    window.location.reload();
+  };
+
   $scope.showCurrentPlan = function() {
     console.log($scope.currentPlan);
-    $scope.plan = getSelectedPlan($scope.currentPlan)[0];
+    $scope.plan = getSelectedPlan($scope.currentPlan);
     console.log($scope.plan);
     $scope.paramIndex = -1;
     $scope.selectedParam = [];
@@ -399,6 +403,141 @@ if($scope.simulate) operator.features.parallel = false;
       $scope.model = model;
       nodeNames = model.nodes.map(function(node) { return node.name; });
     }, 0);
+  };
+
+  $scope.savePlan = function() {
+    var graph = plansConversions.getNodeFromView($scope.model);
+    $scope.plan = plansConversions.convertToPlan(graph);
+
+    if($scope.currentPlan != -1 && $scope.currentPlan !== undefined && !$scope.ctrlDown) {
+      RheemAPI.updatePlan({id: $scope.currentPlan}, $scope.plan, function(data) {
+        alert("plan updated successfully")
+        $scope.currentPlan = $scope.plan;
+        console.log("updated: " + data);
+      });
+    } else {
+      $scope.ctrlDown = false;
+//    $scope.plan.name = prompt("Please enter plan name", "Plan name");
+      do {
+        var name = prompt("Please enter plan name", "Plan name");
+        if(!name) {
+          return;
+        }
+        if($scope.plans.map(function(plan) { return plan.name; }).indexOf(name) != -1) {
+          name = "";
+        }
+      } while(!name);
+      $scope.plan.name = name;
+      RheemAPI.createPlan($scope.plan, function(data) {
+        alert("plan created successfully");
+//      window.location.reload();
+        RheemAPI.getPlans({}, function(data) {
+          $scope.plans = data;
+          setSelectedPlan(name);
+        });
+      });
+    }
+  };
+
+  var getSelectedPlan = function(id) {
+    return $scope.plans.filter(function(plan) { return plan._id == id; })[0];
+  };
+
+  var setSelectedPlan = function(name) {
+    $scope.currentPlan = $scope.plans.filter(function(plan) { return plan.name == name; })[0]._id;
+  };
+
+  $scope.openImport = function() {
+    $scope.ctrlDown = false;
+
+    var htmlTemplate =
+      '<div class="modal-header"><h3>Import Plan</h3></div>' +
+      '<div class="modal-body">' +
+      '<textarea id="textareaJSON" rows=20 style="width:100%;"></textarea>' +
+      '</div>' +
+      '<div class="modal-footer">' +
+      '<button class="btn btn-default" type="button" style="float:left;" onclick="this.nextSibling.click();">Upload from file</button>' +
+      '<input type="file" style="display:none;" ng-model="model" onchange="var fr = new FileReader(); fr.onload = function(event) { document.getElementById(\'textareaJSON\').value = event.target.result; }; fr.readAsText(this.files[0]);">' +
+      '<button class="btn btn-default" type="button" ng-click="importPlan();">Import</button> ' +
+      '<button class="btn btn-default" type="button" ng-click="modalClose();">Cancel</button>' +
+      '</div>';
+
+    $scope.modalInstance = $uibModal.open({
+      scope: $scope,
+      size: 'lg',
+      template: htmlTemplate
+    });
+  };
+
+  $scope.importPlan = function() {
+    var jsonPlan = document.getElementById('textareaJSON').value;
+    $scope.modalInstance.dismiss('cancel');
+    $scope.currentPlan = -1;
+    $scope.plan = JSON.parse(jsonPlan);
+    $scope.paramIndex = -1;
+    $scope.selectedParam = [];
+    $scope.selectedNodeParams = [];
+    $scope.showParamPanel = false;
+    var nodes = plansConversions.getNodesFromDB($scope.plan);
+    var modelData = plansConversions.getViewedJson(nodes);
+    setViewedPlan(modelData);
+  };
+
+// Not currently used...
+//$scope.$on('modal.closing', function(event, reason, closed) {
+//  // reason == $scope.modalInstance.dismiss(reason)
+//});
+
+  $scope.openExport = function() {
+    $scope.ctrlDown = false;
+
+    var viewedNodes = plansConversions.getNodeFromView($scope.model);
+    var plan = plansConversions.convertToPlan(viewedNodes);
+    var jsonPlan = JSON.stringify(plan, null, 4);
+
+    var htmlTemplate =
+      '<div class="modal-header"><h3>Export Plan</h3></div>' +
+      '<div class="modal-body">' +
+      '<textarea rows=20 readonly style="width:100%;">' + jsonPlan + '</textarea>' +
+      '</div>' +
+      '<div class="modal-footer">' +
+      '<button class="btn btn-default" type="button" style="float:left;" onclick="this.nextSibling.click();">Download to file</button>' +
+      '<a href="data:text/plain;charset=utf-8,' + encodeURIComponent(jsonPlan) + '" download="plan.json" style="display:none;"></a>' +
+      '<button class="btn btn-default" type="button" ng-click="modalClose()">Close</button>' +
+      '</div>';
+
+    $scope.modalInstance = $uibModal.open({
+      scope: $scope,
+      size: 'lg',
+      template: htmlTemplate
+    });
+  };
+
+  $scope.modalClose = function() {
+    $scope.modalInstance.dismiss('cancel');
+  };
+
+  // EXECUTION PLAN GRAPH
+  $scope.exportJava = function() {
+    if($scope.currentPlan != -1 && $scope.currentPlan !== undefined) {
+      generatePlanForJava();
+    } else {
+      alert("no plan to generate java sample code")
+    }
+  };
+
+  $scope.exportJson = function() {
+    if($scope.currentPlan != -1 && $scope.currentPlan !== undefined) {
+      if($scope.executedModel != -1 && $scope.executedModel !== undefined) {
+        //alert(<pre>JSON.stringify($scope.executedModel)</pre>);
+        var blob = new Blob([ angular.toJson($scope.plan) ], { type : 'application/json;charset=utf-8;' });
+        $scope.url = (window.URL || window.webkitURL).createObjectURL( blob );
+      } else {
+        alert(generatePlan());
+      }
+    } else {
+      alert("no plan to exportJson");
+    }
   };
 
   var convertParametersToRheemStructure = function(plan) {
@@ -453,124 +592,6 @@ if($scope.simulate) operator.features.parallel = false;
     }
     console.log("GEM " + JSON.stringify(gemPlan));
     return(gemPlan);
-  };
-
-  $scope.savePlan = function() {
-    var graph = plansConversions.getNodeFromView($scope.model);
-    $scope.plan = plansConversions.convertToPlan(graph);
-
-    if($scope.currentPlan != -1 && $scope.currentPlan !== undefined && !$scope.ctrlDown) {
-      RheemAPI.updatePlan({id: $scope.currentPlan}, $scope.plan, function(data) {
-        alert("plan updated successfully")
-        $scope.currentPlan = $scope.plan;
-        console.log("updated: " + data);
-      });
-    } else {
-      $scope.plan.name = prompt("Please enter plan name", "Plan name");
-      RheemAPI.createPlan($scope.plan, function(data) {
-        alert("plan created successfully");
-        window.location.reload();
-      });
-    }
-  };
-
-  $scope.createNewPlan = function() {
-    window.location.reload();
-  };
-
-  var getSelectedPlan = function(id) {
-    return $scope.plans.filter(function(plan) {
-      return plan._id == id;
-    });
-  };
-
-  $scope.openImport = function() {
-    var htmlTemplate =
-      '<div class="modal-header"><h3>Import Plan</h3></div>' +
-      '<div class="modal-body">' +
-      '<textarea id="textareaJSON" rows=20 style="width:100%;"></textarea>' +
-      '</div>' +
-      '<div class="modal-footer">' +
-      '<button class="btn btn-default" type="button" style="float:left;" onclick="this.nextSibling.click();">Upload from file</button>' +
-      '<input type="file" style="display:none;" ng-model="model" onchange="var fr = new FileReader(); fr.onload = function(event) { document.getElementById(\'textareaJSON\').value = event.target.result; }; fr.readAsText(this.files[0]);">' +
-      '<button class="btn btn-default" type="button" ng-click="importPlan();">Import</button> ' +
-      '<button class="btn btn-default" type="button" ng-click="modalClose();">Cancel</button>' +
-      '</div>';
-
-    $scope.modalInstance = $uibModal.open({
-      scope: $scope,
-      size: 'lg',
-      template: htmlTemplate
-    });
-  };
-
-  $scope.importPlan = function() {
-    var jsonPlan = document.getElementById('textareaJSON').value;
-    $scope.modalInstance.dismiss('cancel');
-    $scope.currentPlan = -1;
-    $scope.plan = JSON.parse(jsonPlan);
-    $scope.paramIndex = -1;
-    $scope.selectedParam = [];
-    $scope.selectedNodeParams = [];
-    $scope.showParamPanel = false;
-    var nodes = plansConversions.getNodesFromDB($scope.plan);
-    var modelData = plansConversions.getViewedJson(nodes);
-    setViewedPlan(modelData);
-  };
-
-// Not currently used...
-//$scope.$on('modal.closing', function(event, reason, closed) {
-//  // reason == $scope.modalInstance.dismiss(reason)
-//});
-
-  $scope.openExport = function() {
-    var viewedNodes = plansConversions.getNodeFromView($scope.model);
-    var plan = plansConversions.convertToPlan(viewedNodes);
-    var jsonPlan = JSON.stringify(plan, null, 4);
-
-    var htmlTemplate =
-      '<div class="modal-header"><h3>Export Plan</h3></div>' +
-      '<div class="modal-body">' +
-      '<textarea rows=20 readonly style="width:100%;">' + jsonPlan + '</textarea>' +
-      '</div>' +
-      '<div class="modal-footer">' +
-      '<button class="btn btn-default" type="button" style="float:left;" onclick="this.nextSibling.click();">Download to file</button>' +
-      '<a href="data:text/plain;charset=utf-8,' + encodeURIComponent(jsonPlan) + '" download="plan.json" style="display:none;"></a>' +
-      '<button class="btn btn-default" type="button" ng-click="modalClose()">Close</button>' +
-      '</div>';
-
-    $scope.modalInstance = $uibModal.open({
-      scope: $scope,
-      size: 'lg',
-      template: htmlTemplate
-    });
-  };
-
-  $scope.modalClose = function() {
-    $scope.modalInstance.dismiss('cancel');
-  };
-
-  // EXECUTION PLAN GRAPH
-  $scope.exportJava = function() {
-    if($scope.currentPlan != -1 && $scope.currentPlan !== undefined) {
-      generatePlanForJava();
-    } else {
-      alert("no plan to generate java sample code")
-    }
-  };
-
-  $scope.exportJson = function() {
-    if($scope.currentPlan != -1 && $scope.currentPlan !== undefined) {
-      if($scope.executedModel != -1 && $scope.executedModel !== undefined) {
-        //alert(<pre>JSON.stringify($scope.executedModel)</pre>);
-        var blob = new Blob([ angular.toJson($scope.plan) ], { type : 'application/json;charset=utf-8;' });
-        $scope.url = (window.URL || window.webkitURL).createObjectURL( blob );
-      } else {
-        alert(generatePlan());
-      }
-    } else {
-      alert("no plan to exportJson");
-    }
   };
 
 /*
