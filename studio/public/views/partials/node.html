@@ -2,6 +2,11 @@
   id="{{node.id}}"
   ng-attr-style="position: absolute; top: {{ node.y }}px; left: {{ node.x }}px;"
   ng-dblclick="callbacks.doubleClick(node)">
+
+  <div class="progressBar innerNode" ng-attr-style="background-color: rgba({{ node.rgbProgress }},0.25); display: {{ node.disProgress }};">
+    <div ng-attr-style="background-color: rgba({{ node.rgbProgress }},1.0); width: {{ node.pctProgress }}%;"></div>
+  </div>
+
   <div class="innerNode" ng-hide="node.type == 'source' || node.type == 'sink'">
     <p style="background-image: url('/images/nodes-icons/{{ node.type }}.png')">{{ node.name }}</p>
 
