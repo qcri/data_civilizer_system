@@ -1,7 +1,6 @@
 'use strict';
 
-appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory', 'flowchartConstants', 'RheemAPI', 'excutionPlan', '$http', 'plansConversions', function($scope, prompt, Modelfactory, flowchartConstants, RheemAPI, excutionPlan, $http, plansConversions) {
-
+appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory', 'flowchartConstants', 'RheemAPI', 'excutionPlan', '$http', 'plansConversions', '$timeout', '$uibModal', function($scope, prompt, Modelfactory, flowchartConstants, RheemAPI, excutionPlan, $http, plansConversions, $timeout, $uibModal) {
 
   $scope.useGEM = false;
   $scope.simulate = false;
@@ -12,66 +11,74 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
 
   $scope.paramIndex  = -1;
 
-  $scope.soucresCollapseClicked = function () {
+  $scope.soucresCollapseClicked = function() {
     $scope.sourcesIsCollapsed = !$scope.sourcesIsCollapsed;
-  }
-  $scope.unaryOperatorsCollapseClicked = function () {
+  };
+  $scope.unaryOperatorsCollapseClicked = function() {
     $scope.unaryOperatorsIsCollapsed = !$scope.unaryOperatorsIsCollapsed;
-  }
-  $scope.binaryOperatorsCollapseClicked = function () {
+  };
+  $scope.binaryOperatorsCollapseClicked = function() {
     $scope.binaryOperatorsIsCollapsed = !$scope.binaryOperatorsIsCollapsed;
-  }
-  $scope.trinaryOperatorsCollapseClicked = function () {
+  };
+  $scope.trinaryOperatorsCollapseClicked = function() {
     $scope.trinaryOperatorsIsCollapsed = !$scope.trinaryOperatorsIsCollapsed;
-  }
-  $scope.sinkCollapseClicked = function () {
+  };
+  $scope.sinkCollapseClicked = function() {
     $scope.sinkIsCollapsed = !$scope.sinkIsCollapsed;
-  }
-  $scope.confCollapseClicked = function () {
+  };
+  $scope.confCollapseClicked = function() {
     $scope.confIsCollapsed = !$scope.confIsCollapsed;
-  }
+  };
 
+  var operatorIndex = {};
   $scope.unaryOperators = [];
   $scope.binaryOperators = [];
   $scope.trinaryOperators = [];
   $scope.datasources = [];
   $scope.sinks = [];
 
-  var bindOperatorsData = function(operators){
-    for(var operator of operators){
+  var bindOperatorsData = function(operators) {
+    for(var operator of operators) {
+      operatorIndex[operator.class] = operator;
       if(operator.loop) {
         $scope.trinaryOperators.push(operator);
-      } else if (operator.nb_inputs && operator.nb_inputs == 1 && operator.nb_outputs){
+      } else if(operator.nb_inputs && operator.nb_inputs == 1 && operator.nb_outputs) {
         $scope.unaryOperators.push(operator);
       } else if(operator.nb_inputs && operator.nb_inputs == 2 && operator.nb_outputs) {
+// When in simulation mode, enable advanced progress on gather...
+if($scope.simulate) operator.features.progress = true;
         $scope.binaryOperators.push(operator);
       } else if(operator.nb_inputs && operator.nb_inputs > 2 && operator.nb_outputs) {
         $scope.trinaryOperators.push(operator);
       } else if(operator.nb_inputs && !operator.nb_outputs) {
         $scope.sinks.push(operator);
       } else if(operator.nb_outputs && !operator.nb_inputs) {
+// When in simulation mode, force source operators to serializer...
+if($scope.simulate) operator.features.parallel = false;
         $scope.datasources.push(operator);
       }
     }
-  }
+  };
 
   // GET OPERATORS FROM API
-  // RheemAPI.getBasicOperators({}, function(data){
+  // RheemAPI.getBasicOperators({}, function(data) {
   //   bindOperatorsData(data.operators);
   // });
   //
-  // RheemAPI.getJavaOperators({}, function(data){
+  // RheemAPI.getJavaOperators({}, function(data) {
   //   bindOperatorsData(data.operators);
   // });
   //
-  // RheemAPI.getSparkOperators({}, function(data){
+  // RheemAPI.getSparkOperators({}, function(data) {
   //   bindOperatorsData(data.operators);
   // });
 
-  RheemAPI.getRheemOperator({}, function(data){
+  RheemAPI.getRheemOperator({}, function(data) {
     bindOperatorsData(data.operators);
   });
 
+/*
+// Not used - MDH 2019/01/16
   // Configurations
   $scope.configurations = [
     {
@@ -87,8 +94,9 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
       name: "Conf #4"
     },
   ];
+*/
 
-  $scope.itemSelected = function(item){
+  $scope.itemSelected = function(item) {
   };
 
   // Drag & Drop
@@ -96,210 +104,184 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
   var ctrlKeyCode = 17;
   var aKeyCode = 65;
   var escKeyCode = 27;
-  var nextNodeID = 10;
+  var nextNodeID = 10; // <-- Doesn't seem to have any effect when used
   var nextConnectorID = 20;
   var nextParamID = 30;
-  var ctrlDown = false;
+  $scope.ctrlDown = false;
   var dragOptions = {
     placeholder: true
-  }
+  };
 
   var model = {
     nodes: [],
     edges: []
   };
 
-  $scope.nodeNames = [];
+//$scope.nodeNames = []; // <-- Don't believe this has to or should be in $scope
+  var nodeNames = [];
   $scope.flowchartselected = [];
   var modelservice = Modelfactory(model, $scope.flowchartselected);
 
   $scope.model = model;
   $scope.modelservice = modelservice;
 
-  $scope.keyDown = function (evt) {
-    if (evt.keyCode === ctrlKeyCode) {
-      ctrlDown = true;
+  $scope.keyDown = function(evt) {
+    if(evt.keyCode === ctrlKeyCode) {
+      $scope.ctrlDown = true;
       evt.stopPropagation();
       evt.preventDefault();
     }
   };
 
-  $scope.keyUp = function (evt) {
-    if (evt.keyCode === deleteKeyCode) {
+  $scope.keyUp = function(evt) {
+    if(evt.keyCode === deleteKeyCode) {
       modelservice.deleteSelected();
     }
 
-    if (evt.keyCode == aKeyCode && ctrlDown) {
+    if(evt.keyCode == aKeyCode && $scope.ctrlDown) {
       modelservice.selectAll();
     }
 
-    if (evt.keyCode == escKeyCode) {
+    if(evt.keyCode == escKeyCode) {
       modelservice.deselectAll();
     }
 
-    if (evt.keyCode === ctrlKeyCode) {
-      ctrlDown = false;
+    if(evt.keyCode === ctrlKeyCode) {
+      $scope.ctrlDown = false;
       evt.stopPropagation();
       evt.preventDefault();
     }
   };
-    var enterNodeName = function(nodename){
-        var nodeName = prompt("Enter a node name:", nodename);
-        console.log(nodeName);
-        if( !nodeName ){
-            return -1;
-        }else if($scope.nodeNames.indexOf(nodeName) != -1){
-            alert("Node name already exist")
-            return enterNodeName();
+
+  var enterNodeName = function(nodename) {
+    do {
+      var nodeName = prompt("Enter a node name:", nodename);
+      console.log(nodeName);
+      if(!nodeName) {
+        break;
+      } else {
+//      if($scope.nodeNames.indexOf(nodeName) != -1) {
+        if(nodeNames.indexOf(nodeName) != -1) {
+          alert("Node name already exist");
+          nodeName = "";
         } else {
-            $scope.nodeNames.push(nodeName);
-            return nodeName;
-        }
-    }
-  $scope.addNewNode = function (nodetype,  node, nodeClass) {
-    node = JSON.parse(JSON.stringify(node));
-    console.log(node);
-    var nodeName = enterNodeName( node.class.split(".").splice(-1)[0] );
-    if(nodeName == -1)
-        return;
-        var getNodeParams = function(parameters){
-          for (var item in parameters) {
-            for (var paramsItem in parameters[item]) {
-              if (parameters[item][paramsItem].inputType == 'UDF') {
-                var udfTmpl = parameters[item][paramsItem].udfTmpl;
-                parameters[item][paramsItem].value = udfTmpl.replace(/OPNAME/g, nodeName)
-                                                            .replace(/PARAMNAME/g, parameters[item][paramsItem].name);
-              }else {
-                parameters[item][paramsItem].value = "";
-              }
-              parameters[item][paramsItem].id = nextParamID++;
-            }
-          }
-          return parameters;
-        }
-
-      var getColorCodeByType = function(nodetype){
-        if (nodetype == "sink"){
-          return '#F15B26';
-        } else if(nodetype == "datasource"){
-          return '#F15B29';
-        } else if(nodetype == "operator"){
-          return '#F15B30';
+//        $scope.nodeNames.push(nodeName);
+          nodeNames.push(nodeName);
         }
       }
-
-      var getConnectorsByType = function(nodetype, node){
-        var connectorsArr = [];
-        if(nodetype == "sink"){
-          var sinkNode = {
-            id: nextConnectorID++,
-            type: flowchartConstants.topConnectorType
-          }
-          connectorsArr.push(sinkNode);
-        }else if(nodetype == "datasource"){
-          var datasourceNode = {
-            id: nextConnectorID++,
-            type: flowchartConstants.bottomConnectorType
-          }
-          connectorsArr.push(datasourceNode);
-        }else if(nodetype == "operator"){
-          if(node.nb_inputs >= 1){
-            var inputPortOperatorNode = {
-              id: nextConnectorID++,
-              type: flowchartConstants.topConnectorType
-            }
-            connectorsArr.push(inputPortOperatorNode);
-          }
-
-          if(node.nb_inputs >= 2){
-            var inputPortOperatorNode = {
-              id: nextConnectorID++,
-              type: flowchartConstants.topConnectorType
-            }
-            connectorsArr.push(inputPortOperatorNode);
-          }
-
-          if(node.nb_inputs >= 3){
-            var inputPortOperatorNode = {
-              id: nextConnectorID++,
-              type: flowchartConstants.topConnectorType
-            }
-            connectorsArr.push(inputPortOperatorNode);
-          }
-
-          var outputPortOperatorNode = {
-            id: nextConnectorID++,
-            type: flowchartConstants.bottomConnectorType
-          }
-          connectorsArr.push(outputPortOperatorNode);
-
-          if(node.nb_outputs >= 2){
-             var outputPortOperatorNode = {
-              id: nextConnectorID++,
-              type: flowchartConstants.bottomConnectorType
-            }
-            connectorsArr.push(outputPortOperatorNode);
-          }
-
-          if(node.nb_outputs >= 3){
-             var outputPortOperatorNode = {
-              id: nextConnectorID++,
-              type: flowchartConstants.bottomConnectorType
-            }
-            connectorsArr.push(outputPortOperatorNode);
-          }
-
-          if(node.supportBroadcast){
-            var rightNode = {
-              id: nextConnectorID++,
-              type: flowchartConstants.topConnectorType,
-              broadcast: true
-            }
-            connectorsArr.push(rightNode);
-
-            var leftNode = {
-              id: nextConnectorID++,
-              type: flowchartConstants.topConnectorType,
-              broadcast: true
-            }
-            connectorsArr.push(leftNode);
-          }
-
-        }
-
-        return connectorsArr;
-      }
-
-      var connectors = getConnectorsByType(nodetype, node);
-      var colorCode = getColorCodeByType(nodetype);
-      var newNode = {
-        name: nodeName,
-        id: nextNodeID++,
-        x: 10,
-        y: 10,
-        color: colorCode,
-        connectors: connectors,
-        java_class: node.class,
-        parameters: getNodeParams(node.parameters),
-        interactive: node.interactive,
-        url: node.url,
-        type: nodeClass,
-        selectedConstructor: -1,
-        isBroadCast: node.supportBroadcast
-      };
-
-      model.nodes.push(newNode);
+    } while(!nodeName);
+    return nodeName;
   };
 
+  $scope.addNewNode = function(nodetype, node, nodeClass) {
+//  var nodeName = enterNodeName(node.class.split(".").splice(-1)[0]);
+    var nodeName = enterNodeName(node.class.split(".").pop());
+    if(!nodeName) {
+      return;
+    }
+
+    var getConnectorsByType = function(nodetype, node) {
+      var connectorsArr = [];
+      function addConnector(type, broadcast) {
+        var connector = {
+          "id": nextConnectorID++,
+          "type": type
+        };
+        if(broadcast) {
+          connector["broadcast"] = true;
+        }
+        connectorsArr.push(connector);
+      }
+      switch(nodetype) {
+        case "sink":
+          addConnector(flowchartConstants.topConnectorType);
+          break;
+        case "datasource":
+          addConnector(flowchartConstants.bottomConnectorType);
+          break;
+        case "operator":
+          for(var i = 0; (i < node.nb_inputs) && (i < 3); i++) {
+            addConnector(flowchartConstants.topConnectorType);
+          }
+          for(var i = 0; (i < node.nb_outputs) && (i < 3); i++) {
+            addConnector(flowchartConstants.bottomConnectorType);
+          }
+//        if(node.supportBroadcast){
+          if(node.features && node.features.broadcast) {
+            addConnector(flowchartConstants.topConnectorType, true);
+            addConnector(flowchartConstants.topConnectorType, true);
+          }
+          break;
+      }
+      return connectorsArr;
+    }
+
+    var newNode = createNewNode(nodetype, node, nodeClass, nodeName);
+    newNode.id = nextNodeID++,
+    newNode.connectors = getConnectorsByType(nodetype, node);
+    model.nodes.push(newNode);
+  };
+
+  var createNewNode = function(nodetype,  node, nodeClass, nodeName) {
+    node = JSON.parse(JSON.stringify(node));
+    console.log(node);
+
+    var getNodeParams = function(parameters) {
+      for(var item in parameters) {
+        for(var paramsItem in parameters[item]) {
+          if(parameters[item][paramsItem].inputType == 'UDF') {
+            var udfTmpl = parameters[item][paramsItem].udfTmpl;
+            parameters[item][paramsItem].value = udfTmpl.replace(/OPNAME/g, nodeName)
+                                                        .replace(/PARAMNAME/g, parameters[item][paramsItem].name);
+          } else {
+            parameters[item][paramsItem].value = "";
+          }
+          parameters[item][paramsItem].id = nextParamID++;
+        }
+      }
+      return parameters;
+    }
+
+    var getColorCodeByType = function(nodetype){
+      switch(nodetype) {
+        case "sink":       return '#F15B26';
+        case "datasource": return '#F15B29';
+        case "operator":   return '#F15B30';
+      }
+    }
+
+    var newNode = {
+      name: nodeName,
+//    id: nextNodeID++,
+      x: 10,
+      y: 10,
+      color: getColorCodeByType(nodetype),
+//    connectors: getConnectorsByType(nodetype, node),
+      java_class: node.class,
+      parameters: getNodeParams(node.parameters),
+      interactive: node.interactive,
+      type: nodeClass,
+      selectedConstructor: -1,
+//    isBroadCast: node.supportBroadcast,
+      isBroadCast: node.features && node.features.broadcast,
+      features: node.features,
+      baseurl: node.baseurl
+    };
+
+    return newNode;
+  };
+
+/*
+  // Note currently used - MDH 2019/01/14
   $scope.activateWorkflow = function() {
     angular.forEach($scope.model.edges, function(edge) {
       edge.active = !edge.active;
     });
   };
 
-  $scope.addNewInputConnector = function () {
+  $scope.addNewInputConnector = function() {
     var connectorName = prompt("Enter a connector name:", "New connector");
-    if (!connectorName) {
+    if(!connectorName) {
       return;
     }
 
@@ -310,9 +292,9 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
     }
   };
 
-  $scope.addNewOutputConnector = function () {
+  $scope.addNewOutputConnector = function() {
     var connectorName = prompt("Enter a connector name:", "New connector");
-    if (!connectorName) {
+    if(!connectorName) {
       return;
     }
 
@@ -322,45 +304,45 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
       node.connectors.push({id: nextConnectorID++, type: flowchartConstants.bottomConnectorType});
     }
   };
+*/
 
-  $scope.deleteSelected = function () {
+  $scope.deleteSelected = function() {
     modelservice.deleteSelected();
   };
 
   $scope.callbacks = {
-    edgeDoubleClick: function () {
+    edgeDoubleClick: function() {
       //console.log('Edge double clicked.');
     },
-    edgeMouseOver: function () {
-      //console.log('mouserover')
+    edgeMouseOver: function() {
+      //console.log('mouserover');
     },
-    isValidEdge: function (source, destination) {
+    isValidEdge: function(source, destination) {
       return source.type === flowchartConstants.bottomConnectorType && destination.type === flowchartConstants.topConnectorType;
     },
-
     nodeCallbacks: {
-      'singleClick': function (item) {
+      'singleClick': function(item) {
         alert("hello");
       },
-      'doubleClick': function (item) {
+      'doubleClick': function(item) {
         $scope.item = item;
         $scope.selectedNodeData = item;
         $scope.selectedParam = [];
         $scope.selectedNodeParams = [];
-        for ( var x in $scope.selectedNodeData.parameters) {
+        for(var x in $scope.selectedNodeData.parameters) {
           var paramStr = "(";
-          for (var y in $scope.selectedNodeData.parameters[x] ) {
+          for(var y in $scope.selectedNodeData.parameters[x]) {
             paramStr += $scope.selectedNodeData.parameters[x][y].type + ",\n";
           }
           paramStr = paramStr.trim().slice(0, -1);
           paramStr += ")";
           $scope.selectedNodeParams.push(paramStr);
         }
-        if(item.selectedConstructor != -1){
-        //  $scope.selectedParam =$scope.selectedNodeData.parameters[item.selectedConstructor];
+        if(item.selectedConstructor != -1) {
+          // $scope.selectedParam = $scope.selectedNodeData.parameters[item.selectedConstructor];
           $scope.paramIndex = item.selectedConstructor;
           $scope.selectedParam = $scope.model.nodes[$scope.model.nodes.indexOf($scope.selectedNodeData)].parameters[item.selectedConstructor];
-        }else {
+        } else {
           $scope.paramIndex = -1;
           $scope.selectedParam = [];
         }
@@ -372,140 +354,227 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
     }
   };
 
-    // INFO PANEL
+  //Plans
+  //var person = prompt("Please enter plan name", "Plan name");
+  $scope.currentPlan = -1;
+
+  RheemAPI.getPlans({}, function(data) {
+    $scope.plans = data;
+  });
+
+  $scope.showCurrentPlan = function() {
+    console.log($scope.currentPlan);
+    $scope.plan = getSelectedPlan($scope.currentPlan)[0];
+    console.log($scope.plan);
+    $scope.paramIndex = -1;
+    $scope.selectedParam = [];
+    $scope.selectedNodeParams = [];
     $scope.showParamPanel = false;
+    var nodes = plansConversions.getNodesFromDB($scope.plan);
+    var modelData = plansConversions.getViewedJson(nodes);
+//  model = modelData;
+//  $scope.model.edges = model.edges;
+//  $scope.model.nodes = model.nodes;
+//  $scope.model = model;
+    setViewedPlan(modelData);
+  };
 
-     //Plans
-     //var person = prompt("Please enter plan name", "Plan name");
-     $scope.currentPlan = -1;
+  var setViewedPlan = function(modelData) {
+    modelservice.selectAll();
+    modelservice.deleteSelected();
 
-    RheemAPI.getPlans({}, function(data){
-        $scope.plans = data;
-    })
+//  $scope.nodeNames = [];
+    nodeNames = [];
+    $scope.model = { nodes: [], edges: [] };
 
-    $scope.showCurrentPlan = function() {
-      console.log($scope.currentPlan);
-      $scope.plan = getSelectedPlan($scope.currentPlan)[0];
-      console.log($scope.plan);
-      $scope.paramIndex = -1;
-      $scope.selectedParam = [];
-      $scope.selectedNodeParams = [];
-      $scope.showParamPanel = false;
-      var nodes = plansConversions.getNodesFromDB($scope.plan);
-      var modelData = plansConversions.getViewedJson(nodes);
-      model = modelData;
-      $scope.model.edges = model.edges;
-      $scope.model.nodes = model.nodes;
-      $scope.model = model;
-    }
-
-    var convertParametersToRheemStructure = function(plan) {
-      for(var index in plan.operators) {
-        var selectedConstructor = plan.operators[index].selectedConstructor;
-        if((selectedConstructor == -1) && ("0" in plan.operators[index].parameters) && (Object.keys(plan.operators[index].parameters).length == 1)) {
-          selectedConstructor = 0;
-        }
-        if(selectedConstructor != -1) {
-          var rheemParam = {};
-          for(var item in plan.operators[index].parameters[selectedConstructor]) {
-            rheemParam[plan.operators[index].parameters[selectedConstructor][item].name] = plan.operators[index].parameters[selectedConstructor][item].value;
-          }
-          if($scope.simulate) {
-            plan.operators[index].simulate = true;
-          }
-          plan.operators[index].parameters = rheemParam;
-        }
+    $timeout(function() {
+      for(var node of modelData.nodes) modelservice.nodes._addNode(node);
+      for(var edge of modelData.edges) {
+        console.log("Connecting: " + edge.source + " to " + edge.destination);
+        modelservice.edges._addEdge(
+          { id:edge.source,      type:flowchartConstants.bottomConnectorType },
+          { id:edge.destination, type:flowchartConstants.topConnectorType }
+        );
       }
-      console.log("RHEEM " + JSON.stringify(plan));
-      return plan;
-    }
+      $scope.model = model;
+      nodeNames = model.nodes.map(function(node) { return node.name; });
+    }, 0);
+  };
 
-    var convertRheemToGEMStructure = function(rheemPlan) {
-        var copiedPlan = JSON.parse(JSON.stringify(rheemPlan));
-        var gemPlan = copiedPlan.operators;
-        for(var findex in gemPlan) {
-            var op = gemPlan[findex];
-            op.next = [];
-            if(!("prev" in op)) op.prev = [];
-            if("connects_to" in op) {
-                for(var outnum = 0; outnum < op.np_outputs; outnum++) {
-                    for(var links of op.connects_to[outnum]) {
-                        for(var name in links) {
-                            for(var tindex in gemPlan) {
-                                if(name == gemPlan[tindex].name) {
-                                    op.next.push(tindex);
-                                    var target = gemPlan[tindex];
-                                    if(!("prev" in target)) target.prev = [];
-                                    target.prev.push(findex);
-                                }
-                            }
-                        }
-                    }
+  var convertParametersToRheemStructure = function(plan) {
+    for(var index in plan.operators) {
+      var selectedConstructor = plan.operators[index].selectedConstructor;
+      if((selectedConstructor == -1) && ("0" in plan.operators[index].parameters) && (Object.keys(plan.operators[index].parameters).length == 1)) {
+        selectedConstructor = 0;
+      }
+      if(selectedConstructor != -1) {
+        var rheemParam = {};
+        for(var item in plan.operators[index].parameters[selectedConstructor]) {
+          rheemParam[plan.operators[index].parameters[selectedConstructor][item].name] = plan.operators[index].parameters[selectedConstructor][item].value;
+        }
+        if($scope.simulate) {
+          plan.operators[index].simulate = true;
+        }
+        plan.operators[index].parameters = rheemParam;
+      }
+    }
+    console.log("RHEEM " + JSON.stringify(plan));
+    return plan;
+  };
+
+  var convertRheemToGEMStructure = function(rheemPlan) {
+    var copiedPlan = JSON.parse(JSON.stringify(rheemPlan));
+    var gemPlan = copiedPlan.operators;
+    for(var findex in gemPlan) {
+      var op = gemPlan[findex];
+      op.next = [];
+      if(!("prev" in op)) {
+        op.prev = [];
+      }
+      if("connects_to" in op) {
+        for(var outnum = 0; outnum < op.np_outputs; outnum++) {
+          for(var links of op.connects_to[outnum]) {
+            for(var name in links) {
+              for(var tindex in gemPlan) {
+                if(name == gemPlan[tindex].name) {
+                  op.next.push(tindex);
+                  var target = gemPlan[tindex];
+                  if(!("prev" in target)) {
+                    target.prev = [];
+                  }
+                  target.prev.push(findex);
                 }
-                delete op.connects_to;
+              }
             }
+          }
         }
-        console.log("GEM " + JSON.stringify(gemPlan));
-        return(gemPlan);
+        delete op.connects_to;
+      }
     }
+    console.log("GEM " + JSON.stringify(gemPlan));
+    return(gemPlan);
+  };
 
-    $scope.savePlan = function(){
-        var graph = plansConversions.getNodeFromView($scope.model);
-        $scope.plan  = plansConversions.convertToPlan(graph);
+  $scope.savePlan = function() {
+    var graph = plansConversions.getNodeFromView($scope.model);
+    $scope.plan = plansConversions.convertToPlan(graph);
 
-        if($scope.currentPlan != -1 && $scope.currentPlan !== undefined){
-          RheemAPI.updatePlan({id: $scope.currentPlan}, $scope.plan, function(data){
-            alert("plan updated successfully")
-            $scope.currentPlan = $scope.plan;
-            console.log("updated: " + data);
-
-          });
-        }else{
-          $scope.plan.name = prompt("Please enter plan name", "Plan name");
-          RheemAPI.createPlan($scope.plan, function(data){
-              alert("plan created successfully");
-              window.location.reload();
-          });
-        }
-
-    }
-
-    $scope.createNewPlan = function(){
+    if($scope.currentPlan != -1 && $scope.currentPlan !== undefined && !$scope.ctrlDown) {
+      RheemAPI.updatePlan({id: $scope.currentPlan}, $scope.plan, function(data) {
+        alert("plan updated successfully")
+        $scope.currentPlan = $scope.plan;
+        console.log("updated: " + data);
+      });
+    } else {
+      $scope.plan.name = prompt("Please enter plan name", "Plan name");
+      RheemAPI.createPlan($scope.plan, function(data) {
+        alert("plan created successfully");
         window.location.reload();
+      });
     }
+  };
 
-    var getSelectedPlan = function(id){
-        return $scope.plans.filter(function(plan){
-            return plan._id == id;
-        });
-    }
+  $scope.createNewPlan = function() {
+    window.location.reload();
+  };
+
+  var getSelectedPlan = function(id) {
+    return $scope.plans.filter(function(plan) {
+      return plan._id == id;
+    });
+  };
+
+  $scope.openImport = function() {
+    var htmlTemplate =
+      '<div class="modal-header"><h3>Import Plan</h3></div>' +
+      '<div class="modal-body">' +
+      '<textarea id="textareaJSON" rows=20 style="width:100%;"></textarea>' +
+      '</div>' +
+      '<div class="modal-footer">' +
+      '<button class="btn btn-default" type="button" style="float:left;" onclick="this.nextSibling.click();">Upload from file</button>' +
+      '<input type="file" style="display:none;" ng-model="model" onchange="var fr = new FileReader(); fr.onload = function(event) { document.getElementById(\'textareaJSON\').value = event.target.result; }; fr.readAsText(this.files[0]);">' +
+      '<button class="btn btn-default" type="button" ng-click="importPlan();">Import</button> ' +
+      '<button class="btn btn-default" type="button" ng-click="modalClose();">Cancel</button>' +
+      '</div>';
+
+    $scope.modalInstance = $uibModal.open({
+      scope: $scope,
+      size: 'lg',
+      template: htmlTemplate
+    });
+  };
+
+  $scope.importPlan = function() {
+    var jsonPlan = document.getElementById('textareaJSON').value;
+    $scope.modalInstance.dismiss('cancel');
+    $scope.currentPlan = -1;
+    $scope.plan = JSON.parse(jsonPlan);
+    $scope.paramIndex = -1;
+    $scope.selectedParam = [];
+    $scope.selectedNodeParams = [];
+    $scope.showParamPanel = false;
+    var nodes = plansConversions.getNodesFromDB($scope.plan);
+    var modelData = plansConversions.getViewedJson(nodes);
+    setViewedPlan(modelData);
+  };
+
+// Not currently used...
+//$scope.$on('modal.closing', function(event, reason, closed) {
+//  // reason == $scope.modalInstance.dismiss(reason)
+//});
+
+  $scope.openExport = function() {
+    var viewedNodes = plansConversions.getNodeFromView($scope.model);
+    var plan = plansConversions.convertToPlan(viewedNodes);
+    var jsonPlan = JSON.stringify(plan, null, 4);
+
+    var htmlTemplate =
+      '<div class="modal-header"><h3>Export Plan</h3></div>' +
+      '<div class="modal-body">' +
+      '<textarea rows=20 readonly style="width:100%;">' + jsonPlan + '</textarea>' +
+      '</div>' +
+      '<div class="modal-footer">' +
+      '<button class="btn btn-default" type="button" style="float:left;" onclick="this.nextSibling.click();">Download to file</button>' +
+      '<a href="data:text/plain;charset=utf-8,' + encodeURIComponent(jsonPlan) + '" download="plan.json" style="display:none;"></a>' +
+      '<button class="btn btn-default" type="button" ng-click="modalClose()">Close</button>' +
+      '</div>';
+
+    $scope.modalInstance = $uibModal.open({
+      scope: $scope,
+      size: 'lg',
+      template: htmlTemplate
+    });
+  };
+
+  $scope.modalClose = function() {
+    $scope.modalInstance.dismiss('cancel');
+  };
 
   // EXECUTION PLAN GRAPH
-  $scope.exportJava = function(){
+  $scope.exportJava = function() {
     if($scope.currentPlan != -1 && $scope.currentPlan !== undefined) {
       generatePlanForJava();
-    }
-    else{
+    } else {
       alert("no plan to generate java sample code")
     }
-  }
+  };
 
-  $scope.exportJson = function(){
+  $scope.exportJson = function() {
     if($scope.currentPlan != -1 && $scope.currentPlan !== undefined) {
-      if($scope.executedModel != -1 && $scope.executedModel !== undefined){
+      if($scope.executedModel != -1 && $scope.executedModel !== undefined) {
         //alert(<pre>JSON.stringify($scope.executedModel)</pre>);
         var blob = new Blob([ angular.toJson($scope.plan) ], { type : 'application/json;charset=utf-8;' });
         $scope.url = (window.URL || window.webkitURL).createObjectURL( blob );
-      }
-      else {
+      } else {
         alert(generatePlan());
       }
+    } else {
+      alert("no plan to exportJson");
     }
-    else{
-      alert("no plan to exportJson")
-    }
-  }
+  };
 
+/*
+// Not used - MDH 2019/01/16
 
   var generatePlan = function() {
     var copiedPlan = JSON.parse(JSON.stringify($scope.plan));
@@ -513,33 +582,30 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
 
     $scope.method = 'POST';
     $scope.url = '/api/rheem_plans/generate';
-    $http({method: $scope.method, url: $scope.url, data: planWithRheemParams}).
-        then(function(response) {
-          console.log("build ", response);
+    $http({method: $scope.method, url: $scope.url, data: planWithRheemParams})
+    .then(
+      function(response) {
+        console.log("build ", response);
 
-          if(!response){
-            alert("No data has been return.");
+        if(!response) {
+          alert("No data has been return.");
+        } else {
+          var data = response.data;
+
+          if(typeof data.error != 'undefined') {
+            alert(data.error);
+          } else {
+            console.log("rheem_plans DATA ", JSON.stringify(data));
+            $scope.executedModel  = data;
           }
-          else{
-
-            var data = response.data;
-
-            if(typeof data.error != 'undefined'){
-              alert(data.error);
-            }
-            else{
-              console.log("rheem_plans DATA ", JSON.stringify(data));
-              $scope.executedModel  = data;
-            }
-          }
-        }, function(response) {
-          alert("Unexpected error");
-          console.log("rheem_plans error ", error);
-
-        });
-
-  }
-
+        }
+      },
+      function(response) {
+        alert("Unexpected error");
+        console.log("rheem_plans error ", error);
+      }
+    );
+  };
 
   var generatePlanForJava = function() {
     var copiedPlan = JSON.parse(JSON.stringify($scope.plan));
@@ -547,94 +613,175 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
 
     $scope.method = 'POST';
     $scope.url = '/rheem_plans/java';
-    $http({method: $scope.method, url: $scope.url, data: planWithRheemParams}).
-        then(function(response) {
-          console.log("java build ", response);
+    $http({method: $scope.method, url: $scope.url, data: planWithRheemParams})
+    .then(
+      function(response) {
+        console.log("java build ", response);
 
-          if(!response){
-            alert("No data has been return.");
-          }
-          else{
-            var data = response.data;
-            console.log("rheem_plans java data ", data);
-
-          }
-        }, function(response) {
-          alert("Unexpected error");
-          console.log("rheem_plans java error ", error);
-
-        });
-
-  }
-
-
-
-
-
-
-
-
-
-
-
+        if(!response) {
+          alert("No data has been return.");
+        } else {
+          var data = response.data;
+          console.log("rheem_plans java data ", data);
+        }
+      },
+      function(response) {
+        alert("Unexpected error");
+        console.log("rheem_plans java error ", error);
+      }
+    );
+  };
+*/
 
   // INFO PANEL
   $scope.showParamPanel = false;
+
   $scope.paramClicked = function(index) {
     $scope.paramIndex = index;
     $scope.model.nodes[$scope.model.nodes.indexOf($scope.selectedNodeData)].selectedConstructor = index;
     console.log($scope.model.nodes[$scope.model.nodes.indexOf($scope.selectedNodeData)]);
-  }
+  };
 
   $scope.closeParamPanel = function() {
     $scope.showParamPanel = false;
+  };
+
+  var rebuildPlan = function() {
+
+    // Export
+    var viewedNodes = plansConversions.getNodeFromView($scope.model);
+    var plan = plansConversions.convertToPlan(viewedNodes);
+
+    nodeNames = [];
+    var new_operators = [];
+    var nodeIndex = {};
+    for(var old_op of plan.operators) {
+      // Only rebuild id operator class still exists, i.e. drop node if operator class no longer exists
+      if(old_op.java_class in operatorIndex) {
+        var nodetype = old_op.np_inputs ? old_op.np_outputs ? "operator" : "sink" : "datasource";
+        var node = operatorIndex[old_op.java_class];
+        var nodeClass =
+          old_op.np_inputs  == 0 ? "source" :
+          old_op.np_outputs == 0 ? "sink"   :
+          old_op.np_inputs  == 1 ? "unary"  :
+          old_op.np_inputs  == 2 ? "binary" : "trinary";
+        var nodeName = old_op.name;
+
+        var new_op = createNewNode(nodetype, node, nodeClass, nodeName);
+
+        new_op.x = old_op.x;
+        new_op.y = old_op.y;
+
+        // Attempt to match and copy parameter values
+        for(var old_param_set in old_op.parameters) {
+          for(var old_param of old_op.parameters[old_param_set]) {
+            for(var new_param_set in new_op.parameters) {
+              for(var new_param of new_op.parameters[new_param_set]) {
+                if((old_param.name == new_param.name) && (old_param.type == new_param.type)) {
+                  new_param.value = old_param.value;
+                }
+              }
+            }
+          }
+        }
+
+        new_op.connects_to   = old_op.connects_to;
+        new_op.broadcasts_to = operatorIndex[new_op.java_class].features.broadcast ? old_op.broadcasts_to : {};
+        new_op.np_inputs     = operatorIndex[new_op.java_class].nb_inputs;
+        new_op.np_outputs    = operatorIndex[new_op.java_class].nb_outputs;
+
+        nodeNames.push(nodeName);
+        new_operators.push(new_op);
+        nodeIndex[nodeName] = new_op;
+      }
+    };
+
+    // Evaluate edges and remove any that connected to dropped nodes
+    for(var new_op of new_operators) {
+      if("connects_to" in new_op) {
+        for(var out_nb in new_op.connects_to) {
+          for(var i = 0; i < new_op.connects_to[out_nb].length; i++) {
+            var edge = new_op.connects_to[out_nb][i];
+            var count = 0;
+            for(var nodeName in edge) {
+              if((nodeName in nodeIndex) && (edge[nodeName] <= operatorIndex[nodeIndex[nodeName].java_class].nb_inputs - 1)) {
+                count++;
+              } else {
+                delete edge[nodeName];
+              }
+            }
+            if(count == 0) {
+              new_op.connects_to[out_nb].splice(i--, 1);
+            }
+          }
+        }
+      }
+    }
+
+    plan.operators = new_operators;
+
+    // Import
+//  $scope.currentPlan = -1; // <-- Would allow/force resaving plan
+    $scope.plan = plan;
+    $scope.paramIndex = -1;
+    $scope.selectedParam = [];
+    $scope.selectedNodeParams = [];
+    $scope.showParamPanel = false;
+    var nodes = plansConversions.getNodesFromDB($scope.plan);
+    var modelData = plansConversions.getViewedJson(nodes);
+    setViewedPlan(modelData);
+
   }
 
   $scope.buildPlan = function() {
+if($scope.ctrlDown) {
+    rebuildPlan();
+} else {
     var copiedPlan = JSON.parse(JSON.stringify($scope.plan));
     var planWithRheemParams = convertParametersToRheemStructure(copiedPlan);
 
     $scope.method = 'POST';
     $scope.url = '/api/rheem_plans';
-    $http({method: $scope.method, url: $scope.url, data: planWithRheemParams}).
-        then(function(response) {
-          console.log("build ", response);
+    $http({method: $scope.method, url: $scope.url, data: planWithRheemParams})
+    .then(
+      function(response) {
+        console.log("build ", response);
 
-          if(!response){
-              alert("No data has been return.");
+        if(!response) {
+          alert("No data has been return.");
+        } else {
+          var data = response.data;
+
+          if(typeof data.error != 'undefined') {
+            alert(data.error);
+          } else {
+            console.log("rheem_plans DATA ", JSON.stringify(data));
+            alert("Your workflow is ready.");
+            // $scope.executedModel  = data;
+            // excutionPlan.set(plansConversions.getViewFromExec(data, 250, 100,
+            //   {"Java Streams": "brown", "Apache Spark": "orange", "Apache Hadoop": "green"}));
+            // plansConversions.set(data);
+            // excutionPlan.drawExecutionPan();
+            //
+            // alert("Your workflow is ready.");
           }
-          else{
-            
-            var data = response.data;
-
-            if(typeof data.error != 'undefined'){
-              alert(data.error);
-            }
-            else{
-              console.log("rheem_plans DATA ", JSON.stringify(data));
-              alert("Your workflow is ready.");
-              // $scope.executedModel  = data;
-              // excutionPlan.set(plansConversions.getViewFromExec(data, 250, 100,
-              //     {"Java Streams": "brown", "Apache Spark": "orange", "Apache Hadoop": "green"}));
-              // plansConversions.set(data);
-              // excutionPlan.drawExecutionPan();
-              //
-              // alert("Your workflow is ready.");
-            }
-          }
-        }, function(response) {
-          alert("Unexpected error");
-          console.log("rheem_plans error ", error);
-
-        });
-
-  }
+        }
+      },
+      function(response) {
+        alert("Unexpected error");
+        console.log("rheem_plans error ", error);
+      }
+    );
+}
+  };
 
   $scope.switchPanelState = function() {
     console.log($scope.planSwitch);
     $scope.planSwitch = $scope.planSwitch;
-  }
+  };
 
+/*
+// Not used - MDH 2019/01/16
   $scope.aceLoaded = function(_editor) {
     // Options
     _editor.setReadOnly(true);
@@ -644,12 +791,11 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
     console.log("aceChanged: " + e);
   };
 
-  $scope.saveParamData = function(){
+  $scope.saveParamData = function() {
+  };
+*/
 
-  }
-
-
-  $scope.callExecutePlan = function() {
+  var callExecutePlan = function() {
     $scope.method = 'POST';
     $scope.url = '/api/plan_executions';
     return $http(
@@ -664,8 +810,8 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
       function(response) {
         if(response && response.data && ("run_id" in response.data)) {
           $scope.run_id = response.data.run_id;
-          logProgress(response);
-          setTimeout(getProgress, 2000);
+          ShowProgress(response);
+          $timeout(getProgress, 2000);
           return;
         }
 
@@ -696,13 +842,18 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
         alert("Unexpected error on plan execution");
       }
     );
-  }
+  };
+
+// MDH - Remove 'ts' from $scope?
 
   $scope.executeClicked = function() {
-// alert(JSON.stringify(model.nodes[0], null, 4));
-
+    // Automatically deselect nodes and close param panel
     modelservice.deselectAll();
     $scope.showParamPanel = false;
+
+    // Testing executing displayed plan...
+    var viewedNodes = plansConversions.getNodeFromView($scope.model);
+    $scope.plan  = plansConversions.convertToPlan(viewedNodes);
 
     var copiedPlan = JSON.parse(JSON.stringify($scope.plan));
     var planWithRheemParams = convertParametersToRheemStructure(copiedPlan);
@@ -710,23 +861,35 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
     $scope.loader_req = true;
     plansConversions.set(planWithRheemParams);
 
-    $scope.ts= (new Date()).getTime();
+    $scope.ts = (new Date()).getTime();
     console.log("started", $scope.ts);
-    $scope.callExecutePlan()
-    .then(function() {
-      if($scope.run_id) {
-        return;
+    callExecutePlan()
+    .then(
+      function() {
+        if($scope.run_id) {
+          return;
+        }
+        var te = (new Date()).getTime();
+        console.log("finished:", te, te - $scope.ts);
+        $scope.loader_req = false;
+        if((te - $scope.ts) > 300) {
+          alert("Your data is ready.");
+        }
       }
-      var te= (new Date()).getTime();
-      console.log("finished:", te, te - $scope.ts);
-      $scope.loader_req = false;
-      if((te - $scope.ts) > 300) {
-        alert("Your data is ready.");
-      }
-    });
+    );
 
-    // vafr myVar = setInterval(myTimer, 1000);
-  }
+    // var myVar = setInterval(myTimer, 1000);
+  };
+
+  const STATE_WAITING = 0;
+  const STATE_BLOCKED = 1;
+  const STATE_ACTIVE  = 2;
+  const STATE_USER    = 3;
+  const STATE_LOOP    = 4;
+  const STATE_DONE    = 5;
+  const STATE_ERROR   = 6;
+
+  var states = ["Waiting", "Blocked", "Active", "User", "Loop", "Success", "Error"];
 
   function getProgress() {
     return $http(
@@ -736,16 +899,16 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
       }
     ).then(
       function(response) {
-        logProgress(response);
-        if(response.data.state == 1) {
-          setTimeout(getProgress, 2000);
+        ShowProgress(response);
+        if(response.data.state == STATE_ACTIVE) {
+          $timeout(getProgress, 2000);
         } else {
           var te = (new Date()).getTime();
           console.log("finished:", te, te - $scope.ts);
           $scope.loader_req = false;
           $scope.run_id = null;
-          alert("Plan completion state: " + response.data.state);
-          SetAllBackground("inherit");
+          alert("Plan completion state: " + states[response.data.state]);
+          ClearProgressBars();
         }
       },
       function(response) {
@@ -754,32 +917,51 @@ appControllers.controller('editorController', ['$scope', 'prompt', 'Modelfactory
     );
   }
 
-  function logProgress(response) {
-    var data = response.data;
-    SetBackgroundByStatus(data);
-    var plan = plansConversions.get();
-    var astat = [];
-    for(var i = 0; i < plan.operators.length; i++) {
-      astat.push(['.', '+', '#', '!'][data.op_status[plan.operators[i].name]]);
+  function ClearProgressBars() {
+    for(var i = 0; i < model.nodes.length; i++) {
+      var node = model.nodes[i];
+      node.rgbProgress = "0,0,0";
+      node.pctProgress = 0;
+      node.disProgress = "none";
     }
-    console.log("[" + astat.join("") + "]");
+//  $scope.aaa.showProgressBars = false;
   }
 
-  function SetAllBackground(bgcolor) {
-    var nodes = document.getElementsByClassName("fc-node");
-    for(var i = 0; i < nodes.length; i++) {
-      nodes[i].style.backgroundColor = bgcolor;
-    }
-  }
-
-  function SetBackgroundByStatus(status) {
-    var colors = ["lightgray", "lightgreen", "yellow", "lightblue", "inherit", "pink"];
-    var plan = plansConversions.get();
-    var nodes = document.getElementsByClassName("fc-node");
-    for(var i = 0; i < nodes.length; i++) {
-      var id = parseInt(nodes[i].id);
-      nodes[i].style.backgroundColor = colors[status.op_status[plan.operators[id - 1].name].state];
-    }
+  function ShowProgress(response) {
+    var status = response.data;
+    var colors = [
+      "211,211,211", // waiting - lightgray
+      "173,216,230", // blocked - lightblue
+      "144,238,144", // active  - lightgreen
+      "255,255,0",   // user    - yellow
+      "173,216,230", // loop    -
+      "0,0,0",       // done    - (never displayed)
+      "255,192,203"  // error   - pink (i.e. light red)
+    ];
+    angular.forEach($scope.model.nodes, function(node) {
+      var status_node = status.op_status[node.name];
+      node.rgbProgress = colors[status_node.state];
+      if(status_node.state != STATE_ACTIVE) {
+        // If not executing, always show full color
+        node.pctProgress = 100;
+      } else {
+        if(node.features && node.features.progress) {
+          if(status_node.progress) {
+            // Set percentage of fill based on progress
+            node.pctProgress = (status_node.progress * 100) | 0;
+          } else {
+            // If progress is not yet set, assume initializing
+            node.pctProgress = 0;
+          }
+        } else {
+          // If operator does not support progress, show full color
+          console.log("No progress for " + node.name);
+          node.pctProgress = 100;
+        }
+      }
+      node.disProgress = (status_node.state != STATE_DONE) ? "block" : "none";
+    });
+//  $scope.aaa.showProgressBars = true;
   }
 
 }]);
