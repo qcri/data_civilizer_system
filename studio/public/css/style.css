@@ -479,14 +479,18 @@ body {
 .styled-select.slate {
   background: url(http://i62.tinypic.com/2e3ybe1.jpg) no-repeat right center;
   height: 32px;
-  width: 185px;
+/*width: 185px;*/
+  width: 100%;
 }
 
 .styled-select.slate select {
   border: 1px none #999999;
   font-size: 16px;
   height: 32px;
-  width: 200px;
+/*width: 200px;*/
+  width: 100%;
+  -moz-appearance: none;
+  -webkit-appearance: none;
 }
 .slate select   { color: #333; }
 .slate   { background-color: #FFF; }
