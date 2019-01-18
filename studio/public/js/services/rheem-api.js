@@ -48,6 +48,11 @@ appServices.factory('RheemAPI', ['$resource',
             url: 'api/plans/:id',
             cache: false
         },
+        deletePlan: {
+            method: "DELETE",
+            url: 'api/plans/:id',
+            cache: false
+        },
         getRheemOperator: {
             method: "GET",
             url: 'api/rheem_operators',

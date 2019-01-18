@@ -363,8 +363,28 @@ if($scope.simulate) operator.features.parallel = false;
   });
 
   $scope.createNewPlan = function() {
-    window.location.reload();
+    if($scope.ctrlDown) {
+      deleteSelectedPlan();
+    } else {
+      window.location.reload();
+    }
   };
+
+  var deleteSelectedPlan = function() {
+    if($scope.currentPlan != -1) {
+      $scope.ctrlDown = false;
+      var name = getSelectedPlan($scope.currentPlan).name;
+      if(confirm("Delete plan '" + name + "'?")) {
+        RheemAPI.deletePlan({id: $scope.currentPlan}, function(data) {
+          alert("Plan '" + name + "' deleted.");
+          $scope.currentPlan = -1;
+          RheemAPI.getPlans({}, function(data) {
+            $scope.plans = data;
+          });
+        });
+      }
+    }
+  }
 
   $scope.showCurrentPlan = function() {
     console.log($scope.currentPlan);

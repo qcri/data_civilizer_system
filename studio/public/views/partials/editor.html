@@ -2,7 +2,7 @@
   <div id="drag-area" class="main-column col-xs-2">
     <div id="info-panel">
       <div id="build-action">
-        <a ng-click="createNewPlan()"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>New</a>
+        <a ng-click="createNewPlan()"><span ng-hide="ctrlDown"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>New</span><span ng-show="ctrlDown"><i class="fa fa-remove" aria-hidden="true"></i>Delete</span></a>
         <a id="save-plan" ng-click="savePlan()"><i class="fa fa-floppy-o" aria-hidden="true"></i>Save<span ng-show="ctrlDown"> As</span></a>
       </div>
       <label for="currentPlan"> Load Another Plan </label>
