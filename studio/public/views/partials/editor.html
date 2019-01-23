@@ -33,7 +33,7 @@
            src="images/spinner.gif" />
     </div>
 
-    <div id="datasources-tools" class="group-of-draggables">
+    <div id="datasources-tools" class="group-of-draggables" ng-show="datasources.length">
       <h4 class="collapse-title {{arrowDirection}}" ng-click="soucresCollapseClicked()">
         <img src="/images/operators-icons/source.png">Source Operators
       </h4>
@@ -48,7 +48,7 @@
       </ul>
     </div>
 
-    <div id="operators-tools" class="group-of-draggables">
+    <div id="operators-tools" class="group-of-draggables" ng-show="unaryOperators.length">
       <h4 class="collapse-title {{arrowDirection}}" ng-click="unaryOperatorsCollapseClicked()">
       <img src="/images/operators-icons/unary.png">Civilizer Services</h4>
 
@@ -63,7 +63,7 @@
       </ul>
     </div>
 
-    <div xstyle="display: none;" xclass="toshow"  id="operators-tools" class="group-of-draggables">
+    <div id="operators-tools" class="group-of-draggables" ng-show="binaryOperators.length">
       <h4 class="collapse-title {{arrowDirection}}" ng-click="binaryOperatorsCollapseClicked()">
       <img src="/images/operators-icons/binary.png">Binary Operators</h4>
 
@@ -78,7 +78,7 @@
       </ul>
     </div>
 
-    <div style="display: none;" class="toshow"  id="operators-tools" class="group-of-draggables">
+    <div id="operators-tools" class="group-of-draggables" ng-show="trinaryOperators.length">
       <h4 class="collapse-title {{arrowDirection}}" ng-click="trinaryOperatorsCollapseClicked()">
       <img src="/images/operators-icons/sink.png">Trinary Operators</h4>
       <ul class="list-of-tools" uib-collapse="trinaryOperatorsIsCollapsed">
@@ -92,7 +92,7 @@
       </ul>
     </div>
 
-    <div xstyle="display: none;" id="sink-tools" class="group-of-draggables">
+    <div id="sink-tools" class="group-of-draggables" ng-show="sinks.length">
       <h4 class="collapse-title {{arrowDirection}}" ng-click="sinkCollapseClicked()">
       <img src="/images/operators-icons/sink.png">Sink Operators</h4>
       <ul class="list-of-tools" uib-collapse="sinkIsCollapsed">
