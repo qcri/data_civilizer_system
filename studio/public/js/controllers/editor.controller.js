@@ -117,8 +117,6 @@ if($scope.simulate) operator.features.parallel = false;
     edges: []
   };
 
-//$scope.nodeNames = []; // <-- Don't believe this has to or should be in $scope
-  var nodeNames = [];
   $scope.flowchartselected = [];
   var modelservice = Modelfactory(model, $scope.flowchartselected);
 
@@ -154,19 +152,17 @@ if($scope.simulate) operator.features.parallel = false;
   };
 
   var enterNodeName = function(nodename) {
+    // Gather current node names to ensure new node name is unique
+    var nodeNames = model.nodes.map(function(node) { return node.name; });
     do {
       var nodeName = prompt("Enter a node name:", nodename);
       console.log(nodeName);
       if(!nodeName) {
         break;
       } else {
-//      if($scope.nodeNames.indexOf(nodeName) != -1) {
         if(nodeNames.indexOf(nodeName) != -1) {
           alert("Node name already exist");
           nodeName = "";
-        } else {
-//        $scope.nodeNames.push(nodeName);
-          nodeNames.push(nodeName);
         }
       }
     } while(!nodeName);
@@ -286,7 +282,7 @@ if($scope.simulate) operator.features.parallel = false;
     }
 
     var selectedNodes = modelservice.nodes.getSelectedNodes($scope.model);
-    for (var i = 0; i < selectedNodes.length; ++i) {
+    for(var i = 0; i < selectedNodes.length; ++i) {
       var node = selectedNodes[i];
       node.connectors.push({id: nextConnectorID++, type: flowchartConstants.topConnectorType});
     }
@@ -299,7 +295,7 @@ if($scope.simulate) operator.features.parallel = false;
     }
 
     var selectedNodes = modelservice.nodes.getSelectedNodes($scope.model);
-    for (var i = 0; i < selectedNodes.length; ++i) {
+    for(var i = 0; i < selectedNodes.length; ++i) {
       var node = selectedNodes[i];
       node.connectors.push({id: nextConnectorID++, type: flowchartConstants.bottomConnectorType});
     }
@@ -407,8 +403,6 @@ if($scope.simulate) operator.features.parallel = false;
     modelservice.selectAll();
     modelservice.deleteSelected();
 
-//  $scope.nodeNames = [];
-    nodeNames = [];
     $scope.model = { nodes: [], edges: [] };
 
     $timeout(function() {
@@ -421,7 +415,6 @@ if($scope.simulate) operator.features.parallel = false;
         );
       }
       $scope.model = model;
-      nodeNames = model.nodes.map(function(node) { return node.name; });
     }, 0);
   };
 
@@ -438,12 +431,13 @@ if($scope.simulate) operator.features.parallel = false;
     } else {
       $scope.ctrlDown = false;
 //    $scope.plan.name = prompt("Please enter plan name", "Plan name");
+      var planNames = $scope.plans.map(function(plan) { return plan.name; });
       do {
         var name = prompt("Please enter plan name", "Plan name");
         if(!name) {
           return;
         }
-        if($scope.plans.map(function(plan) { return plan.name; }).indexOf(name) != -1) {
+        if(planNames.indexOf(name) != -1) {
           name = "";
         }
       } while(!name);
@@ -693,7 +687,6 @@ if($scope.simulate) operator.features.parallel = false;
     var viewedNodes = plansConversions.getNodeFromView($scope.model);
     var plan = plansConversions.convertToPlan(viewedNodes);
 
-    nodeNames = [];
     var new_operators = [];
     var nodeIndex = {};
     for(var old_op of plan.operators) {
@@ -731,7 +724,6 @@ if($scope.simulate) operator.features.parallel = false;
         new_op.np_inputs     = operatorIndex[new_op.java_class].nb_inputs;
         new_op.np_outputs    = operatorIndex[new_op.java_class].nb_outputs;
 
-        nodeNames.push(nodeName);
         new_operators.push(new_op);
         nodeIndex[nodeName] = new_op;
       }
