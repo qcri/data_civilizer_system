@@ -87,6 +87,11 @@
                         "name": "param1",
                         "inputType": "String",
                         "type": "DataSetType"
+                    },
+                    {
+                        "name": "param2",
+                        "inputType": "String",
+                        "type": "Output Property Name"
                     }
                 ]
             },
@@ -113,6 +118,11 @@
                         "name": "param1",
                         "inputType": "String",
                         "type": "DataSetType"
+                    },
+                    {
+                        "name": "param2",
+                        "inputType": "String",
+                        "type": "Input Property Name"
                     }
                 ]
             },

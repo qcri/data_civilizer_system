@@ -244,6 +244,35 @@ def executeOperator(operator):
     class_name = operator["java_class"]
     parameters = operator["parameters"]
     inputs = operator["inputs"]
+    #
+    # WARNING:
+    #
+    # The "inputs" property of the operator used to be an array where each
+    # index corresponded to a physical input connection point on the workflow
+    # chart and the value stored in each array element was the output object
+    # from the preceding operator linked to that connection point.
+    #
+    # This has now been changed such that each element of "inputs" is itself
+    # an array to allow multiple output objects to be queued to each input
+    # connection point.  However, thorough consideration has not been made
+    # as to how to handle arbitrary object properties generically.
+    #
+    # The code below collapses multiple input objects in each inputs element
+    # into a single object so that subsequent operator processing occurs as
+    # before.  Primarily, this checks for and concatenates the contents of the
+    # "civilizer.dataCollection.filelist" property from each input object into
+    # the first.  Any other properties from input objects beyond the first are
+    # ignored.  Other properties on the first input object are left unchanged
+    # and passed to the operator for processing.
+    #
+    for index, inputq in enumerate(inputs):
+        if len(inputq) > 1:
+            if "civilizer.dataCollection.filelist" in inputq[0]:
+                for input in inputq[1:]:
+                    if "civilizer.dataCollection.filelist" in input:
+                        inputq[0]['civilizer.dataCollection.filelist'].extend(input['civilizer.dataCollection.filelist'])
+        inputs[index] = inputq[0]
+
     task_sources = parameters["param2"] if 'param2' in parameters else ""
     task_destination = parameters["param3"] if 'param3' in parameters else ""
     input_source, output_destination = get_source_destination_objects(task_sources, task_destination)
@@ -265,17 +294,19 @@ def executeOperator(operator):
         files_out = list()
         for files in list(map(glob.glob, files_in)):
             files_out.extend(files)
+        out_name = parameters["param2"] or "civilizer.dataCollection.filelist"
         output = {
-            "civilizer.dataCollection.filelist": list(map(os.path.abspath, files_out))
+            out_name: list(map(os.path.abspath, files_out))
         }
 
     elif(class_name == "civilizer.basic.operators.CollectionSink"):
         log("CollectionSink")
         dir_out = parameters["civilizer.collectionSink.location"]
+        in_name = parameters["param2"] or "civilizer.dataCollection.filelist"
         try:
             if not os.path.isdir(dir_out):
                 os.makedirs(dir_out)
-            for file_in in inputs[0]['civilizer.dataCollection.filelist']:
+            for file_in in inputs[0][in_name]:
                 shutil.copy(file_in, dir_out)
             output = {}
         except OSError as err:

@@ -53,6 +53,9 @@ function ExecutePlans_rheem(rheemPlan) {
     op.run_id = run_id;
     op.state = STATE_WAITING;
     op.inputs = [];
+    for(var i = 0; i < op.np_inputs; i++) {
+      op.inputs[i] = [];
+    }
     op.depends_on = [];
     op.links_to = [];
   }
@@ -178,9 +181,9 @@ function ExecutePlans_rheem(rheemPlan) {
             for(var onum = 0; onum < op.links_to.length; onum++) {
               next_keys = next_keys.concat(Object.keys(op.links_to[onum]));
               for(var op_key in op.links_to[onum]) {
+                var inum = op.links_to[onum][op_key];
                 var next_op = ops[op_key];
-                next_op.inputs[op.links_to[onum][op_key]] =
-                  onum < op.outputs.length ? op.outputs[onum] : {};
+                next_op.inputs[inum].push(onum < op.outputs.length ? op.outputs[onum] : {});
               }
             }
           }
