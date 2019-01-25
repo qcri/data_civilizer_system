@@ -104,8 +104,15 @@ if($scope.simulate) operator.features.parallel = false;
   var ctrlKeyCode = 17;
   var aKeyCode = 65;
   var escKeyCode = 27;
-  var nextNodeID = 10; // <-- Doesn't seem to have any effect when used
-  var nextConnectorID = 20;
+//345678901234567890123456789012345678901234567890123456789012345678901234567890
+  //
+  // Node and connector IDs are used by the ngFlowchart module to identify
+  // chart elements and must be unique within the currently displayed chart.
+  // However, they are not stored with the model, but are reassigned each
+  // time a saved plan is loaded.
+  //
+  var maxNodeID = 0; // was 10
+  var minConnectorID = 0; // was 20
   var nextParamID = 30;
   $scope.ctrlDown = false;
   var dragOptions = {
@@ -170,7 +177,6 @@ if($scope.simulate) operator.features.parallel = false;
   };
 
   $scope.addNewNode = function(nodetype, node, nodeClass) {
-//  var nodeName = enterNodeName(node.class.split(".").splice(-1)[0]);
     var nodeName = enterNodeName(node.class.split(".").pop());
     if(!nodeName) {
       return;
@@ -180,7 +186,7 @@ if($scope.simulate) operator.features.parallel = false;
       var connectorsArr = [];
       function addConnector(type, broadcast) {
         var connector = {
-          "id": nextConnectorID++,
+          "id": --minConnectorID,
           "type": type
         };
         if(broadcast) {
@@ -213,7 +219,7 @@ if($scope.simulate) operator.features.parallel = false;
     }
 
     var newNode = createNewNode(nodetype, node, nodeClass, nodeName);
-    newNode.id = nextNodeID++,
+    newNode.id = ++maxNodeID,
     newNode.connectors = getConnectorsByType(nodetype, node);
     model.nodes.push(newNode);
   };
@@ -248,7 +254,7 @@ if($scope.simulate) operator.features.parallel = false;
 
     var newNode = {
       name: nodeName,
-//    id: nextNodeID++,
+//    id: ++maxNodeID,
       x: 10,
       y: 10,
       color: getColorCodeByType(nodetype),
@@ -284,7 +290,7 @@ if($scope.simulate) operator.features.parallel = false;
     var selectedNodes = modelservice.nodes.getSelectedNodes($scope.model);
     for(var i = 0; i < selectedNodes.length; ++i) {
       var node = selectedNodes[i];
-      node.connectors.push({id: nextConnectorID++, type: flowchartConstants.topConnectorType});
+      node.connectors.push({id: --minConnectorID, type: flowchartConstants.topConnectorType});
     }
   };
 
@@ -297,7 +303,7 @@ if($scope.simulate) operator.features.parallel = false;
     var selectedNodes = modelservice.nodes.getSelectedNodes($scope.model);
     for(var i = 0; i < selectedNodes.length; ++i) {
       var node = selectedNodes[i];
-      node.connectors.push({id: nextConnectorID++, type: flowchartConstants.bottomConnectorType});
+      node.connectors.push({id: --minConnectorID, type: flowchartConstants.bottomConnectorType});
     }
   };
 */
@@ -350,8 +356,7 @@ if($scope.simulate) operator.features.parallel = false;
     }
   };
 
-  //Plans
-  //var person = prompt("Please enter plan name", "Plan name");
+  // Plans
   $scope.currentPlan = -1;
 
   RheemAPI.getPlans({}, function(data) {
@@ -414,6 +419,11 @@ if($scope.simulate) operator.features.parallel = false;
           { id:edge.destination, type:flowchartConstants.topConnectorType }
         );
       }
+      minConnectorID = 0;
+      maxNodeID = Math.max(...model.nodes.map(function(node) {
+        minConnectorID = Math.min(minConnectorID, ...modelservice.nodes.getConnectorIds(node));
+        return node.id;
+      }));
       $scope.model = model;
     }, 0);
   };
@@ -430,7 +440,6 @@ if($scope.simulate) operator.features.parallel = false;
       });
     } else {
       $scope.ctrlDown = false;
-//    $scope.plan.name = prompt("Please enter plan name", "Plan name");
       var planNames = $scope.plans.map(function(plan) { return plan.name; });
       do {
         var name = prompt("Please enter plan name", "Plan name");
@@ -444,7 +453,6 @@ if($scope.simulate) operator.features.parallel = false;
       $scope.plan.name = name;
       RheemAPI.createPlan($scope.plan, function(data) {
         alert("plan created successfully");
-//      window.location.reload();
         RheemAPI.getPlans({}, function(data) {
           $scope.plans = data;
           setSelectedPlan(name);
@@ -690,7 +698,7 @@ if($scope.simulate) operator.features.parallel = false;
     var new_operators = [];
     var nodeIndex = {};
     for(var old_op of plan.operators) {
-      // Only rebuild id operator class still exists, i.e. drop node if operator class no longer exists
+      // Only rebuild if operator class still exists, i.e. drop node if operator class no longer exists
       if(old_op.java_class in operatorIndex) {
         var nodetype = old_op.np_inputs ? old_op.np_outputs ? "operator" : "sink" : "datasource";
         var node = operatorIndex[old_op.java_class];
@@ -910,8 +918,6 @@ if($scope.ctrlDown) {
         }
       }
     );
-
-    // var myVar = setInterval(myTimer, 1000);
   };
 
   const STATE_WAITING = 0;
@@ -957,7 +963,6 @@ if($scope.ctrlDown) {
       node.pctProgress = 0;
       node.disProgress = "none";
     }
-//  $scope.aaa.showProgressBars = false;
   }
 
   function ShowProgress(response) {
@@ -994,7 +999,6 @@ if($scope.ctrlDown) {
       }
       node.disProgress = (status_node.state != STATE_DONE) ? "block" : "none";
     });
-//  $scope.aaa.showProgressBars = true;
   }
 
 }]);
