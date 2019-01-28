@@ -45,7 +45,7 @@ if(0) {
     console.log(target + " @ " + new Date().toISOString());
     requests++;
 
-    clients[baseurl].get("/rheem" + req.url, function(err, reshttp, body) {
+    clients[baseurl].get("/rheem" + req.url, function(baseurl) { return function(err, reshttp, body) {
       console.log(body);
       if(body && ("operators" in body) && Array.isArray(body.operators)) {
         for(var operator of body.operators) {
@@ -57,7 +57,7 @@ if(0) {
         console.log("Operator.getByType returning:\r\n" + JSON.stringify(operators, null, 4));
         return res.json(operators);
       }
-    });
+    }}(baseurl));
   }
 }
 };
