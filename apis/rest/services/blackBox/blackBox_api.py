@@ -30,10 +30,15 @@ def executeService(parameters, inputs):
         os.makedirs(out_dir_path)
 
     # these are the input files passed from civilizer.py
+    '''
+    Here we just copy the files from the input dir to the output dir.
+    The logic of the operator should go here, e.g., calling the doThings() function
+    '''
     for input in inputs:
         if 'civilizer.dataCollection.filelist' in input:
             filelist.extend(input['civilizer.dataCollection.filelist'])
             for file in input['civilizer.dataCollection.filelist']:
+            	doThings(file)
                 file_tmp = out_dir_path + file.split("/")[-1]
                 copyfile(file, file_tmp)
                 filelist.append(file_tmp)
@@ -42,3 +47,6 @@ def executeService(parameters, inputs):
     output = {'civilizer.dataCollection.filelist': filelist}
     return output
 
+
+def doThings(file):
+	pass
