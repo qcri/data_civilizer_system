@@ -12,6 +12,8 @@ import tempfile
 import uuid
 import subprocess
 
+from services.blackBox import blackBox_api
+
 # from subprocess import Popen, PIPE
 # demo-g# from services.fahes_service import fahes_api
 # demo-g# from services.imputedb_service import imputedb_api
@@ -357,37 +359,8 @@ def executeOperator(operator):
             'civilizer.dataCollection.filelist': filelist
         }
 
-    elif(class_name == "civilizer.basic.operators.BlackBox2"):
-        from shutil import copyfile
-        log_text('BlackBox2')
-        log_text(parameters["param4"])
-
-        command = parameters["param5"]
-        if command:
-            subprocess.run([command])
-
-        filelist = []
-
-        try:
-            out_dir_path = getOutputDirectory(parameters)
-        except OSError as err:
-            return {"error": "OSError: {0}".format(err)}
-
-        if not os.path.exists(out_dir_path):
-            os.makedirs(out_dir_path)
-
-        for input in inputs:
-            if 'civilizer.dataCollection.filelist' in input:
-                filelist.extend(input['civilizer.dataCollection.filelist'])
-                for file in input['civilizer.dataCollection.filelist']:
-                    file_tmp = out_dir_path + file.split("/")[-1]
-                    copyfile(file, file_tmp)
-                    filelist.append(file_tmp)
-
-        output = {
-            'civilizer.dataCollection.filelist': filelist
-        }
-
+    elif(class_name == "civilizer.basic.operators.BlackBox"):
+        output = blackBox_api.executeService(parameters,inputs)
 
     else:
         print("Error")

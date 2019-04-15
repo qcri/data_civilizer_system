@@ -65,7 +65,7 @@
         {
             "supportBroadcast": true,
             "nb_outputs": 1,
-            "class": "civilizer.basic.operators.BlackBox2",
+            "class": "civilizer.basic.operators.BlackBox",
             "features": {
                 "broadcast": false,
                 "interactive": false,
@@ -77,7 +77,7 @@
                     {
                         "name": "param0",
                         "inputType": "Service",
-                        "type": "civilizer.basic.operators.BlackBox2"
+                        "type": "civilizer.basic.operators.BlackBox"
                     },
                     {
                         "name": "param1",
@@ -97,12 +97,7 @@
                     {
                         "name": "param4",
                         "inputType": "String",
-                        "type": "civilizer.DataCleaning.BlackBox2.log"
-                    },
-                    {
-                        "name": "param5",
-                        "inputType": "String",
-                        "type": "civilizer.DataCleaning.BlackBox2.log"
+                        "type": "civilizer.DataCleaning.BlackBox.log"
                     }
                 ]
             },
