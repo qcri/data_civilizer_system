@@ -21,6 +21,7 @@ RUN DEBIAN_FRONTEND=noninteractive && \
 # update pip
 RUN python3 -m pip install pip --upgrade
 RUN python3 -m pip install wheel
+RUN python3 -m pip install funcy
 
 # fix the path for python
 # RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.5 10
@@ -60,22 +61,22 @@ RUN pip3 install -r requirements.txt
 # RUN /app/DeepER-Lite/install.sh
 
 # install required lib for DeepER
-RUN luarocks install csvigo
-RUN luarocks install dp
+#demo-m# RUN luarocks install csvigo
+#demo-m# RUN luarocks install dp
 
 COPY ./rest /app/rest
 
 # -- Modify build.sh in place to not install GloVe
 # -- Create symlink to point to external GloVe.t7 file
-RUN sed -i '/GloVe/,/^)$/ s/^[^#]/#&/' /app/rest/services/build.sh && \
-    /app/rest/services/build.sh && \
-    find /app -name '*.o' -exec rm -f {} \; && \
-    ln -s /app/storage/glove/GloVe.t7 /app/rest/services/deeper_service/DeepER-Lite/glove/GloVe.t7
+#demo-m# RUN sed -i '/GloVe/,/^)$/ s/^[^#]/#&/' /app/rest/services/build.sh && \
+#demo-m#     /app/rest/services/build.sh && \
+#demo-m#     find /app -name '*.o' -exec rm -f {} \; && \
+#demo-m#     ln -s /app/storage/glove/GloVe.t7 /app/rest/services/deeper_service/DeepER-Lite/glove/GloVe.t7
 
-COPY ./fastText /root/fastText
+#demo-m# COPY ./fastText /root/fastText
 
-RUN cd /root/fastText && \
-    python3 setup.py install
+#demo-m# RUN cd /root/fastText && \
+#demo-m#     python3 setup.py install
 
 EXPOSE 8089
 #CMD python ./rest/civilizer.py

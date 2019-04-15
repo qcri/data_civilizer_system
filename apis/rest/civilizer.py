@@ -10,15 +10,17 @@ import re
 import shutil
 import tempfile
 import uuid
+import subprocess
 
 # from subprocess import Popen, PIPE
-from services.fahes_service import fahes_api
-from services.imputedb_service import imputedb_api
-from services.pkduck_service import pkduck_api
+# demo-g# from services.fahes_service import fahes_api
+# demo-g# from services.imputedb_service import imputedb_api
+# demo-g# from services.pkduck_service import pkduck_api
 # from services.cleaning_service import cleaning_api
-from services.deeper_service import deeper_api
+# demo-g# from services.deeper_service import deeper_api
 # from services.aurum_service import aurum_api
-from services.deeper_lite_service import deeper_lite_sim_train_predict as deeper_lite_api
+# demo-g# from services.deeper_lite_service import
+# deeper_lite_sim_train_predict as deeper_lite_api
 
 app = Flask(__name__)
 
@@ -47,10 +49,21 @@ try:
 except:
     docker_log = None
 
+
+def log_text(text):
+    log_path = '/app/'
+    file_name = log_path + 'log.txt'
+    f = open(file_name, "a+")
+    f.write(text)
+    f.write('\n')
+    f.close
+
+
 def log(text):
     print(text)
     if docker_log is not None:
-        print(text, file = docker_log)
+        print(text, file=docker_log)
+
 
 def getOutputDirectory(parameters):
     tmpdir = ""
@@ -65,12 +78,15 @@ def getOutputDirectory(parameters):
 
     return output_dir + "/"
 
+
 def parseQuery(filelist, query, returnColumns=False):
     # Use regex to perform simplistic query parsing
-    re_query = re.compile("^\\s*SELECT\\s*([^;]*\\S)\\s*FROM\\s*([^;]*\\S)\\s*;\\s*$", re.IGNORECASE)
+    re_query = re.compile(
+        "^\\s*SELECT\\s*([^;]*\\S)\\s*FROM\\s*([^;]*\\S)\\s*;\\s*$", re.IGNORECASE)
     match = re_query.match(query)
     if not match:
-        raise SyntaxError("Unrecognized column name query, '{0}'.".format(query))
+        raise SyntaxError(
+            "Unrecognized column name query, '{0}'.".format(query))
 
     # Identify the CSV from filelist associated with the table name from query
     table_name = match.group(2)
@@ -96,9 +112,11 @@ def parseQuery(filelist, query, returnColumns=False):
         try:
             columns[i] = str(headers.index(column))
         except ValueError:
-            raise NameError("Unrecognized column name '{0}' for table '{1}'.".format(column, table_name))
+            raise NameError(
+                "Unrecognized column name '{0}' for table '{1}'.".format(column, table_name))
 
     return filepath[0], table_name, ",".join(columns)
+
 
 @app.route('/rheem/rheem_plans', methods=['POST'])
 def post_plan():
@@ -106,7 +124,8 @@ def post_plan():
     return jsonify(request.json)
 
 
-# Returns adjacent vertices (next services) for a given service node in the pipeline
+# Returns adjacent vertices (next services) for a given service node in
+# the pipeline
 def get_next_services(service):
     return service['next']
 
@@ -121,9 +140,10 @@ def order_tasks(service, service_id, ordered_list, visited, service_id_json_map)
     for next_service in get_next_services(service):
         next_service_id = int(next_service)
         if (visited[next_service_id] == False):
-            order_tasks(service_id_json_map[next_service_id], next_service_id, ordered_list, visited, service_id_json_map)
+            order_tasks(service_id_json_map[
+                        next_service_id], next_service_id, ordered_list, visited, service_id_json_map)
 
-    ordered_list.insert(0, service) # Insert current service into the list
+    ordered_list.insert(0, service)  # Insert current service into the list
 
 
 @app.route('/rheem/plan_executions', methods=['POST'])
@@ -143,11 +163,12 @@ def post_ExePlan():
         return executeOperator(operators[number])
 
     pipeline = task_request
-    service_id_json_map = [None]*len(task_request) # this array is used  to map service ids
-                                               # to the service JSON description
+    # this array is used  to map service ids
+    service_id_json_map = [None] * len(task_request)
+    # to the service JSON description
 
     # first, we perform a toplogical sort of the workflow DAG
-    visited = [False]*len(pipeline)
+    visited = [False] * len(pipeline)
     ordered_list = []
 
     for service_id, service in enumerate(pipeline):
@@ -156,10 +177,12 @@ def post_ExePlan():
 
     for service_id, service in enumerate(pipeline):
         if visited[service_id] == False:
-            order_tasks(service, service_id, ordered_list, visited, service_id_json_map)
+            order_tasks(service, service_id, ordered_list,
+                        visited, service_id_json_map)
 
-    service_input_dir = {} # this dict is used to keep track of the input dirs of each service
-                           # service_input_dir[s] returns the input dir (if any) for service s 
+    # this dict is used to keep track of the input dirs of each service
+    service_input_dir = {}
+    # service_input_dir[s] returns the input dir (if any) for service s
 
     for service_id, service in enumerate(ordered_list):
         print(service_id)
@@ -171,24 +194,30 @@ def post_ExePlan():
         # index of output dir is always at index 3 of parameters list
         if str(service_id) in service_input_dir:
             log(str(service_id) + " in service_input_dir")
-            service['parameters']['param2'] = service_input_dir[str(service_id)]
+            service['parameters'][
+                'param2'] = service_input_dir[str(service_id)]
 
-        for next_service_id in service['next']: # fill out the input dirs for the next services
+        # fill out the input dirs for the next services
+        for next_service_id in service['next']:
             # if no out dir was specified, assume in dir is same as out dir
             if 'param3' in service['parameters']:
-                if not service['parameters']['param3']: 
-                    service_input_dir[next_service_id] = service['parameters']['param2']
+                if not service['parameters']['param3']:
+                    service_input_dir[next_service_id] = service[
+                        'parameters']['param2']
                 else:
-                    service_input_dir[next_service_id] = service['parameters']['param3']
+                    service_input_dir[next_service_id] = service[
+                        'parameters']['param3']
 
         log(str(service_id) + ": " + service['name'])
-        log("  param2: " + service['parameters']['param2'] if 'param2' in service['parameters'] else "Not set")
-        log("  param3: " + service['parameters']['param3'] if 'param3' in service['parameters'] else "Not set")
+        log("  param2: " + service['parameters']['param2']
+            if 'param2' in service['parameters'] else "Not set")
+        log("  param3: " + service['parameters']['param3']
+            if 'param3' in service['parameters'] else "Not set")
 
         for key, value in op_response.items():
             service['parameters'][key] = value
 
-        #Execute service
+        # Execute service
         op_response = executeOperator(service).json
 
     return jsonify(op_response)
@@ -196,6 +225,7 @@ def post_ExePlan():
 
 
 progress = {}
+
 
 @app.route('/rheem/plan_exec_op', methods=['POST'])
 def post_ExeOperator():
@@ -221,10 +251,12 @@ def post_ExeOperator():
         log("simulating op_request:")
         log(json.dumps(op_request, sort_keys=True, indent=4))
         if not key:
-            # For services that don't support advanced progress reporting, simply wait 2-10 seconds
+            # For services that don't support advanced progress reporting,
+            # simply wait 2-10 seconds
             time.sleep(random.randint(2, 10))
         else:
-            # For services that support advanced progress reporting, simulate inceasing progress over 20 seconds
+            # For services that support advanced progress reporting, simulate
+            # inceasing progress over 20 seconds
             for i in range(1, 10):
                 progress[key]["progress"] = i * 10 / 100
                 time.sleep(2)
@@ -270,17 +302,20 @@ def executeOperator(operator):
             if "civilizer.dataCollection.filelist" in inputq[0]:
                 for input in inputq[1:]:
                     if "civilizer.dataCollection.filelist" in input:
-                        inputq[0]['civilizer.dataCollection.filelist'].extend(input['civilizer.dataCollection.filelist'])
+                        inputq[0]['civilizer.dataCollection.filelist'].extend(
+                            input['civilizer.dataCollection.filelist'])
         inputs[index] = inputq[0]
 
     task_sources = parameters["param2"] if 'param2' in parameters else ""
     task_destination = parameters["param3"] if 'param3' in parameters else ""
-    input_source, output_destination = get_source_destination_objects(task_sources, task_destination)
+    input_source, output_destination = get_source_destination_objects(
+        task_sources, task_destination)
 
     log("input: " + operator['name'])
     log(json.dumps(operator, sort_keys=True, indent=4))
 
-    parameters['civilizer.dataCollection.tmpdir'] = tmpdir + operator['run_id'] + "/"
+    parameters['civilizer.dataCollection.tmpdir'] = tmpdir + \
+        operator['run_id'] + "/"
 
     output = None
 
@@ -310,7 +345,7 @@ def executeOperator(operator):
                 shutil.copy(file_in, dir_out)
             output = {}
         except OSError as err:
-            output = { "error": "OSError: {0}".format(err) }
+            output = {"error": "OSError: {0}".format(err)}
 
     elif(class_name == "civilizer.basic.operators.Gather"):
         log("Gather")
@@ -322,146 +357,37 @@ def executeOperator(operator):
             'civilizer.dataCollection.filelist': filelist
         }
 
-    elif(class_name == "civilizer.basic.operators.DataDiscovery"):
-        print("Data Discovery")
-        # open_chrome('http://localhost:3000/')
-        return jsonify(myresponse2)
+    elif(class_name == "civilizer.basic.operators.BlackBox2"):
+        from shutil import copyfile
+        log_text('BlackBox2')
+        log_text(parameters["param4"])
 
-    elif(class_name=="civilizer.basic.operators.DataCleaning-Fahes"):
-        print("DataCleaning-Fahes")
-        if inputs:
-            output = fahes_api.execute_fahes_params(parameters, inputs)
-        else:
-            fahes_api.execute_fahes(input_source, output_destination)
+        command = parameters["param5"]
+        if command:
+            subprocess.run([command])
 
-#   elif(class_name=="civilizer.basic.operators.DataCleaning-FahesFilter"):
-#       print("DataCleaning-FahesFilter")
-#       fahes_api.executeService(input_source, output_destination)
+        filelist = []
 
-    elif(class_name=="civilizer.basic.operators.DataCleaning-FahesApply"):
-        print("DataCleaning-FahesApply")
-        if inputs:
-            output = fahes_api.executeService_params(parameters, inputs)
-        else:
-            fahes_api.executeService(input_source, output_destination)
+        try:
+            out_dir_path = getOutputDirectory(parameters)
+        except OSError as err:
+            return {"error": "OSError: {0}".format(err)}
 
-    elif (class_name == "civilizer.basic.operators.DataCleaning-PKDuck"):
-        print("DataCleaning-PKDuck")
-        if inputs:
-            parameters['civilizer.PKDuck.columnSelect'] = parameters['param4'].splitlines()
-            parameters['civilizer.PKDuck.tau'] = Decimal(parameters['param5'])
-            output = pkduck_api.executeService_params(parameters, inputs)
-        else:
-            columns = parameters["param4"]
-            tau = parameters["param5"]
-            pkduck_api.execute_pkduck(input_source, output_destination, columns, Decimal(tau))
-        # inputF = "sources.json"
-        # outputF = "destination.json"
-        # columns = "12#11#8#7#1,2,7#10"
-        # pkduck_api.execute_pkduck_file(inputF, outputF, columns, 0.8)
+        if not os.path.exists(out_dir_path):
+            os.makedirs(out_dir_path)
 
-    elif (class_name == "civilizer.basic.operators.DataCleaning-Imputedb"):
-        print("DataCleaning-Imputedb")
-        if inputs:
-            parameters['civilizer.DataCleaning.Imputedb.Query'] = parameters['param5'].splitlines()
-            parameters['civilizer.DataCleaning.Imputedb.Ratio'] = parameters['param6']
-            output = imputedb_api.executeService_params(parameters, inputs)
-        else:
-            tableName = parameters["param4"]
-            q = parameters["param5"]
-            r = parameters["param6"]
-            input_source = {'CSV': {'dir': task_sources, 'table': tableName}}
-            # imputedb_api.execute_imputedb(input_source, output_destination, q, r)
-            imputedb_api.executeService(input_source, output_destination, q, r)
-            # inputF = "sources_im.json"
-            # outputF = "destination.json"
-            # imputedb_api.execute_imputedb_file(inputF, outputF, 'select Dept_Budget_Code from Sis_department;', 0)
+        for input in inputs:
+            if 'civilizer.dataCollection.filelist' in input:
+                filelist.extend(input['civilizer.dataCollection.filelist'])
+                for file in input['civilizer.dataCollection.filelist']:
+                    file_tmp = out_dir_path + file.split("/")[-1]
+                    copyfile(file, file_tmp)
+                    filelist.append(file_tmp)
 
-    elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER"):
-        print("DataCleaning-DeepER")
-        table1 = parameters["param4"]
-        table2 = parameters["param5"]
-        predictionsFileName = parameters["param6"]
-        number_of_pairs = parameters["param7"]
-        deeper_api.execute_deeper(task_sources, table1, table2, number_of_pairs, task_destination, predictionsFileName)
+        output = {
+            'civilizer.dataCollection.filelist': filelist
+        }
 
-    elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER-Train"):
-        print("DataCleaning-DeepER-Train")
-        if inputs:
-            ltable_file_path = inputs[0]['civilizer.dataCollection.filelist'][0]
-            rtable_file_path = inputs[0]['civilizer.dataCollection.filelist'][1]
-            if not rtable_file_path:
-                rtable_file_path = ltable_file_path
-        else:
-            parameters["metadata_path"] = parameters["param2"]
-            ltable_file_path = parameters["param4"]
-            rtable_file_path = parameters["param5"]
-        parameters["ltable_file_path"] = ltable_file_path
-        parameters["rtable_file_path"] = rtable_file_path
-        parameters["labeled_file_path"] = parameters["param6"]
-#       params = {
-#           "metadata_path":parameters["param2"],
-#           "ltable_file_path":parameters["param4"],
-#           "rtable_file_path":parameters["param5"],
-#           "labeled_file_path":parameters["param6"],
-#       }
-        output = deeper_lite_api.executeServiceTrain(parameters, inputs)
-
-    elif (class_name == "civilizer.basic.operators.EntityMatching-DeepER-Predict"):
-        print("DataCleaning-DeepER-Predict")
-        if inputs:
-            parameters["metadata_path"] = inputs[0]["civilizer.DeepER.metadataPath"]
-            ltable_file_path = inputs[0]['civilizer.dataCollection.filelist'][0]
-            rtable_file_path = inputs[0]['civilizer.dataCollection.filelist'][1]
-            if not rtable_file_path:
-                rtable_file_path = ltable_file_path
-        else:
-            parameters["metadata_path"] = parameters["param2"]
-            ltable_file_path = parameters["param4"]
-            rtable_file_path = parameters["param5"]
-        parameters["ltable_file_path"] = ltable_file_path
-        parameters["rtable_file_path"] = rtable_file_path
-        parameters["candidates_file_path"] = parameters["param6"]
-        parameters["lblocking_key"] = parameters["param7"]
-        parameters["rblocking_key"] = parameters["param7"]
-#       params = {
-#               "metadata_path":parameters["param2"],
-#               "out_file_path":parameters["param3"],
-#               "ltable_file_path":parameters["param4"],
-#               "rtable_file_path":parameters["param5"],
-#               "candidates_file_path":parameters["param6"],
-#               "lblocking_key":parameters["param7"],
-#               "rblocking_key":parameters["param7"],
-#       }
-        output = deeper_lite_api.executeServicePredict(parameters, inputs)
-
-    elif(class_name == "civilizer.basic.operators.EntityConsolidation"):
-        print("Entity Consolidation")
-        # gr_source_file = "/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/civilizer_services/grecord_service/source.txt"
-        # gr_destination_file = "/Users/emansour/elab/DAGroup/DataCivilizer/github/data_civilizer_system/civilizer_services/grecord_service/destination.txt"
-
-        # gr_source_file = "/app/rest/services/grecord_service/source.txt"
-        # gr_destination_file = "/app/rest/services/grecord_service/destination.txt"
-
-        gr_source_file = "/app/storage/data_sets/gr/source.txt"
-        gr_destination_file = "/app/storage/data_sets/gr/destination.txt"
-
-        sfile = open(gr_source_file, 'w')
-        sfile.write(task_sources+" ")
-        sfile.close()
-
-        dfile = open(gr_destination_file, 'w')
-        dfile.write(task_destination+" ")
-        dfile.close()
-
-        # open_chrome('http://0.0.0.0:8888/notebooks/civilizer_gr.ipynb')
-        return jsonify(myresponse1)
-    
-    elif (class_name == "civilizer.basic.operators.DataCleaning-Profiler"):
-        print("DataCleaning-Profiler")
-        inputF = "sources_p.json"
-        outputF = "destination.json"
-        # cleaning_api.execute_cleaning(inputF, outputF)
 
     else:
         print("Error")
@@ -474,18 +400,18 @@ def executeOperator(operator):
 
 
 def get_activeNode(request):
-    
+
     active_node_index = 0
     task_request = request.json
     operators = task_request["operators"]
     number = len(operators)
     # x ranges from 0 to number-1
-    for x in range(number):    
+    for x in range(number):
         isActive = operators[x]["parameters"]["param1"]
         if isActive == 'y':
             active_node_index = x
 #       else:
-            break 
+            break
 
     return active_node_index
 
@@ -502,7 +428,6 @@ def open_chrome(url):
     chrome_path = 'open -a /Applications/Google\ Chrome.app %s'
     print("open chrome")
     webbrowser.get(chrome_path).open(url)
-
 
 
 # def __placeholder():
@@ -528,7 +453,8 @@ def get_Progress():
         if key in progress:
             # Branch out to service specific progress functions here.
             #
-            # Gather only reports as supporting advanced progress when testing...
+            # Gather only reports as supporting advanced progress when
+            # testing...
             if progress[key]["class_name"] == "civilizer.basic.operators.Gather":
                 retval[name] = progress[key]
     return jsonify(retval)
@@ -543,6 +469,7 @@ def get_operators():
     json_data.close()
     return jsonify(operators)
 
+
 def init_modules():
     """
     Before the Flask app starts, we call init() function of each module.
@@ -555,6 +482,6 @@ if __name__ == '__main__':
     # app.run(debug=True)
     # init_modules()
     port = os.environ.get('PORT')
-    if not port: 
+    if not port:
         port = "8089"
     app.run(host='0.0.0.0', port=int(port))

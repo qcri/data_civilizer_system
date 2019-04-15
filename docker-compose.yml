@@ -1,94 +1,32 @@
 version: '3.4'
 
-# networks:
-#   aurum_net:
-#     driver: bridge
-
 services:
-  grecord_service:
-    build: grecord_service
-    image: grecord_service:0.1
-    volumes:
-      - $PWD/app_storage:/app/storage
-    ports:
-      - "8888:8888"
-      - "8889:8889"
   mongodb:
     image: mongo:latest
-  # elasticsearch:
-  #   image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.0.1
-  #   volumes:
-  #     - $PWD/app_storage/elasticsearch:/usr/share/elasticsearch/data
-  #   ports:
-  #     - 9200:9200
-  #     - 9300:9300
-  #   networks:
-  #     aurum_net:
-  #       aliases:
-  #         - elasticsearch
-  # frontend:
-  #   depends_on:
-  #    - elasticsearch
-  #   image: aurum/frontend
-  #   build:
-  #    context: ./aurum-datadiscovery
-  #    dockerfile: docker/Dockerfile-ui
-  #   volumes:
-  #    - $PWD/app_storage/models:/aurum/data/models
-  #   ports:
-  #    - 3000:3000
-  #    # - 5000:5000
-  #   networks:
-  #    aurum_net:
-  #      aliases:
-  #        - frontend        
-  cuda_torch:
-    image: llsc/cuda-torch:0.6
-    build: cuda-torch
+  
   apis:
     build: apis
+    image: data-civilizer-api-demo:0.1
     volumes:
         - $PWD/app_storage:/app/storage
-        # - $PWD/apis/rest:/app/rest
     environment:
       - PORT=8089
     ports:
       - "8089:8089"
-    image: data-civilizer-api:0.1
-    # command: ["/bin/sleep", "1000000"]
-    depends_on:
-      - grecord_service
-      # - frontend
-  apis2:
-    build: apis2
-    volumes:
-        - $PWD/app_storage:/app/storage
-    environment:
-      - PORT=8090
-    ports:
-      - "8090:8090"
-    image: data-civilizer-api2:0.1
-    # command: ["/bin/sleep", "1000000"]
+  
   studio:
     build: studio
-    image: data-civilizer-studio:0.1
+    image: data-civilizer-studio-demo:0.1
     environment:
       - MONGODB_URL=mongodb://mongodb:27017/dcstudio
       - WEB_SERVER_PORT=5000
       - SOCKET_SERVER_ENDPOINT=ws://localhost:5002
       - SOCKET_SERVER_PORT=5005
-      - API_SERVER_URL=http://apis:8089;http://apis2:8090
+      - API_SERVER_URL=http://apis:8089
     ports:
       - "5000:5000"
       - "5002:5002"
       - "5005:5005"
-    # command: ["/bin/sleep", "1000000"]
     depends_on:
       - mongodb
       - apis
-      - apis2
-#  aurum:
-#    build: aurum-datadiscovery
-#    image: aurum-discovery:0.1
-
-
