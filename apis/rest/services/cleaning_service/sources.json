@@ -1,6 +1,0 @@
-{
-    "CSV": {
-            "dir":"datasets/",
-            "table": "sample.csv"
-        }
-}
