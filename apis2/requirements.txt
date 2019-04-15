@@ -1,8 +1,0 @@
-flask
-networkx
-pandas
-numpy
-requests
-ipython
-nltk
-Cython
