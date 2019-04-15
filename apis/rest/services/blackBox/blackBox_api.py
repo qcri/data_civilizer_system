@@ -38,10 +38,10 @@ def executeService(parameters, inputs):
         if 'civilizer.dataCollection.filelist' in input:
             filelist.extend(input['civilizer.dataCollection.filelist'])
             for file in input['civilizer.dataCollection.filelist']:
-            	doThings(file)
                 file_tmp = out_dir_path + file.split("/")[-1]
                 copyfile(file, file_tmp)
                 filelist.append(file_tmp)
+                # doThings(file)
 
     # these are the files passed to the next operator
     output = {'civilizer.dataCollection.filelist': filelist}
